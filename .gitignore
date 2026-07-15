@@ -15,3 +15,6 @@ dist-ssr
 # Supabase
 supabase/.temp
 supabase/.branches
+
+.mcp.json
+supabase/_all_migrations_combined.sql
