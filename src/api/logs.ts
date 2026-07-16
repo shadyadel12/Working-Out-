@@ -38,6 +38,7 @@ export interface UpsertLogInput {
   log_date: string;
   actual_sets: number | null;
   actual_reps: string | null;
+  actual_weight: string | null;
   player_video_url: string | null;
   player_video_is_external: boolean;
   player_comment: string | null;

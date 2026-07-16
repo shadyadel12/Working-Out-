@@ -254,6 +254,7 @@ function DraftWorkoutsEditor({
                   name: '',
                   target_sets: 3,
                   target_reps: '10',
+                  target_weight: null,
                   coach_comment: null,
                   coach_video_url: null,
                   coach_video_is_external: false,
@@ -319,6 +320,14 @@ function DraftWorkoutsEditor({
                     value={ex.target_reps ?? ''}
                     onChange={(e) => setExercise(wi, ei, { target_reps: e.target.value || null })}
                     placeholder="8-12"
+                  />
+                </div>
+                <div className="field" style={{ margin: 0, flex: 1 }}>
+                  <label>Target weight</label>
+                  <input
+                    value={ex.target_weight ?? ''}
+                    onChange={(e) => setExercise(wi, ei, { target_weight: e.target.value || null })}
+                    placeholder="60kg"
                   />
                 </div>
               </div>
@@ -424,6 +433,7 @@ function ExerciseEditor({ workoutId, playerId }: { workoutId: string; playerId: 
         name: 'New exercise',
         target_sets: 3,
         target_reps: '10',
+        target_weight: null,
         coach_video_url: null,
         coach_video_is_external: false,
         coach_comment: null,
@@ -456,6 +466,7 @@ function ExerciseRow({
   const [name, setName] = useState(exercise.name);
   const [sets, setSets] = useState(exercise.target_sets?.toString() ?? '');
   const [reps, setReps] = useState(exercise.target_reps ?? '');
+  const [weight, setWeight] = useState(exercise.target_weight ?? '');
   const [comment, setComment] = useState(exercise.coach_comment ?? '');
   const [video, setVideo] = useState<VideoValue>({
     url: exercise.coach_video_url,
@@ -468,6 +479,7 @@ function ExerciseRow({
         name,
         target_sets: sets ? Number(sets) : null,
         target_reps: reps || null,
+        target_weight: weight || null,
         coach_comment: comment || null,
         coach_video_url: video.url,
         coach_video_is_external: video.isExternal,
@@ -494,6 +506,10 @@ function ExerciseRow({
         <div className="field" style={{ margin: 0, flex: 1 }}>
           <label>Target reps</label>
           <input value={reps} onChange={(e) => setReps(e.target.value)} placeholder="8-12" />
+        </div>
+        <div className="field" style={{ margin: 0, flex: 1 }}>
+          <label>Target weight</label>
+          <input value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="60kg" />
         </div>
       </div>
       <div className="field" style={{ margin: 0 }}>

@@ -212,6 +212,7 @@ function ExerciseBody({
 
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState('');
   const [comment, setComment] = useState('');
   const [video, setVideo] = useState<VideoValue>({ url: null, isExternal: false });
   const [initialized, setInitialized] = useState(false);
@@ -219,6 +220,7 @@ function ExerciseBody({
   if (log && !initialized) {
     setSets(log.actual_sets?.toString() ?? '');
     setReps(log.actual_reps ?? '');
+    setWeight(log.actual_weight ?? '');
     setComment(log.player_comment ?? '');
     setVideo({ url: log.player_video_url, isExternal: log.player_video_is_external });
     setInitialized(true);
@@ -232,6 +234,7 @@ function ExerciseBody({
         log_date: logDate,
         actual_sets: sets ? Number(sets) : null,
         actual_reps: reps || null,
+        actual_weight: weight || null,
         player_comment: comment || null,
         player_video_url: video.url,
         player_video_is_external: video.isExternal,
@@ -244,6 +247,12 @@ function ExerciseBody({
 
   return (
     <div className="stack">
+      {(exercise.target_weight || exercise.target_sets || exercise.target_reps) && (
+        <div className="muted" style={{ fontSize: '0.85rem' }}>
+          Target: {exercise.target_sets ?? '—'} sets × {exercise.target_reps ?? '—'} reps
+          {exercise.target_weight ? ` @ ${exercise.target_weight}` : ''}
+        </div>
+      )}
       {exercise.coach_comment && (
         <p style={{ margin: 0 }}>
           <span className="muted">Coach: </span>
@@ -274,6 +283,10 @@ function ExerciseBody({
           <div className="field" style={{ margin: 0, flex: 1 }}>
             <label>Reps done</label>
             <input value={reps} onChange={(e) => setReps(e.target.value)} />
+          </div>
+          <div className="field" style={{ margin: 0, flex: 1 }}>
+            <label>Weight used</label>
+            <input value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="60kg" />
           </div>
         </div>
         <div className="field" style={{ margin: '0.5rem 0 0' }}>

@@ -56,6 +56,7 @@ export type Exercise = {
   name: string;
   target_sets: number | null;
   target_reps: string | null;
+  target_weight: string | null;
   coach_video_url: string | null;
   coach_video_is_external: boolean;
   coach_comment: string | null;
@@ -69,6 +70,7 @@ export type ExerciseLog = {
   log_date: string;
   actual_sets: number | null;
   actual_reps: string | null;
+  actual_weight: string | null;
   player_video_url: string | null;
   player_video_is_external: boolean;
   player_comment: string | null;
@@ -205,6 +207,7 @@ export type Database = {
           name: string;
           target_sets?: number | null;
           target_reps?: string | null;
+          target_weight?: string | null;
           coach_video_url?: string | null;
           coach_video_is_external?: boolean;
           coach_comment?: string | null;
@@ -218,6 +221,7 @@ export type Database = {
           name?: string;
           target_sets?: number | null;
           target_reps?: string | null;
+          target_weight?: string | null;
           coach_video_url?: string | null;
           coach_video_is_external?: boolean;
           coach_comment?: string | null;
@@ -234,6 +238,7 @@ export type Database = {
           log_date?: string;
           actual_sets?: number | null;
           actual_reps?: string | null;
+          actual_weight?: string | null;
           player_video_url?: string | null;
           player_video_is_external?: boolean;
           player_comment?: string | null;
@@ -248,6 +253,7 @@ export type Database = {
           log_date?: string;
           actual_sets?: number | null;
           actual_reps?: string | null;
+          actual_weight?: string | null;
           player_video_url?: string | null;
           player_video_is_external?: boolean;
           player_comment?: string | null;

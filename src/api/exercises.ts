@@ -18,6 +18,7 @@ export interface ExerciseInput {
   name: string;
   target_sets: number | null;
   target_reps: string | null;
+  target_weight: string | null;
   coach_video_url: string | null;
   coach_video_is_external: boolean;
   coach_comment: string | null;

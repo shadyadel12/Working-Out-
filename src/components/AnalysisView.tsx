@@ -47,6 +47,7 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
                   <th style={cell}>Date</th>
                   <th style={cell}>Sets</th>
                   <th style={cell}>Reps</th>
+                  <th style={cell}>Weight</th>
                   <th style={cell}>Done</th>
                   <th style={cell}>Note</th>
                   <th style={cell}>Video</th>
@@ -59,6 +60,9 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
                     prev && l.actual_sets != null && prev.actual_sets != null
                       ? l.actual_sets - prev.actual_sets
                       : null;
+                  const wNow = parseWeight(l.actual_weight);
+                  const wPrev = prev ? parseWeight(prev.actual_weight) : null;
+                  const weightUp = wNow != null && wPrev != null ? wNow - wPrev : null;
                   return (
                     <tr key={l.id} style={{ borderTop: '1px solid var(--border)' }}>
                       <td style={cell}>{l.log_date}</td>
@@ -72,6 +76,15 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
                         )}
                       </td>
                       <td style={cell}>{l.actual_reps ?? '—'}</td>
+                      <td style={cell}>
+                        {l.actual_weight ?? '—'}
+                        {weightUp != null && weightUp !== 0 && (
+                          <span className={weightUp > 0 ? 'trend-up' : 'trend-down'}>
+                            {' '}
+                            {weightUp > 0 ? `▲${weightUp}` : `▼${Math.abs(weightUp)}`}
+                          </span>
+                        )}
+                      </td>
                       <td style={cell}>{l.is_completed ? '✓' : '—'}</td>
                       <td style={cell}>{l.player_comment ?? ''}</td>
                       <td style={cell}>
@@ -91,6 +104,13 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
 }
 
 const cell: React.CSSProperties = { padding: '0.4rem 0.6rem' };
+
+/** Parse the leading number out of a weight string like "60kg" -> 60. */
+function parseWeight(w: string | null): number | null {
+  if (!w) return null;
+  const m = w.match(/[\d.]+/);
+  return m ? parseFloat(m[0]) : null;
+}
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
