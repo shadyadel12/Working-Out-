@@ -91,7 +91,7 @@ export default function ChatWindow({
                   padding: '0.5em 0.85em',
                   borderRadius: mine ? '14px 14px 3px 14px' : '14px 14px 14px 3px',
                   background: mine ? 'var(--accent)' : 'var(--surface-2)',
-                  color: mine ? '#fff' : 'var(--text)',
+                  color: mine ? 'var(--accent-text)' : 'var(--text)',
                   fontSize: '0.9rem',
                   wordBreak: 'break-word',
                   lineHeight: 1.45,
