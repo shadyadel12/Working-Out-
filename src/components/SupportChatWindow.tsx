@@ -50,9 +50,15 @@ function Attachment({ path, type }: { path: string; type: string }) {
 export default function SupportChatWindow({
   coachId,
   currentUserId,
+  coachName,
+  onNewMessage,
 }: {
   coachId: string;
   currentUserId: string;
+  /** Shown in message bubbles on the admin side. */
+  coachName?: string;
+  /** Called when a new realtime message arrives (admin uses this to mark per-coach read). */
+  onNewMessage?: () => void;
 }) {
   const qc = useQueryClient();
   const [text, setText] = useState('');
@@ -77,6 +83,7 @@ export default function SupportChatWindow({
       // Mark read immediately since chat is open
       markRead(currentUserId, 'support');
       qc.setQueryData(['unread', 'support', currentUserId], 0);
+      onNewMessage?.();
     });
     return () => { ch.unsubscribe(); };
   }, [coachId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -144,8 +151,15 @@ export default function SupportChatWindow({
         )}
         {messages.map((msg) => {
           const mine = msg.sender_id === currentUserId;
+          // Label for incoming messages: on admin side show coach name; on coach side show "Admin Team".
+          const senderLabel = mine ? null : coachName ?? 'Admin Team';
           return (
-            <div key={msg.id} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start' }}>
+            <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
+              {senderLabel && (
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', margin: '0 0.35rem 0.15rem' }}>
+                  {senderLabel}
+                </span>
+              )}
               <div
                 style={{
                   maxWidth: '72%',
