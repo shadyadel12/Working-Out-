@@ -3,7 +3,17 @@ import { Link } from 'react-router-dom';
 /** Landing / role chooser — first screen a user sees. PulseFit-style hero. */
 export default function Landing() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundImage:
+          'linear-gradient(rgba(10, 10, 12, 0.82), rgba(10, 10, 12, 0.88)), url(/hero.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       {/* Top bar */}
       <header
         style={{
@@ -11,7 +21,9 @@ export default function Landing() {
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '1rem 1.5rem',
-          borderBottom: '1px solid var(--border)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(10, 10, 12, 0.55)',
+          backdropFilter: 'blur(6px)',
         }}
       >
         <div className="row" style={{ gap: '0.6rem' }}>
