@@ -20,17 +20,20 @@ import Checkups from './routes/coach/Checkups';
 import CoachPlayerAnalysis from './routes/coach/PlayerAnalysis';
 import CoachDiet from './routes/coach/Diet';
 import CoachSettings from './routes/coach/Settings';
+import CoachSupport from './routes/coach/Support';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
 import PlayerDiet from './routes/player/Diet';
 import Blocked from './routes/player/Blocked';
 import AdminCoaches from './routes/admin/Coaches';
+import AdminSupport from './routes/admin/Support';
 
 const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard' },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/settings', label: 'Settings' },
+  { to: '/coach/support', label: 'Support' },
 ];
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
@@ -40,6 +43,7 @@ const playerLinks = [
 ];
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
+  { to: '/admin/support', label: 'Support' },
 ];
 
 export default function App() {
@@ -73,6 +77,7 @@ export default function App() {
             <Route path="players/:playerId/chat" element={<CoachChat />} />
             <Route path="checkups" element={<Checkups />} />
             <Route path="settings" element={<CoachSettings />} />
+            <Route path="support" element={<CoachSupport />} />
           </Route>
 
           {/* Player */}
@@ -103,6 +108,7 @@ export default function App() {
           >
             <Route index element={<Navigate to="coaches" replace />} />
             <Route path="coaches" element={<AdminCoaches />} />
+            <Route path="support" element={<AdminSupport />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
