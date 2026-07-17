@@ -20,7 +20,7 @@ export type Profile = {
 export type CoachPlayerLink = {
   id: string;
   coach_id: string;
-  player_id: string;
+  player_id: string | null;   // null = unclaimed (no player yet)
   subscription_key: string;
   subscription_end_date: string;
   status: LinkStatus;
@@ -485,6 +485,10 @@ export type Database = {
       };
       coach_create_player_key: {
         Args: { p_player_id: string; p_end_date: string };
+        Returns: CoachPlayerLink;
+      };
+      coach_create_unclaimed_key: {
+        Args: { p_end_date: string };
         Returns: CoachPlayerLink;
       };
       admin_revoke_coach_key: {

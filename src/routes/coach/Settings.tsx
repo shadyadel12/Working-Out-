@@ -1,26 +1,37 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
-import { listPlayersForCoach, coachCreatePlayerKey } from '../../api/players';
+import { listPlayersForCoach, coachCreateUnclaimedKey, coachCreatePlayerKey } from '../../api/players';
 import { generateXlsxTemplate, importFromXlsx } from '../../api/programs';
 import type { CoachPlayerLink } from '../../types/database.types';
-
-function statusBadge(link: CoachPlayerLink) {
-  const expired = new Date(link.subscription_end_date) < new Date();
-  if (link.status === 'revoked') return <span className="badge danger">Revoked</span>;
-  if (expired) return <span className="badge danger">Expired</span>;
-  return <span className="badge active">Active</span>;
-}
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-/** Returns a date string YYYY-MM-DD N months from today. */
+function isExpired(link: CoachPlayerLink) {
+  return new Date(link.subscription_end_date) < new Date();
+}
+
 function monthsFromToday(n: number) {
   const d = new Date();
   d.setMonth(d.getMonth() + n);
   return d.toISOString().slice(0, 10);
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [done, setDone] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(text).then(() => {
+      setDone(true);
+      setTimeout(() => setDone(false), 2000);
+    });
+  }
+  return (
+    <button type="button" className="secondary" onClick={copy} style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+      {done ? 'Copied ✓' : 'Copy'}
+    </button>
+  );
 }
 
 export default function CoachSettings() {
@@ -33,9 +44,35 @@ export default function CoachSettings() {
     queryFn: () => listPlayersForCoach(coachId),
   });
 
-  const claimed = (players ?? []).filter((p) => p.profile !== null);
+  const unclaimed = (players ?? []).filter((p) => p.profile === null);
+  const claimed   = (players ?? []).filter((p) => p.profile !== null);
 
-  // Excel import state
+  // ── Generate unclaimed key ──────────────────────────────────────
+  const [newKeyDate, setNewKeyDate] = useState(monthsFromToday(1));
+  const [lastKey, setLastKey] = useState<string | null>(null);
+
+  const genUnclaimed = useMutation({
+    mutationFn: () => coachCreateUnclaimedKey(newKeyDate),
+    onSuccess: (link) => {
+      qc.invalidateQueries({ queryKey: ['players', coachId] });
+      setLastKey(link.subscription_key);
+    },
+  });
+
+  // ── Renew existing player's key ─────────────────────────────────
+  const [openRenewFor, setOpenRenewFor] = useState<string | null>(null);
+  const [renewDate, setRenewDate] = useState(monthsFromToday(1));
+
+  const genRenew = useMutation({
+    mutationFn: ({ playerId, date }: { playerId: string; date: string }) =>
+      coachCreatePlayerKey(playerId, date),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['players', coachId] });
+      setOpenRenewFor(null);
+    },
+  });
+
+  // ── Excel import ────────────────────────────────────────────────
   const [importPlayerId, setImportPlayerId] = useState('');
   const importXlsx = useMutation({
     mutationFn: (file: File) => importFromXlsx(file, importPlayerId, coachId),
@@ -54,84 +91,118 @@ export default function CoachSettings() {
     e.target.value = '';
   }
 
-  // Key generation state
-  const [openKeyFor, setOpenKeyFor] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState(monthsFromToday(1));
-  // Map playerId → newly generated key (to display after success)
-  const [shownKeys, setShownKeys] = useState<Record<string, string>>({});
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const genKey = useMutation({
-    mutationFn: ({ playerId, date }: { playerId: string; date: string }) =>
-      coachCreatePlayerKey(playerId, date),
-    onSuccess: (link, { playerId }) => {
-      qc.invalidateQueries({ queryKey: ['players', coachId] });
-      setShownKeys((prev) => ({ ...prev, [playerId]: link.subscription_key }));
-      setOpenKeyFor(null);
-    },
-  });
-
-  function copyKey(playerId: string, key: string) {
-    navigator.clipboard.writeText(key).then(() => {
-      setCopied(playerId);
-      setTimeout(() => setCopied(null), 2000);
-    });
-  }
-
   return (
     <div className="stack">
       <h1>Settings</h1>
 
-      {/* ── Player subscriptions ─────────────────────────────── */}
+      {/* ── Generate new key ───────────────────────────────────── */}
       <div className="card stack">
         <div>
-          <strong>Player subscriptions</strong>
+          <strong>Generate player key</strong>
           <p className="muted" style={{ fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
-            Generate or renew a subscription key for any of your players.
-            Share the key with the player — they enter it at login to activate access.
+            Create a key and share it with a new player. They sign up on the website,
+            enter the key, and are linked to your account automatically.
           </p>
         </div>
 
-        {/* Future: payment gateway placeholder */}
-        <div
-          style={{
-            padding: '0.7rem 1rem',
-            borderRadius: 'var(--radius)',
-            background: 'var(--surface-2)',
-            border: '1px dashed var(--border)',
-            fontSize: '0.85rem',
-            color: 'var(--text-dim)',
-          }}
-        >
-          Coming soon — online payments. Coaches will be able to purchase key packages
-          directly from this page.
+        <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div className="field" style={{ margin: 0 }}>
+            <label>Duration</label>
+            <select value={newKeyDate} onChange={(e) => setNewKeyDate(e.target.value)} style={{ width: 'auto' }}>
+              <option value={monthsFromToday(1)}>1 month</option>
+              <option value={monthsFromToday(3)}>3 months</option>
+              <option value={monthsFromToday(6)}>6 months</option>
+              <option value={monthsFromToday(12)}>1 year</option>
+            </select>
+          </div>
+          <div className="field" style={{ margin: 0 }}>
+            <label>Or pick a date</label>
+            <input
+              type="date"
+              value={newKeyDate}
+              min={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setNewKeyDate(e.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            disabled={genUnclaimed.isPending}
+            onClick={() => { setLastKey(null); genUnclaimed.mutate(); }}
+          >
+            {genUnclaimed.isPending ? 'Generating…' : 'Generate key'}
+          </button>
         </div>
 
-        {claimed.length === 0 ? (
-          <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
-            No players yet. Ask an admin to create player accounts and link them to you.
-          </p>
-        ) : (
+        {lastKey && (
+          <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+            <input
+              readOnly
+              value={lastKey}
+              style={{ flex: 1, fontFamily: 'monospace', letterSpacing: '0.08em', fontWeight: 600 }}
+            />
+            <CopyButton text={lastKey} />
+          </div>
+        )}
+        {genUnclaimed.error && (
+          <span className="error">{(genUnclaimed.error as Error).message}</span>
+        )}
+
+        {/* Coming soon: payment gateway */}
+        <div style={{
+          padding: '0.6rem 0.9rem', borderRadius: 'var(--radius)',
+          background: 'var(--surface-2)', border: '1px dashed var(--border)',
+          fontSize: '0.82rem', color: 'var(--text-dim)',
+        }}>
+          Coming soon — buy key packages online. After payment, keys are generated automatically.
+        </div>
+      </div>
+
+      {/* ── Unclaimed keys ─────────────────────────────────────── */}
+      {unclaimed.length > 0 && (
+        <div className="card stack">
+          <strong>Pending keys <span className="muted" style={{ fontSize: '0.85rem', fontWeight: 400 }}>— not yet claimed by a player</span></strong>
+          <div className="stack" style={{ gap: '0.4rem' }}>
+            {unclaimed.map(({ link }) => (
+              <div key={link.id} className="row" style={{ gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <input
+                  readOnly
+                  value={link.subscription_key}
+                  style={{ flex: 1, fontFamily: 'monospace', fontSize: '0.88rem', letterSpacing: '0.06em' }}
+                />
+                <span className="muted" style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
+                  Exp. {fmtDate(link.subscription_end_date)}
+                </span>
+                <CopyButton text={link.subscription_key} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Active players ─────────────────────────────────────── */}
+      {claimed.length > 0 && (
+        <div className="card stack">
+          <strong>Active players</strong>
           <div className="stack" style={{ gap: '0.6rem' }}>
             {claimed.map((p) => {
               const pid = p.profile!.id;
               const name = p.profile!.name ?? p.profile!.email;
               const link = p.link;
-              const isOpen = openKeyFor === pid;
-              const newKey = shownKeys[pid];
+              const expired = isExpired(link);
+              const isOpen = openRenewFor === pid;
 
               return (
-                <div
-                  key={pid}
-                  className="card stack"
-                  style={{ background: 'var(--surface-2)', gap: '0.5rem' }}
-                >
+                <div key={pid} className="card stack" style={{ background: 'var(--surface-2)', gap: '0.45rem' }}>
                   <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
                     <div>
                       <strong>{name}</strong>{' '}
-                      {statusBadge(link)}
+                      {link.status === 'revoked'
+                        ? <span className="badge danger">Revoked</span>
+                        : expired
+                          ? <span className="badge danger">Expired</span>
+                          : <span className="badge active">Active</span>}
                       <span className="muted" style={{ fontSize: '0.82rem', marginLeft: '0.5rem' }}>
-                        Expires {fmtDate(link.subscription_end_date)}
+                        Exp. {fmtDate(link.subscription_end_date)}
                       </span>
                     </div>
                     <button
@@ -139,45 +210,21 @@ export default function CoachSettings() {
                       className="secondary"
                       style={{ fontSize: '0.85rem' }}
                       onClick={() => {
-                        setOpenKeyFor(isOpen ? null : pid);
-                        setEndDate(monthsFromToday(1));
-                        genKey.reset();
+                        setOpenRenewFor(isOpen ? null : pid);
+                        setRenewDate(monthsFromToday(1));
+                        genRenew.reset();
                       }}
                     >
-                      {isOpen ? 'Cancel' : 'Generate key'}
+                      {isOpen ? 'Cancel' : 'Renew key'}
                     </button>
                   </div>
 
-                  {/* Newly generated key display */}
-                  {newKey && !isOpen && (
-                    <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <input
-                        readOnly
-                        value={newKey}
-                        style={{ flex: 1, fontFamily: 'monospace', letterSpacing: '0.05em' }}
-                      />
-                      <button
-                        type="button"
-                        className="secondary"
-                        onClick={() => copyKey(pid, newKey)}
-                        style={{ whiteSpace: 'nowrap' }}
-                      >
-                        {copied === pid ? 'Copied ✓' : 'Copy key'}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Key generation form */}
                   {isOpen && (
                     <div className="stack" style={{ gap: '0.5rem', borderTop: '1px solid var(--border)', paddingTop: '0.6rem' }}>
                       <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
                         <div className="field" style={{ margin: 0 }}>
                           <label>Duration</label>
-                          <select
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            style={{ width: 'auto' }}
-                          >
+                          <select value={renewDate} onChange={(e) => setRenewDate(e.target.value)} style={{ width: 'auto' }}>
                             <option value={monthsFromToday(1)}>1 month</option>
                             <option value={monthsFromToday(3)}>3 months</option>
                             <option value={monthsFromToday(6)}>6 months</option>
@@ -188,36 +235,35 @@ export default function CoachSettings() {
                           <label>Or pick a date</label>
                           <input
                             type="date"
-                            value={endDate}
+                            value={renewDate}
                             min={new Date().toISOString().slice(0, 10)}
-                            onChange={(e) => setEndDate(e.target.value)}
+                            onChange={(e) => setRenewDate(e.target.value)}
                           />
                         </div>
                         <button
                           type="button"
-                          disabled={genKey.isPending}
+                          disabled={genRenew.isPending}
                           onClick={() => {
-                            if (confirm(`Generate a new subscription key for ${name}?\nExpires: ${fmtDate(endDate)}\n\nThis replaces their current key.`)) {
-                              genKey.mutate({ playerId: pid, date: endDate });
+                            if (confirm(`Generate a new key for ${name}?\nExpires: ${fmtDate(renewDate)}\n\nThis replaces their current key.`)) {
+                              genRenew.mutate({ playerId: pid, date: renewDate });
                             }
                           }}
                         >
-                          {genKey.isPending ? 'Generating…' : 'Confirm & generate'}
+                          {genRenew.isPending ? 'Renewing…' : 'Confirm & renew'}
                         </button>
                       </div>
-                      {genKey.error && (
-                        <span className="error">{(genKey.error as Error).message}</span>
-                      )}
+                      {genRenew.isSuccess && <span className="badge active">Key renewed ✓</span>}
+                      {genRenew.error && <span className="error">{(genRenew.error as Error).message}</span>}
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* ── Excel import ─────────────────────────────────────── */}
+      {/* ── Excel template & import ────────────────────────────── */}
       <div className="card stack">
         <strong>Program template</strong>
         <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
@@ -234,10 +280,8 @@ export default function CoachSettings() {
       <div className="card stack">
         <strong>Import program from Excel</strong>
         <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
-          Choose a player, then upload a filled template. This replaces the player's
-          entire existing program.
+          Choose a player, then upload a filled template. This replaces the player's entire existing program.
         </p>
-
         <div className="field" style={{ margin: 0, maxWidth: 360 }}>
           <label>Player</label>
           <select value={importPlayerId} onChange={(e) => { setImportPlayerId(e.target.value); importXlsx.reset(); }}>
@@ -249,18 +293,14 @@ export default function CoachSettings() {
             ))}
           </select>
         </div>
-
         <div>
-          <label
-            style={{
-              display: 'inline-flex', alignItems: 'center', padding: '0.6em 1.1em',
-              background: 'var(--surface-2)', color: 'var(--text)',
-              border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-              cursor: !importPlayerId || importXlsx.isPending ? 'not-allowed' : 'pointer',
-              fontWeight: 600,
-              opacity: !importPlayerId ? 0.5 : 1,
-            }}
-          >
+          <label style={{
+            display: 'inline-flex', alignItems: 'center', padding: '0.6em 1.1em',
+            background: 'var(--surface-2)', color: 'var(--text)',
+            border: '1px solid var(--border)', borderRadius: 'var(--radius)',
+            cursor: !importPlayerId || importXlsx.isPending ? 'not-allowed' : 'pointer',
+            fontWeight: 600, opacity: !importPlayerId ? 0.5 : 1,
+          }}>
             {importXlsx.isPending ? 'Importing…' : 'Import Excel…'}
             <input
               type="file"
@@ -271,7 +311,6 @@ export default function CoachSettings() {
             />
           </label>
         </div>
-
         {importXlsx.isSuccess && importXlsx.data && (
           <span className="badge active">
             Imported {importXlsx.data.daysCreated} days, {importXlsx.data.exercisesCreated} exercises ✓

@@ -91,3 +91,17 @@ export async function coachCreatePlayerKey(
   if (error) throw error;
   return data as CoachPlayerLink;
 }
+
+/**
+ * Coach generates a fresh unclaimed key (no player attached).
+ * A new player claims it at login with claim_subscription_key(key).
+ */
+export async function coachCreateUnclaimedKey(
+  endDate: string   // ISO date YYYY-MM-DD
+): Promise<CoachPlayerLink> {
+  const { data, error } = await supabase.rpc('coach_create_unclaimed_key', {
+    p_end_date: endDate,
+  });
+  if (error) throw error;
+  return data as CoachPlayerLink;
+}
