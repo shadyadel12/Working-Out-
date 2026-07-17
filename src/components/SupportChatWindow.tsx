@@ -8,6 +8,7 @@ import {
   subscribeToAdminMessages,
   type AdminMessage,
 } from '../api/adminChat';
+import { useMarkReadOnMount, markRead } from '../hooks/useUnreadCounts';
 
 /** Renders one attachment — image preview, video player, or download link. */
 function Attachment({ path, type }: { path: string; type: string }) {
@@ -60,6 +61,9 @@ export default function SupportChatWindow({
   const fileRef = useRef<HTMLInputElement>(null);
   const key = ['adminChat', coachId] as const;
 
+  // Reset unread counter when this chat is open
+  useMarkReadOnMount('support');
+
   const { data: messages = [], isLoading } = useQuery({
     queryKey: key,
     queryFn: () => listAdminMessages(coachId),
@@ -70,6 +74,9 @@ export default function SupportChatWindow({
       qc.setQueryData<AdminMessage[]>(key, (prev = []) =>
         prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
       );
+      // Mark read immediately since chat is open
+      markRead(currentUserId, 'support');
+      qc.setQueryData(['unread', 'support', currentUserId], 0);
     });
     return () => { ch.unsubscribe(); };
   }, [coachId]); // eslint-disable-line react-hooks/exhaustive-deps

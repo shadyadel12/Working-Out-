@@ -1,14 +1,19 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useUnreadCounts } from '../hooks/useUnreadCounts';
 
-/** Shared shell: top bar with nav links + sign out. */
-export default function AppLayout({
-  links,
-}: {
-  links: { to: string; label: string }[];
-}) {
+type NavLink_ = { to: string; label: string; badgeKey?: 'chat' | 'support' };
+
+export default function AppLayout({ links }: { links: NavLink_[] }) {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const { chatCount, supportCount } = useUnreadCounts();
+
+  const countFor = (key?: 'chat' | 'support') => {
+    if (key === 'chat') return chatCount;
+    if (key === 'support') return supportCount;
+    return 0;
+  };
 
   async function handleSignOut() {
     await signOut();
@@ -21,11 +26,36 @@ export default function AppLayout({
         <div className="row" style={{ gap: '1.5rem' }}>
           <strong>Coach Platform</strong>
           <nav>
-            {links.map((l) => (
-              <NavLink key={l.to} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
-                {l.label}
-              </NavLink>
-            ))}
+            {links.map((l) => {
+              const count = countFor(l.badgeKey);
+              return (
+                <NavLink key={l.to} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
+                  {l.label}
+                  {count > 0 && (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minWidth: 18,
+                        height: 18,
+                        padding: '0 5px',
+                        borderRadius: 9,
+                        background: 'var(--accent)',
+                        color: 'var(--accent-text)',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        marginLeft: 6,
+                        verticalAlign: 'middle',
+                        lineHeight: 1,
+                      }}
+                    >
+                      {count > 99 ? '99+' : count}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
         <div className="row">

@@ -6,6 +6,7 @@ import {
   subscribeToChatMessages,
   type ChatMessage,
 } from '../api/chat';
+import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
 
 export default function ChatWindow({
   coachId,
@@ -21,6 +22,9 @@ export default function ChatWindow({
   const bottomRef = useRef<HTMLDivElement>(null);
   const key = ['chat', coachId, playerId] as const;
 
+  // Reset unread counter when this chat is open
+  useMarkReadOnMount('chat');
+
   const { data: messages = [], isLoading } = useQuery({
     queryKey: key,
     queryFn: () => listChatMessages(coachId, playerId),
@@ -32,6 +36,11 @@ export default function ChatWindow({
       qc.setQueryData<ChatMessage[]>(key, (prev = []) =>
         prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
       );
+      // Mark read immediately since chat is open
+      import('../hooks/useUnreadCounts').then(({ markRead }) => {
+        markRead(currentUserId, 'chat');
+        qc.setQueryData(['unread', 'chat', currentUserId], 0);
+      });
     });
     return () => { channel.unsubscribe(); };
   }, [coachId, playerId]); // eslint-disable-line react-hooks/exhaustive-deps

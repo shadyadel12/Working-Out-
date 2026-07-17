@@ -30,20 +30,20 @@ import AdminCoaches from './routes/admin/Coaches';
 import AdminSupport from './routes/admin/Support';
 
 const coachLinks = [
-  { to: '/coach/dashboard', label: 'Dashboard' },
+  { to: '/coach/dashboard', label: 'Dashboard', badgeKey: 'chat' as const },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/settings', label: 'Settings' },
-  { to: '/coach/support', label: 'Support' },
+  { to: '/coach/support', label: 'Support', badgeKey: 'support' as const },
 ];
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
   { to: '/player/diet', label: 'Diet' },
   { to: '/player/analysis', label: 'Progress' },
-  { to: '/player/chat', label: 'Chat' },
+  { to: '/player/chat', label: 'Chat', badgeKey: 'chat' as const },
 ];
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
-  { to: '/admin/support', label: 'Support' },
+  { to: '/admin/support', label: 'Support', badgeKey: 'support' as const },
 ];
 
 export default function App() {
