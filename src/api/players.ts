@@ -74,3 +74,20 @@ export async function getLastActivity(playerId: string): Promise<string | null> 
   if (error) throw error;
   return data?.log_date ?? null;
 }
+
+/**
+ * Coach generates or renews a subscription key for one of their players.
+ * Creates the coach_player_link if it doesn't exist; renews it if it does.
+ * Returns the updated link row including the newly generated key.
+ */
+export async function coachCreatePlayerKey(
+  playerId: string,
+  endDate: string   // ISO date YYYY-MM-DD
+): Promise<CoachPlayerLink> {
+  const { data, error } = await supabase.rpc('coach_create_player_key', {
+    p_player_id: playerId,
+    p_end_date: endDate,
+  });
+  if (error) throw error;
+  return data as CoachPlayerLink;
+}
