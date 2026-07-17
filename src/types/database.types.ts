@@ -483,6 +483,10 @@ export type Database = {
         Args: { p_key: string };
         Returns: CoachKey;
       };
+      coach_create_player_key: {
+        Args: { p_player_id: string; p_end_date: string };
+        Returns: CoachPlayerLink;
+      };
       admin_revoke_coach_key: {
         Args: { p_key_id: string };
         Returns: CoachKey;
