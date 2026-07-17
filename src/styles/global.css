@@ -1,17 +1,17 @@
 :root {
-  /* Colorful dark theme: deep navy base + vivid blue/cyan accents */
-  --bg: #0c0f1a;
-  --surface: #141927;
-  --surface-2: #1c2333;
-  --border: #2a3247;
-  --text: #eef1f8;
-  --text-dim: #98a2bd;
-  --accent: #3b82f6;
-  --accent-hover: #2668d9;
+  /* PulseFit-style theme: dark charcoal base + energetic orange accent */
+  --bg: #121212;
+  --surface: #1b1b1d;
+  --surface-2: #242427;
+  --border: #333338;
+  --text: #f4f4f5;
+  --text-dim: #9d9da6;
+  --accent: #f9702b;
+  --accent-hover: #e05e1d;
   --accent-text: #ffffff;
-  --accent-glow: rgba(59, 130, 246, 0.35);
+  --accent-glow: rgba(249, 112, 43, 0.35);
   --danger: #f45860;
-  --success: #34d399;
+  --success: #22c55e;
   --warning: #fbbf24;
   --radius: 10px;
   color-scheme: dark;
@@ -39,16 +39,13 @@ h1, h2, h3 {
   font-weight: 650;
 }
 h1 {
-  background: linear-gradient(90deg, #60a5fa, #22d3ee);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  width: fit-content;
-  margin-inline: auto;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
-/* Left-aligned contexts keep h1 at the left edge */
-.container h1 {
-  margin-inline: 0;
+/* Orange highlight helper for hero words */
+.accent-text {
+  color: var(--accent);
 }
 
 button {
@@ -57,9 +54,12 @@ button {
   border: none;
   border-radius: var(--radius);
   padding: 0.6em 1.1em;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #f9702b, #f9502b);
   color: var(--accent-text);
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
   transition: filter 0.15s, box-shadow 0.15s;
 }
 button:hover:not(:disabled) {
@@ -183,7 +183,7 @@ label {
   color: var(--text);
 }
 .day-tab.active {
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #f9702b, #f9502b);
   color: var(--accent-text);
   border-color: transparent;
   box-shadow: 0 0 12px var(--accent-glow);
