@@ -11,8 +11,6 @@ import {
   duplicateWeek,
   duplicateDayToWeeks,
   duplicateExerciseToWeeks,
-  generateXlsxTemplate,
-  importFromXlsx,
   type DraftWorkoutData,
 } from '../../api/programs';
 import { listWorkouts, createWorkout, updateWorkout, deleteWorkout } from '../../api/workouts';
@@ -72,27 +70,6 @@ export default function ProgramBuilder() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['program', playerId] }),
   });
-
-  // Excel import mutation.
-  const importXlsx = useMutation({
-    mutationFn: (file: File) => importFromXlsx(file, playerId!, coachId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['program', playerId] }),
-  });
-
-  function downloadTemplate() {
-    generateXlsxTemplate();
-  }
-
-  async function handleXlsxFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!confirm('Import will REPLACE the entire existing program for this player. Continue?')) {
-      e.target.value = '';
-      return;
-    }
-    importXlsx.mutate(file);
-    e.target.value = '';
-  }
 
   return (
     <div className="stack">
@@ -155,38 +132,6 @@ export default function ProgramBuilder() {
           {duplicate.error && <span className="error">{(duplicate.error as Error).message}</span>}
         </div>
       )}
-
-      <div className="card row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
-        <span className="muted" style={{ fontSize: '0.85rem' }}>
-          Import from Excel (replaces the entire program) or download a blank template:
-        </span>
-        <div className="row" style={{ gap: '0.5rem' }}>
-          <button className="secondary" type="button" onClick={downloadTemplate}>
-            Download template (.xlsx)
-          </button>
-          <label className="secondary" style={{
-            display: 'inline-flex', alignItems: 'center', padding: '0.6em 1.1em',
-            background: 'var(--surface-2)', color: 'var(--text)',
-            border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-            cursor: importXlsx.isPending ? 'not-allowed' : 'pointer', fontWeight: 600,
-          }}>
-            {importXlsx.isPending ? 'Importing…' : 'Import Excel…'}
-            <input
-              type="file"
-              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              onChange={handleXlsxFile}
-              disabled={importXlsx.isPending}
-              style={{ display: 'none' }}
-            />
-          </label>
-        </div>
-        {importXlsx.isSuccess && importXlsx.data && (
-          <span className="badge active">
-            Imported {importXlsx.data.daysCreated} days, {importXlsx.data.exercisesCreated} exercises ✓
-          </span>
-        )}
-        {importXlsx.error && <span className="error">{(importXlsx.error as Error).message}</span>}
-      </div>
 
       <div className="day-tabs">
         {WEEK_ORDER_SAT_FIRST.map((dow) => {

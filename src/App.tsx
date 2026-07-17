@@ -19,6 +19,7 @@ import CoachChat from './routes/coach/Chat';
 import Checkups from './routes/coach/Checkups';
 import CoachPlayerAnalysis from './routes/coach/PlayerAnalysis';
 import CoachDiet from './routes/coach/Diet';
+import CoachSettings from './routes/coach/Settings';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
@@ -29,6 +30,7 @@ import AdminCoaches from './routes/admin/Coaches';
 const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard' },
   { to: '/coach/checkups', label: 'Check-ups' },
+  { to: '/coach/settings', label: 'Settings' },
 ];
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
@@ -70,6 +72,7 @@ export default function App() {
             <Route path="players/:playerId/messages" element={<CoachMessages />} />
             <Route path="players/:playerId/chat" element={<CoachChat />} />
             <Route path="checkups" element={<Checkups />} />
+            <Route path="settings" element={<CoachSettings />} />
           </Route>
 
           {/* Player */}
