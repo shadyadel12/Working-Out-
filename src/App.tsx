@@ -14,10 +14,12 @@ import PlayerSignup from './routes/auth/PlayerSignup';
 import CoachDashboard from './routes/coach/Dashboard';
 import ProgramBuilder from './routes/coach/ProgramBuilder';
 import CoachMessages from './routes/coach/Messages';
+import CoachChat from './routes/coach/Chat';
 import Checkups from './routes/coach/Checkups';
 import CoachPlayerAnalysis from './routes/coach/PlayerAnalysis';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
+import PlayerChat from './routes/player/Chat';
 import Blocked from './routes/player/Blocked';
 import AdminCoaches from './routes/admin/Coaches';
 
@@ -28,6 +30,7 @@ const coachLinks = [
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
   { to: '/player/analysis', label: 'Progress' },
+  { to: '/player/chat', label: 'Chat' },
 ];
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
@@ -59,6 +62,7 @@ export default function App() {
             <Route path="players/:playerId/program" element={<ProgramBuilder />} />
             <Route path="players/:playerId/analysis" element={<CoachPlayerAnalysis />} />
             <Route path="players/:playerId/messages" element={<CoachMessages />} />
+            <Route path="players/:playerId/chat" element={<CoachChat />} />
             <Route path="checkups" element={<Checkups />} />
           </Route>
 
@@ -72,22 +76,9 @@ export default function App() {
             }
           >
             <Route index element={<Navigate to="program" replace />} />
-            <Route
-              path="program"
-              element={
-                <RequireActiveSubscription>
-                  <PlayerProgram />
-                </RequireActiveSubscription>
-              }
-            />
-            <Route
-              path="analysis"
-              element={
-                <RequireActiveSubscription>
-                  <PlayerAnalysis />
-                </RequireActiveSubscription>
-              }
-            />
+            <Route path="program" element={<RequireActiveSubscription><PlayerProgram /></RequireActiveSubscription>} />
+            <Route path="analysis" element={<RequireActiveSubscription><PlayerAnalysis /></RequireActiveSubscription>} />
+            <Route path="chat" element={<RequireActiveSubscription><PlayerChat /></RequireActiveSubscription>} />
             <Route path="blocked" element={<Blocked />} />
           </Route>
 

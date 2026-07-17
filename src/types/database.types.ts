@@ -114,6 +114,15 @@ export type CoachKey = {
   created_at: string;
 }
 
+export type ChatMessage = {
+  id: string;
+  coach_id: string;
+  player_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+}
+
 export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '12';
@@ -346,6 +355,26 @@ export type Database = {
           key?: string;
           status?: LinkStatus;
           claimed_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      chat_messages: {
+        Row: ChatMessage;
+        Insert: {
+          id?: string;
+          coach_id: string;
+          player_id: string;
+          sender_id: string;
+          body: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          coach_id?: string;
+          player_id?: string;
+          sender_id?: string;
+          body?: string;
           created_at?: string;
         };
         Relationships: [];
