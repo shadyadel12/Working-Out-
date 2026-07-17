@@ -114,10 +114,23 @@ export type CoachKey = {
   created_at: string;
 }
 
+export type DietFoodItem = {
+  food: string;   // food type name (from coach's food library)
+  grams: string;  // amount, e.g. "150"
+}
+
 export type DietMeal = {
   type: 'meal' | 'snack';
   label: string;
-  content: string;
+  content: string;        // legacy free text (kept for old rows)
+  items?: DietFoodItem[]; // structured food items
+}
+
+export type CoachFood = {
+  id: string;
+  coach_id: string;
+  name: string;
+  created_at: string;
 }
 
 export type DietDay = {
@@ -372,6 +385,22 @@ export type Database = {
           key?: string;
           status?: LinkStatus;
           claimed_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      coach_foods: {
+        Row: CoachFood;
+        Insert: {
+          id?: string;
+          coach_id: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          coach_id?: string;
+          name?: string;
           created_at?: string;
         };
         Relationships: [];

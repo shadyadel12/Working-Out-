@@ -1,5 +1,29 @@
 import { supabase } from '../lib/supabase';
-import type { DietDay, DietMeal } from '../types/database.types';
+import type { CoachFood, DietDay, DietMeal } from '../types/database.types';
+
+// ---- Coach food library ----
+
+export async function listCoachFoods(coachId: string): Promise<CoachFood[]> {
+  const { data, error } = await supabase
+    .from('coach_foods')
+    .select('*')
+    .eq('coach_id', coachId)
+    .order('name');
+  if (error) throw error;
+  return (data ?? []) as CoachFood[];
+}
+
+/** Insert a food if it doesn't exist yet (case-insensitive match kept simple via unique constraint). */
+export async function addCoachFood(coachId: string, name: string): Promise<CoachFood> {
+  const trimmed = name.trim();
+  const { data, error } = await supabase
+    .from('coach_foods')
+    .upsert({ coach_id: coachId, name: trimmed }, { onConflict: 'coach_id,name' })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as CoachFood;
+}
 
 export async function listDietDays(playerId: string): Promise<DietDay[]> {
   const { data, error } = await supabase

@@ -10,8 +10,10 @@ import {
   deleteDietDay,
   duplicateDietDayToWeeks,
   duplicateDietWeek,
+  listCoachFoods,
+  addCoachFood,
 } from '../../api/diet';
-import type { DietDay, DietMeal } from '../../types/database.types';
+import type { DietDay, DietFoodItem, DietMeal } from '../../types/database.types';
 import WeekPicker from '../../components/WeekPicker';
 
 /** Build meal slots from counts: snacks are spread evenly between meals. */
@@ -20,18 +22,18 @@ function buildSlots(meals: number, snacks: number): DietMeal[] {
   // Interleave: after each meal, possibly a snack, distributed evenly.
   let snackIdx = 0;
   for (let m = 1; m <= meals; m++) {
-    slots.push({ type: 'meal', label: `Meal ${m}`, content: '' });
+    slots.push({ type: 'meal', label: `Meal ${m}`, content: '', items: [] });
     // Place snacks after all but the last meal, spread evenly.
     const snacksSoFar = Math.round((m / Math.max(1, meals)) * snacks);
     while (snackIdx < snacksSoFar && snackIdx < snacks && m < meals) {
       snackIdx++;
-      slots.push({ type: 'snack', label: `Snack ${snackIdx}`, content: '' });
+      slots.push({ type: 'snack', label: `Snack ${snackIdx}`, content: '', items: [] });
     }
   }
   // Any remaining snacks go at the end.
   while (snackIdx < snacks) {
     snackIdx++;
-    slots.push({ type: 'snack', label: `Snack ${snackIdx}`, content: '' });
+    slots.push({ type: 'snack', label: `Snack ${snackIdx}`, content: '', items: [] });
   }
   return slots;
 }
@@ -194,19 +196,59 @@ function DietDayCard({
     setMeals(buildSlots(mealCount, snackCount));
   }
 
-  const setContent = (i: number, content: string) =>
-    setMeals((ms) => ms.map((m, idx) => (idx === i ? { ...m, content } : m)));
+  // Coach's food library for the dropdowns.
+  const { data: foods } = useQuery({
+    queryKey: ['coachFoods', coachId],
+    queryFn: () => listCoachFoods(coachId),
+  });
+  const foodNames = (foods ?? []).map((f) => f.name);
+
+  const setItem = (mi: number, ii: number, patch: Partial<DietFoodItem>) =>
+    setMeals((ms) =>
+      ms.map((m, idx) =>
+        idx === mi
+          ? { ...m, items: (m.items ?? []).map((it, j) => (j === ii ? { ...it, ...patch } : it)) }
+          : m
+      )
+    );
+  const addItem = (mi: number) =>
+    setMeals((ms) =>
+      ms.map((m, idx) =>
+        idx === mi ? { ...m, items: [...(m.items ?? []), { food: '', grams: '' }] } : m
+      )
+    );
+  const removeItem = (mi: number, ii: number) =>
+    setMeals((ms) =>
+      ms.map((m, idx) =>
+        idx === mi ? { ...m, items: (m.items ?? []).filter((_, j) => j !== ii) } : m
+      )
+    );
 
   const save = useMutation({
-    mutationFn: () =>
-      upsertDietDay({
+    mutationFn: async () => {
+      // Save any new food names to the coach's library first.
+      const known = new Set(foodNames.map((n) => n.toLowerCase()));
+      const newFoods = new Set<string>();
+      for (const m of meals) {
+        for (const it of m.items ?? []) {
+          const name = it.food.trim();
+          if (name && !known.has(name.toLowerCase())) newFoods.add(name);
+        }
+      }
+      for (const name of newFoods) await addCoachFood(coachId, name);
+
+      return upsertDietDay({
         player_id: playerId,
         coach_id: coachId,
         week_number: week,
         day_of_week: dayOfWeek,
         meals,
-      }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['diet', playerId] }),
+      });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['diet', playerId] });
+      qc.invalidateQueries({ queryKey: ['coachFoods', coachId] });
+    },
   });
 
   const del = useMutation({
@@ -286,23 +328,63 @@ function DietDayCard({
           </p>
         )}
 
-        {meals.map((m, i) => (
+        {meals.map((m, mi) => (
           <div
-            key={i}
+            key={mi}
             className="card stack"
             style={{
               background: 'var(--surface-2)',
-              gap: '0.4rem',
+              gap: '0.5rem',
               borderLeft: m.type === 'snack' ? '3px solid var(--warning, #fbbf24)' : '3px solid var(--accent)',
             }}
           >
             <strong style={{ fontSize: '0.9rem' }}>{m.label}</strong>
-            <textarea
-              rows={2}
-              value={m.content}
-              onChange={(e) => setContent(i, e.target.value)}
-              placeholder={m.type === 'snack' ? 'e.g. Greek yogurt + almonds' : 'e.g. 200g chicken, 150g rice, salad'}
-            />
+
+            {(m.items ?? []).map((it, ii) => (
+              <div key={ii} className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <div className="field" style={{ margin: 0, flex: 2, minWidth: 160 }}>
+                  <label>Food type</label>
+                  <input
+                    list={`foods-${mi}-${ii}`}
+                    value={it.food}
+                    onChange={(e) => setItem(mi, ii, { food: e.target.value })}
+                    placeholder="Choose or type new…"
+                  />
+                  <datalist id={`foods-${mi}-${ii}`}>
+                    {foodNames.map((n) => (
+                      <option key={n} value={n} />
+                    ))}
+                  </datalist>
+                </div>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 90 }}>
+                  <label>Grams</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={it.grams}
+                    onChange={(e) => setItem(mi, ii, { grams: e.target.value })}
+                    placeholder="150"
+                  />
+                </div>
+                <button
+                  className="danger"
+                  type="button"
+                  onClick={() => removeItem(mi, ii)}
+                  style={{ padding: '0.55em 0.8em' }}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+
+            <button
+              className="secondary"
+              type="button"
+              onClick={() => addItem(mi)}
+              style={{ alignSelf: 'flex-start' }}
+            >
+              + Add food
+            </button>
           </div>
         ))}
 

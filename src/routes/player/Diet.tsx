@@ -78,9 +78,24 @@ export default function PlayerDiet() {
                   }}
                 >
                   <strong style={{ fontSize: '0.9rem' }}>{m.label}</strong>
-                  <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.92rem' }}>
-                    {m.content || <span className="muted">—</span>}
-                  </div>
+                  {(m.items ?? []).length > 0 ? (
+                    <div className="stack" style={{ gap: '0.25rem' }}>
+                      {(m.items ?? []).map((it, j) => (
+                        <div
+                          key={j}
+                          className="row"
+                          style={{ justifyContent: 'space-between', fontSize: '0.92rem' }}
+                        >
+                          <span>{it.food}</span>
+                          <span className="muted">{it.grams ? `${it.grams} g` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.92rem' }}>
+                      {m.content || <span className="muted">—</span>}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
