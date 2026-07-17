@@ -371,11 +371,8 @@ function ExerciseBody({
           <VideoInput ownerId={playerId} value={video} onChange={setVideo} />
         </div>
         <div className="row" style={{ marginTop: '0.7rem' }}>
-          <button onClick={() => save.mutate(done)} disabled={save.isPending}>
-            {save.isPending ? 'Saving…' : 'Save log'}
-          </button>
-          <button className={done ? 'danger' : 'secondary'} onClick={() => save.mutate(!done)} disabled={save.isPending}>
-            {done ? 'Mark not done' : 'Mark done ✓'}
+          <button className={done ? 'danger' : ''} onClick={() => save.mutate(!done)} disabled={save.isPending}>
+            {save.isPending ? 'Saving…' : done ? 'Mark not done' : 'Mark done ✓'}
           </button>
           {save.error && <span className="error">{(save.error as Error).message}</span>}
         </div>

@@ -52,9 +52,13 @@ export default function ProgramBuilder() {
   const [selectedDow, setSelectedDow] = useState<number>(todayDayOfWeek());
   const selectedExisting = byDow.get(selectedDow) ?? null;
 
-  const [dupTo, setDupTo] = useState(week + 1);
+  const [dupN, setDupN] = useState(1);
   const duplicate = useMutation({
-    mutationFn: () => duplicateWeek(playerId!, coachId, week, dupTo),
+    mutationFn: async () => {
+      const targets = Array.from({ length: dupN }, (_, i) => week + 1 + i);
+      for (const t of targets) await duplicateWeek(playerId!, coachId, week, t);
+      return dupN;
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['program', playerId] }),
   });
 
@@ -105,35 +109,37 @@ export default function ProgramBuilder() {
       {weekDays.length > 0 && (
         <div className="card row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
           <span className="muted" style={{ fontSize: '0.85rem' }}>
-            Copy Week {week}'s full schedule to another week (overwrites the target week):
+            Copy Week {week}'s full schedule to the next N weeks (overwrites target weeks):
           </span>
-          <div className="row" style={{ gap: '0.5rem' }}>
+          <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
             <select
-              value={dupTo}
-              onChange={(e) => setDupTo(Number(e.target.value))}
+              value={dupN}
+              onChange={(e) => setDupN(Number(e.target.value))}
               style={{ width: 'auto' }}
+              disabled={duplicate.isPending}
             >
-              {Array.from({ length: 12 }, (_, i) => i + 1)
-                .filter((w) => w !== week)
-                .map((w) => (
-                  <option key={w} value={w}>
-                    Week {w}
-                  </option>
-                ))}
+              {Array.from({ length: 12 - week }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n} week{n === 1 ? '' : 's'}
+                </option>
+              ))}
             </select>
+            <span className="muted" style={{ fontSize: '0.8rem' }}>
+              → W{week + 1}{dupN > 1 ? `–W${week + dupN}` : ''}
+            </span>
             <button
               onClick={() => {
-                if (confirm(`Copy Week ${week} to Week ${dupTo}? This overwrites Week ${dupTo}.`)) {
+                if (confirm(`Copy Week ${week} to the next ${dupN} week${dupN === 1 ? '' : 's'}? This overwrites those weeks.`)) {
                   duplicate.mutate();
                 }
               }}
-              disabled={duplicate.isPending}
+              disabled={duplicate.isPending || week >= 12}
             >
               {duplicate.isPending ? 'Copying…' : 'Duplicate week'}
             </button>
           </div>
           {duplicate.isSuccess && (
-            <span className="badge active">Copied to Week {dupTo} ✓</span>
+            <span className="badge active">Copied to {duplicate.data} week{duplicate.data === 1 ? '' : 's'} ✓</span>
           )}
           {duplicate.error && <span className="error">{(duplicate.error as Error).message}</span>}
         </div>
