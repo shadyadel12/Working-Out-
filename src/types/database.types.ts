@@ -145,6 +145,16 @@ export type DietDay = {
   updated_at: string;
 }
 
+export type AdminMessage = {
+  id: string;
+  coach_id: string;
+  sender_id: string;
+  body: string;
+  attachment_path: string | null;
+  attachment_type: string | null;
+  created_at: string;
+}
+
 export type ChatMessage = {
   id: string;
   coach_id: string;
@@ -448,6 +458,28 @@ export type Database = {
           player_id?: string;
           sender_id?: string;
           body?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      admin_messages: {
+        Row: AdminMessage;
+        Insert: {
+          id?: string;
+          coach_id: string;
+          sender_id: string;
+          body?: string;
+          attachment_path?: string | null;
+          attachment_type?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          coach_id?: string;
+          sender_id?: string;
+          body?: string;
+          attachment_path?: string | null;
+          attachment_type?: string | null;
           created_at?: string;
         };
         Relationships: [];
