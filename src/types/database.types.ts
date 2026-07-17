@@ -140,6 +140,7 @@ export type DietDay = {
   week_number: number;
   day_of_week: number;
   meals: DietMeal[];
+  comment: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -414,6 +415,7 @@ export type Database = {
           week_number: number;
           day_of_week: number;
           meals?: DietMeal[];
+          comment?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -424,6 +426,7 @@ export type Database = {
           week_number?: number;
           day_of_week?: number;
           meals?: DietMeal[];
+          comment?: string | null;
           created_at?: string;
           updated_at?: string;
         };

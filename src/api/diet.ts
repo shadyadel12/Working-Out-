@@ -42,6 +42,7 @@ export async function upsertDietDay(day: {
   week_number: number;
   day_of_week: number;
   meals: DietMeal[];
+  comment?: string | null;
 }): Promise<DietDay> {
   const { data, error } = await supabase
     .from('diet_days')

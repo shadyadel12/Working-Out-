@@ -185,6 +185,7 @@ function DietDayCard({
 }) {
   const qc = useQueryClient();
   const [meals, setMeals] = useState<DietMeal[]>(existing?.meals ?? []);
+  const [comment, setComment] = useState<string>(existing?.comment ?? '');
   const [mealCount, setMealCount] = useState(
     existing ? existing.meals.filter((m) => m.type === 'meal').length || 3 : 3
   );
@@ -244,6 +245,7 @@ function DietDayCard({
         week_number: week,
         day_of_week: dayOfWeek,
         meals,
+        comment: comment.trim() || null,
       });
     },
     onSuccess: () => {
@@ -382,6 +384,17 @@ function DietDayCard({
             </button>
           </div>
         ))}
+
+        <div className="field" style={{ margin: 0 }}>
+          <label>Coach note for this day</label>
+          <textarea
+            rows={3}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Optional note to the player about this day's diet…"
+            style={{ resize: 'vertical' }}
+          />
+        </div>
 
         <div className="row" style={{ flexWrap: 'wrap' }}>
           <button onClick={() => save.mutate()} disabled={save.isPending || meals.length === 0}>

@@ -98,6 +98,22 @@ export default function PlayerDiet() {
                   )}
                 </div>
               ))}
+              {selectedDay.comment && (
+                <div
+                  className="card"
+                  style={{
+                    background: 'var(--surface-2)',
+                    borderLeft: '3px solid var(--text-dim)',
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.92rem',
+                  }}
+                >
+                  <span className="muted" style={{ fontSize: '0.8rem', display: 'block', marginBottom: '0.3rem' }}>
+                    Coach note
+                  </span>
+                  {selectedDay.comment}
+                </div>
+              )}
             </div>
           ) : (
             <div className="card">
