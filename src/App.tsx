@@ -18,9 +18,11 @@ import CoachMessages from './routes/coach/Messages';
 import CoachChat from './routes/coach/Chat';
 import Checkups from './routes/coach/Checkups';
 import CoachPlayerAnalysis from './routes/coach/PlayerAnalysis';
+import CoachDiet from './routes/coach/Diet';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
+import PlayerDiet from './routes/player/Diet';
 import Blocked from './routes/player/Blocked';
 import AdminCoaches from './routes/admin/Coaches';
 
@@ -30,6 +32,7 @@ const coachLinks = [
 ];
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
+  { to: '/player/diet', label: 'Diet' },
   { to: '/player/analysis', label: 'Progress' },
   { to: '/player/chat', label: 'Chat' },
 ];
@@ -62,6 +65,7 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<CoachDashboard />} />
             <Route path="players/:playerId/program" element={<ProgramBuilder />} />
+            <Route path="players/:playerId/diet" element={<CoachDiet />} />
             <Route path="players/:playerId/analysis" element={<CoachPlayerAnalysis />} />
             <Route path="players/:playerId/messages" element={<CoachMessages />} />
             <Route path="players/:playerId/chat" element={<CoachChat />} />
@@ -79,6 +83,7 @@ export default function App() {
           >
             <Route index element={<Navigate to="program" replace />} />
             <Route path="program" element={<RequireActiveSubscription><PlayerProgram /></RequireActiveSubscription>} />
+            <Route path="diet" element={<RequireActiveSubscription><PlayerDiet /></RequireActiveSubscription>} />
             <Route path="analysis" element={<RequireActiveSubscription><PlayerAnalysis /></RequireActiveSubscription>} />
             <Route path="chat" element={<RequireActiveSubscription><PlayerChat /></RequireActiveSubscription>} />
             <Route path="blocked" element={<Blocked />} />

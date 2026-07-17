@@ -114,6 +114,23 @@ export type CoachKey = {
   created_at: string;
 }
 
+export type DietMeal = {
+  type: 'meal' | 'snack';
+  label: string;
+  content: string;
+}
+
+export type DietDay = {
+  id: string;
+  player_id: string;
+  coach_id: string;
+  week_number: number;
+  day_of_week: number;
+  meals: DietMeal[];
+  created_at: string;
+  updated_at: string;
+}
+
 export type ChatMessage = {
   id: string;
   coach_id: string;
@@ -356,6 +373,30 @@ export type Database = {
           status?: LinkStatus;
           claimed_by?: string | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      diet_days: {
+        Row: DietDay;
+        Insert: {
+          id?: string;
+          player_id: string;
+          coach_id: string;
+          week_number: number;
+          day_of_week: number;
+          meals?: DietMeal[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          player_id?: string;
+          coach_id?: string;
+          week_number?: number;
+          day_of_week?: number;
+          meals?: DietMeal[];
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
