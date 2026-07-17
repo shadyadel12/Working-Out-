@@ -15,6 +15,7 @@ import {
 } from '../../api/diet';
 import type { DietDay, DietFoodItem, DietMeal } from '../../types/database.types';
 import WeekPicker from '../../components/WeekPicker';
+import FoodPicker from '../../components/FoodPicker';
 
 /** Build meal slots from counts: snacks are spread evenly between meals. */
 function buildSlots(meals: number, snacks: number): DietMeal[] {
@@ -344,17 +345,11 @@ function DietDayCard({
               <div key={ii} className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
                 <div className="field" style={{ margin: 0, flex: 2, minWidth: 160 }}>
                   <label>Food type</label>
-                  <input
-                    list={`foods-${mi}-${ii}`}
+                  <FoodPicker
                     value={it.food}
-                    onChange={(e) => setItem(mi, ii, { food: e.target.value })}
-                    placeholder="Choose or type new…"
+                    onChange={(v) => setItem(mi, ii, { food: v })}
+                    options={foodNames}
                   />
-                  <datalist id={`foods-${mi}-${ii}`}>
-                    {foodNames.map((n) => (
-                      <option key={n} value={n} />
-                    ))}
-                  </datalist>
                 </div>
                 <div className="field" style={{ margin: 0, flex: 1, minWidth: 90 }}>
                   <label>Grams</label>
