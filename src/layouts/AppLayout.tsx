@@ -16,7 +16,7 @@ export default function AppLayout({
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <header className="topbar">
         <div className="row" style={{ gap: '1.5rem' }}>
           <strong>Coach Platform</strong>
@@ -37,9 +37,20 @@ export default function AppLayout({
           </button>
         </div>
       </header>
-      <main className="container">
+      <main className="container" style={{ flex: 1 }}>
         <Outlet />
       </main>
+      <footer style={{
+        textAlign: 'center',
+        padding: '1rem',
+        fontSize: '0.78rem',
+        color: 'var(--text-muted, #888)',
+        borderTop: '1px solid var(--border)',
+        marginTop: 'auto',
+      }}>
+        © {new Date().getFullYear()} Coach Platform. All rights reserved. · Unauthorized reproduction or redistribution is prohibited.{' '}
+        <a href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>Terms of Use</a>
+      </footer>
     </div>
   );
 }

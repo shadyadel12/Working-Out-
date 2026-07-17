@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /coach/
+Disallow: /player/
+Disallow: /admin/
+Allow: /
+Allow: /terms
+
+# Copyright (c) 2026 Coach Platform. All rights reserved.
+# Unauthorized scraping, reproduction, or AI-assisted replication of this
+# platform's design, features, or content is strictly prohibited.

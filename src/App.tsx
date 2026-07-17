@@ -5,6 +5,7 @@ import RequireActiveSubscription from './auth/RequireActiveSubscription';
 import AppLayout from './layouts/AppLayout';
 
 import Landing from './routes/Landing';
+import Terms from './routes/Terms';
 import CoachLogin from './routes/auth/CoachLogin';
 import PlayerLogin from './routes/auth/PlayerLogin';
 import AdminLogin from './routes/auth/AdminLogin';
@@ -42,6 +43,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/login/coach" element={<CoachLogin />} />
           <Route path="/login/player" element={<PlayerLogin />} />
           <Route path="/login/admin" element={<AdminLogin />} />
