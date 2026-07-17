@@ -38,6 +38,17 @@ export default function ProgramBuilder() {
     enabled: !!playerId,
   });
 
+  // Total program weeks derived from the player's subscription window.
+  // Falls back to 12 if the link isn't loaded yet.
+  const totalWeeks = (() => {
+    const link = player?.link;
+    if (!link) return 12;
+    const start = new Date(link.created_at);
+    const end = new Date(link.subscription_end_date);
+    const days = Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(1, Math.ceil(days / 7));
+  })();
+
   const { data: days } = useQuery({
     queryKey: ['program', playerId],
     queryFn: () => listProgramDays(playerId!),
@@ -97,7 +108,7 @@ export default function ProgramBuilder() {
         <div className="field" style={{ margin: 0, minWidth: 120 }}>
           <label>Week</label>
           <select value={week} onChange={(e) => setWeek(Number(e.target.value))}>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((w) => (
+            {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((w) => (
               <option key={w} value={w}>
                 Week {w}
               </option>
@@ -118,7 +129,7 @@ export default function ProgramBuilder() {
               style={{ width: 'auto' }}
               disabled={duplicate.isPending}
             >
-              {Array.from({ length: 12 - week }, (_, i) => i + 1).map((n) => (
+              {Array.from({ length: totalWeeks - week }, (_, i) => i + 1).map((n) => (
                 <option key={n} value={n}>
                   {n} week{n === 1 ? '' : 's'}
                 </option>
@@ -133,7 +144,7 @@ export default function ProgramBuilder() {
                   duplicate.mutate();
                 }
               }}
-              disabled={duplicate.isPending || week >= 12}
+              disabled={duplicate.isPending || week >= totalWeeks}
             >
               {duplicate.isPending ? 'Copying…' : 'Duplicate week'}
             </button>
@@ -202,6 +213,7 @@ export default function ProgramBuilder() {
         dayOfWeek={selectedDow}
         dayName={DAY_NAMES[selectedDow]}
         existing={selectedExisting}
+        totalWeeks={totalWeeks}
       />
     </div>
   );
@@ -214,6 +226,7 @@ function DayCard({
   dayOfWeek,
   dayName,
   existing,
+  totalWeeks,
 }: {
   playerId: string;
   coachId: string;
@@ -221,6 +234,7 @@ function DayCard({
   dayOfWeek: number;
   dayName: string;
   existing: ProgramDay | null;
+  totalWeeks: number;
 }) {
   const qc = useQueryClient();
   const [dayType, setDayType] = useState(existing?.day_type ?? 'training');
@@ -287,6 +301,7 @@ function DayCard({
       {dupOpen && existing && (
         <WeekPicker
           excludeWeek={week}
+          totalWeeks={totalWeeks}
           busy={dupDay.isPending}
           onDuplicate={(weeks) => dupDay.mutate(weeks)}
           onCancel={() => setDupOpen(false)}
@@ -333,6 +348,7 @@ function DayCard({
             playerId={playerId}
             coachId={coachId}
             currentWeek={week}
+            totalWeeks={totalWeeks}
           />
         )}
       </div>
@@ -471,9 +487,9 @@ function DraftWorkoutsEditor({
 }
 
 function WorkoutList({
-  programDayId, playerId, coachId, currentWeek,
+  programDayId, playerId, coachId, currentWeek, totalWeeks,
 }: {
-  programDayId: string; playerId: string; coachId: string; currentWeek: number;
+  programDayId: string; playerId: string; coachId: string; currentWeek: number; totalWeeks: number;
 }) {
   const qc = useQueryClient();
   const { data: workouts } = useQuery({
@@ -497,6 +513,7 @@ function WorkoutList({
           playerId={playerId}
           coachId={coachId}
           currentWeek={currentWeek}
+          totalWeeks={totalWeeks}
         />
       ))}
       <button className="secondary" onClick={() => addWorkout.mutate()} disabled={addWorkout.isPending}>
@@ -507,13 +524,14 @@ function WorkoutList({
 }
 
 function WorkoutCard({
-  workout, programDayId, playerId, coachId, currentWeek,
+  workout, programDayId, playerId, coachId, currentWeek, totalWeeks,
 }: {
   workout: Workout;
   programDayId: string;
   playerId: string;
   coachId: string;
   currentWeek: number;
+  totalWeeks: number;
 }) {
   const qc = useQueryClient();
   const [name, setName] = useState(workout.name);
@@ -543,15 +561,16 @@ function WorkoutCard({
         playerId={playerId}
         coachId={coachId}
         currentWeek={currentWeek}
+        totalWeeks={totalWeeks}
       />
     </div>
   );
 }
 
 function ExerciseEditor({
-  workoutId, playerId, coachId, currentWeek,
+  workoutId, playerId, coachId, currentWeek, totalWeeks,
 }: {
-  workoutId: string; playerId: string; coachId: string; currentWeek: number;
+  workoutId: string; playerId: string; coachId: string; currentWeek: number; totalWeeks: number;
 }) {
   const qc = useQueryClient();
   const { data: exercises } = useQuery({
@@ -584,6 +603,7 @@ function ExerciseEditor({
           workoutId={workoutId}
           coachId={coachId}
           currentWeek={currentWeek}
+          totalWeeks={totalWeeks}
         />
       ))}
       <button className="secondary" onClick={() => addEx.mutate()} disabled={addEx.isPending}>
@@ -599,12 +619,14 @@ function ExerciseRow({
   workoutId,
   coachId,
   currentWeek,
+  totalWeeks,
 }: {
   exercise: Exercise;
   playerId: string;
   workoutId: string;
   coachId: string;
   currentWeek: number;
+  totalWeeks: number;
 }) {
   const qc = useQueryClient();
   const [name, setName] = useState(exercise.name);
@@ -686,6 +708,7 @@ function ExerciseRow({
       {dupOpen && (
         <WeekPicker
           excludeWeek={currentWeek}
+          totalWeeks={totalWeeks}
           busy={dupEx.isPending}
           onDuplicate={(weeks) => dupEx.mutate(weeks)}
           onCancel={() => setDupOpen(false)}
