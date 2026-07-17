@@ -135,3 +135,15 @@ export function subscribeToAdminMessages(
     )
     .subscribe();
 }
+
+/** Admin inbox: listen to every coach thread (no coach_id filter). */
+export function subscribeToAllAdminMessages(onNew: (msg: AdminMessage) => void) {
+  return supabase
+    .channel('admin-msg-all')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'admin_messages' },
+      (payload) => onNew(payload.new as AdminMessage)
+    )
+    .subscribe();
+}

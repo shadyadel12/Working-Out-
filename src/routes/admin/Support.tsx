@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { listCoaches } from '../../api/admin';
-import { listCoachThreadSummaries, type CoachThreadSummary } from '../../api/adminChat';
+import { listCoachThreadSummaries, subscribeToAllAdminMessages, type CoachThreadSummary } from '../../api/adminChat';
 import SupportChatWindow from '../../components/SupportChatWindow';
 
 const LS_KEY = (adminId: string, coachId: string) =>
@@ -76,6 +76,14 @@ export default function AdminSupport() {
   useEffect(() => {
     if (selectedCoachId) markCoachRead(selectedCoachId);
   }, [selectedCoachId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Live-refresh the inbox list on any incoming message (re-sort + badge update).
+  useEffect(() => {
+    const ch = subscribeToAllAdminMessages(() => {
+      qc.invalidateQueries({ queryKey: ['adminThreadSummaries'] });
+    });
+    return () => { ch.unsubscribe(); };
+  }, [qc]);
 
   const selectedCoach = coaches.find((c) => c.id === selectedCoachId);
 
