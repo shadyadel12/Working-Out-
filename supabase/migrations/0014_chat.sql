@@ -15,8 +15,8 @@ alter table public.chat_messages enable row level security;
 -- Admin: full access
 create policy "admin full access on chat_messages" on public.chat_messages
   for all to authenticated
-  using  (current_role() = 'admin')
-  with check (current_role() = 'admin');
+  using  ((select role from public.profiles where id = (select auth.uid())) = 'admin')
+  with check ((select role from public.profiles where id = (select auth.uid())) = 'admin');
 
 -- Participants can read any message they are part of
 create policy "participants read chat" on public.chat_messages
