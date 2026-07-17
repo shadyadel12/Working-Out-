@@ -130,14 +130,6 @@ function DayPanel({ day, playerId }: { day: ProgramDay; playerId: string }) {
         <span className="muted"> — {day.day_type === 'rest' ? 'Rest day' : 'Training'}</span>
       </div>
 
-      {day.diet_plan && (
-        <div>
-          <strong style={{ fontSize: '0.9rem' }}>Diet plan</strong>
-          <p className="muted" style={{ whiteSpace: 'pre-wrap', margin: '0.2rem 0 0' }}>
-            {day.diet_plan}
-          </p>
-        </div>
-      )}
       {day.day_type === 'training' &&
         (workouts ?? []).map((w) => (
           <WorkoutAccordion key={w.id} workout={w} playerId={playerId} />

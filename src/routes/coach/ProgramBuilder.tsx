@@ -238,7 +238,6 @@ function DayCard({
 }) {
   const qc = useQueryClient();
   const [dayType, setDayType] = useState(existing?.day_type ?? 'training');
-  const [diet, setDiet] = useState(existing?.diet_plan ?? '');
   // Draft workouts (each with draft exercises) for a not-yet-created day.
   const [draftWorkouts, setDraftWorkouts] = useState<DraftWorkoutData[]>([]);
   // Duplicate-day picker toggle.
@@ -261,7 +260,7 @@ function DayCard({
         day_of_week: dayOfWeek,
         day_type: dayType,
         title: existing?.title ?? null,
-        diet_plan: diet || null,
+        diet_plan: existing?.diet_plan ?? null,
       };
       if (!existing && dayType === 'training' && draftWorkouts.length > 0) {
         await createFullDay(base, draftWorkouts);
@@ -322,11 +321,6 @@ function DayCard({
             <input type="radio" style={{ width: 'auto' }} checked={dayType === 'rest'} onChange={() => setDayType('rest')} />
             Rest day
           </label>
-        </div>
-
-        <div className="field" style={{ margin: 0 }}>
-          <label>Diet plan (optional)</label>
-          <textarea rows={2} value={diet} onChange={(e) => setDiet(e.target.value)} />
         </div>
 
         {/* New training day: build workouts + exercises before the first save. */}
