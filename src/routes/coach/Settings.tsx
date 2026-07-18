@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { listPlayersForCoach, coachCreateUnclaimedKey, coachCreatePlayerKey } from '../../api/players';
 import { generateXlsxTemplate, importFromXlsx } from '../../api/programs';
+import { generateDietXlsxTemplate, importDietFromXlsx } from '../../api/diet';
 import type { CoachPlayerLink } from '../../types/database.types';
 
 function fmtDate(iso: string) {
@@ -88,6 +89,23 @@ export default function CoachSettings() {
       return;
     }
     importXlsx.mutate(file);
+    e.target.value = '';
+  }
+
+  const [dietImportPlayerId, setDietImportPlayerId] = useState('');
+  const importDietXlsx = useMutation({
+    mutationFn: (file: File) => importDietFromXlsx(file, dietImportPlayerId, coachId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['diet', dietImportPlayerId] });
+      qc.invalidateQueries({ queryKey: ['coachFoods', coachId] });
+    },
+  });
+  function handleDietXlsxFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const player = claimed.find((item) => item.profile!.id === dietImportPlayerId);
+    const name = player?.profile?.name ?? player?.profile?.email ?? 'this player';
+    if (confirm(`Import will REPLACE the entire existing diet plan for ${name}. Continue?`)) importDietXlsx.mutate(file);
     e.target.value = '';
   }
 
@@ -317,6 +335,30 @@ export default function CoachSettings() {
           </span>
         )}
         {importXlsx.error && <span className="error">{(importXlsx.error as Error).message}</span>}
+      </div>
+
+      <div className="card stack">
+        <strong>Diet template</strong>
+        <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>Download the blank diet workbook, fill in its weeks and days, then import it for a selected player.</p>
+        <div><button className="secondary" type="button" onClick={generateDietXlsxTemplate}>Download diet template (.xlsx)</button></div>
+      </div>
+
+      <div className="card stack">
+        <strong>Import diet from Excel</strong>
+        <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>Choose a player first. Importing replaces that player's entire diet plan.</p>
+        <div className="field" style={{ margin: 0, maxWidth: 360 }}>
+          <label>Player</label>
+          <select value={dietImportPlayerId} onChange={(e) => { setDietImportPlayerId(e.target.value); importDietXlsx.reset(); }}>
+            <option value="">— Select a player —</option>
+            {claimed.map((player) => <option key={player.profile!.id} value={player.profile!.id}>{player.profile!.name ?? player.profile!.email}</option>)}
+          </select>
+        </div>
+        <div><label style={{ display: 'inline-flex', alignItems: 'center', padding: '0.6em 1.1em', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', cursor: !dietImportPlayerId || importDietXlsx.isPending ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: dietImportPlayerId ? 1 : 0.5 }}>
+          {importDietXlsx.isPending ? 'Importing…' : 'Import diet Excel…'}
+          <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={handleDietXlsxFile} disabled={!dietImportPlayerId || importDietXlsx.isPending} style={{ display: 'none' }} />
+        </label></div>
+        {importDietXlsx.isSuccess && <span className="badge active">Imported {importDietXlsx.data.daysCreated} days, {importDietXlsx.data.mealsCreated} meals, and {importDietXlsx.data.foodsCreated} food rows ✓</span>}
+        {importDietXlsx.error && <span className="error">{(importDietXlsx.error as Error).message}</span>}
       </div>
     </div>
   );

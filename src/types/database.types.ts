@@ -146,6 +146,8 @@ export type DietDay = {
   day_of_week: number;
   meals: DietMeal[];
   comment: string | null;
+  template_id: string | null;
+  is_template_override: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -468,6 +470,8 @@ export type Database = {
           day_of_week: number;
           meals?: DietMeal[];
           comment?: string | null;
+          template_id?: string | null;
+          is_template_override?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -479,9 +483,17 @@ export type Database = {
           day_of_week?: number;
           meals?: DietMeal[];
           comment?: string | null;
+          template_id?: string | null;
+          is_template_override?: boolean;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      diet_templates: {
+        Row: { id: string; coach_id: string; name: string; meals: DietMeal[]; comment: string | null; created_at: string };
+        Insert: { id?: string; coach_id: string; name: string; meals?: DietMeal[]; comment?: string | null; created_at?: string };
+        Update: { id?: string; coach_id?: string; name?: string; meals?: DietMeal[]; comment?: string | null; created_at?: string };
         Relationships: [];
       };
       diet_logs: {
@@ -615,6 +627,8 @@ export type Database = {
       };
       save_workout_as_template: { Args: { p_workout_id: string }; Returns: string };
       assign_workout_template: { Args: { p_program_day_id: string; p_template_id: string; p_position?: number }; Returns: string };
+      save_diet_as_template: { Args: { p_diet_day_id: string; p_name: string }; Returns: string };
+      assign_diet_template: { Args: { p_player_id: string; p_week: number; p_day_of_week: number; p_template_id: string }; Returns: string };
       replace_program_import: {
         Args: { p_player_id: string; p_days: unknown };
         Returns: { daysCreated: number; workoutsCreated: number; exercisesCreated: number };

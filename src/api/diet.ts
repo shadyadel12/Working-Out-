@@ -38,14 +38,18 @@ export async function addCoachFood(coachId: string, name: string): Promise<Coach
 }
 
 export async function listDietDays(playerId: string, week?: number): Promise<DietDay[]> {
-  let query = supabase
-    .from('diet_days')
-    .select('*')
+  let query = (supabase
+    .from('diet_days') as any)
+    .select('*, diet_templates(meals,comment)')
     .eq('player_id', playerId);
   if (week != null) query = query.eq('week_number', week);
   const { data, error } = await query.order('week_number').order('day_of_week');
   if (error) throw error;
-  return (data ?? []) as DietDay[];
+  return (data ?? []).map((row: any) => ({
+    ...row,
+    meals: row.is_template_override ? row.meals : (row.diet_templates?.meals ?? []),
+    comment: row.is_template_override ? row.comment : (row.diet_templates?.comment ?? null),
+  })) as DietDay[];
 }
 
 export async function upsertDietDay(day: {
@@ -59,7 +63,7 @@ export async function upsertDietDay(day: {
   const { data, error } = await supabase
     .from('diet_days')
     .upsert(
-      { ...day, updated_at: new Date().toISOString() },
+      { ...day, is_template_override: true, updated_at: new Date().toISOString() },
       { onConflict: 'player_id,week_number,day_of_week' }
     )
     .select()
@@ -97,7 +101,10 @@ export async function duplicateDietDayToWeeks(
     coach_id: coachId,
     week_number: w,
     day_of_week: dayOfWeek,
-    meals: source.meals,
+    meals: source.template_id && !source.is_template_override ? [] : source.meals,
+    comment: source.template_id && !source.is_template_override ? null : source.comment,
+    template_id: source.template_id,
+    is_template_override: source.is_template_override,
     updated_at: new Date().toISOString(),
   }));
   const { error: upErr } = await supabase
@@ -129,7 +136,10 @@ export async function duplicateDietWeek(
       coach_id: coachId,
       week_number: w,
       day_of_week: d.day_of_week,
-      meals: d.meals,
+      meals: d.template_id && !d.is_template_override ? [] : d.meals,
+      comment: d.template_id && !d.is_template_override ? null : d.comment,
+      template_id: d.template_id,
+      is_template_override: d.is_template_override,
       updated_at: new Date().toISOString(),
     }))
   );

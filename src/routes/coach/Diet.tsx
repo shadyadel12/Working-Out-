@@ -12,13 +12,12 @@ import {
   duplicateDietWeek,
   listCoachFoods,
   addCoachFood,
-  generateDietXlsxTemplate,
-  importDietFromXlsx,
 } from '../../api/diet';
 import type { DietDay, DietFoodItem, DietMeal } from '../../types/database.types';
 import WeekPicker from '../../components/WeekPicker';
 import FoodPicker from '../../components/FoodPicker';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
+import { assignDietTemplate, listDietTemplates, saveDietAsTemplate } from '../../api/dietTemplates';
 
 /** Build meal slots from counts: snacks are spread evenly between meals. */
 function buildSlots(meals: number, snacks: number): DietMeal[] {
@@ -87,24 +86,6 @@ export default function CoachDiet() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['diet', playerId] }),
   });
 
-  const importXlsx = useMutation({
-    mutationFn: (file: File) => importDietFromXlsx(file, playerId!, coachId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['diet', playerId] });
-      qc.invalidateQueries({ queryKey: ['coachFoods', coachId] });
-    },
-  });
-
-  function handleXlsxFile(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const playerName = player?.profile?.name ?? player?.profile?.email ?? 'this player';
-    if (confirm(`Import will REPLACE the entire existing diet plan for ${playerName}. Continue?`)) {
-      importXlsx.mutate(file);
-    }
-    event.target.value = '';
-  }
-
   return (
     <div className="stack">
       <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -130,41 +111,6 @@ export default function CoachDiet() {
       </div>
 
       {dietLoading && <LoadingSkeleton rows={6} />}
-
-      <div className="card stack">
-        <strong>Diet Excel import</strong>
-        <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
-          Download the template, fill in all diet weeks and days, then import it for this player.
-          Importing replaces their entire existing diet plan.
-        </p>
-        <div className="row" style={{ flexWrap: 'wrap' }}>
-          <button className="secondary" type="button" onClick={generateDietXlsxTemplate}>
-            Download template (.xlsx)
-          </button>
-          <label style={{
-            display: 'inline-flex', alignItems: 'center', padding: '0.6em 1.1em',
-            background: 'var(--surface-2)', color: 'var(--text)',
-            border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-            cursor: importXlsx.isPending ? 'not-allowed' : 'pointer',
-            fontWeight: 600, opacity: importXlsx.isPending ? 0.6 : 1,
-          }}>
-            {importXlsx.isPending ? 'Importing…' : 'Import Excel…'}
-            <input
-              type="file"
-              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              onChange={handleXlsxFile}
-              disabled={importXlsx.isPending}
-              style={{ display: 'none' }}
-            />
-          </label>
-        </div>
-        {importXlsx.isSuccess && (
-          <span className="badge active">
-            Imported {importXlsx.data.daysCreated} days, {importXlsx.data.mealsCreated} meals, and {importXlsx.data.foodsCreated} food rows ✓
-          </span>
-        )}
-        {importXlsx.error && <span className="error">{(importXlsx.error as Error).message}</span>}
-      </div>
 
       {weekDays.length > 0 && week < totalWeeks && (
         <div className="card row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
@@ -256,6 +202,22 @@ function DietDayCard({
   const [snackCount, setSnackCount] = useState(
     existing ? existing.meals.filter((m) => m.type === 'snack').length : 1
   );
+  const [templateId, setTemplateId] = useState('');
+  const [templateName, setTemplateName] = useState(`${dayName} diet`);
+  const { data: templates = [] } = useQuery({ queryKey: ['diet-templates', coachId], queryFn: () => listDietTemplates(coachId) });
+  const useTemplate = useMutation({
+    mutationFn: () => assignDietTemplate(playerId, week, dayOfWeek, templateId),
+    onSuccess: () => {
+      const template = templates.find((item) => item.id === templateId);
+      if (template) { setMeals(template.meals); setComment(template.comment ?? ''); }
+      setTemplateId('');
+      qc.invalidateQueries({ queryKey: ['diet', playerId] });
+    },
+  });
+  const saveTemplate = useMutation({
+    mutationFn: () => saveDietAsTemplate(existing!.id, templateName),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['diet-templates', coachId] }),
+  });
 
   function generate() {
     if (meals.length > 0 && !confirm('Regenerate meal slots? Existing text for this day will be cleared.')) return;
@@ -361,6 +323,20 @@ function DietDayCard({
       {dupDay.isSuccess && (
         <span className="badge active">Duplicated to {dupDay.data} week{dupDay.data === 1 ? '' : 's'} ✓</span>
       )}
+
+      <div className="card stack" style={{ background: 'var(--surface-2)' }}>
+        <strong>Saved diet library</strong>
+        {templates.length > 0 && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Use saved diet</label><select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from library…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></div>
+          <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Adding…' : 'Add to this player/day'}</button>
+        </div>}
+        {existing && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Library name</label><input value={templateName} maxLength={200} onChange={(event) => setTemplateName(event.target.value)} /></div>
+          <button type="button" className="secondary" disabled={!templateName.trim() || saveTemplate.isPending} onClick={() => saveTemplate.mutate()}>{saveTemplate.isPending ? 'Saving…' : 'Save diet once for reuse'}</button>
+        </div>}
+        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse ✓</span>}
+        {(saveTemplate.error || useTemplate.error) && <span className="error">{((saveTemplate.error || useTemplate.error) as Error).message}</span>}
+      </div>
 
       <div className="stack" style={{ borderTop: '1px solid var(--border)', paddingTop: '0.9rem' }}>
         <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
