@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { validateChatAttachment, type ChatAttachmentType } from '../lib/security';
 
 export interface ChatMessage {
   id: string;
@@ -6,6 +7,8 @@ export interface ChatMessage {
   player_id: string;
   sender_id: string;
   body: string;
+  attachment_path: string | null;
+  attachment_type: ChatAttachmentType | null;
   created_at: string;
 }
 
@@ -31,15 +34,39 @@ export async function sendChatMessage(
   coachId: string,
   playerId: string,
   senderId: string,
-  body: string
+  body: string,
+  attachmentPath: string | null = null,
+  attachmentType: ChatAttachmentType | null = null
 ): Promise<ChatMessage> {
   const { data, error } = await supabase
     .from('chat_messages')
-    .insert({ coach_id: coachId, player_id: playerId, sender_id: senderId, body })
+    .insert({ coach_id: coachId, player_id: playerId, sender_id: senderId, body, attachment_path: attachmentPath, attachment_type: attachmentType })
     .select()
     .single();
   if (error) throw error;
   return data;
+}
+
+export async function uploadChatAttachment(
+  coachId: string,
+  playerId: string,
+  senderId: string,
+  file: File
+): Promise<{ path: string; type: ChatAttachmentType }> {
+  const { type, extension } = await validateChatAttachment(file);
+  const path = `${coachId}/${playerId}/${senderId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+  const { error } = await supabase.storage.from('chat-attachments').upload(path, file, {
+    upsert: false,
+    contentType: file.type,
+  });
+  if (error) throw error;
+  return { path, type };
+}
+
+export async function getChatAttachmentUrl(path: string): Promise<string> {
+  const { data, error } = await supabase.storage.from('chat-attachments').createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl;
 }
 
 /**

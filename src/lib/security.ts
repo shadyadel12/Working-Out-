@@ -62,6 +62,58 @@ export async function validateVideoFile(file: File, maxBytes: number): Promise<v
   if (!valid) throw new Error('The selected file is not a valid video or its content does not match its extension.');
 }
 
+export type ChatAttachmentType = 'image' | 'video' | 'audio';
+
+const CHAT_ATTACHMENT_TYPES: Record<string, { extension: string; type: ChatAttachmentType; maxBytes: number }> = {
+  'image/jpeg': { extension: 'jpg', type: 'image', maxBytes: 10 * 1024 * 1024 },
+  'image/png': { extension: 'png', type: 'image', maxBytes: 10 * 1024 * 1024 },
+  'image/webp': { extension: 'webp', type: 'image', maxBytes: 10 * 1024 * 1024 },
+  'image/gif': { extension: 'gif', type: 'image', maxBytes: 10 * 1024 * 1024 },
+  'video/mp4': { extension: 'mp4', type: 'video', maxBytes: 50 * 1024 * 1024 },
+  'video/webm': { extension: 'webm', type: 'video', maxBytes: 50 * 1024 * 1024 },
+  'video/quicktime': { extension: 'mov', type: 'video', maxBytes: 50 * 1024 * 1024 },
+  'audio/mpeg': { extension: 'mp3', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+  'audio/mp4': { extension: 'm4a', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+  'audio/wav': { extension: 'wav', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+  'audio/ogg': { extension: 'ogg', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+  'audio/webm': { extension: 'webm', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+};
+
+/** Validate chat media using MIME, extension, size, and the file's actual signature. */
+export async function validateChatAttachment(file: File): Promise<{ type: ChatAttachmentType; extension: string }> {
+  const rule = CHAT_ATTACHMENT_TYPES[file.type];
+  if (!rule) throw new Error('Only pictures, videos, and audio files are allowed.');
+  if (file.size <= 0 || file.size > rule.maxBytes) {
+    throw new Error(`${rule.type[0].toUpperCase()}${rule.type.slice(1)} must be smaller than ${rule.maxBytes / 1024 / 1024} MB.`);
+  }
+  if (file.name.includes('\0') || /[\\/]/.test(file.name)) throw new Error('Invalid attachment filename.');
+  const actualExtension = file.name.split('.').pop()?.toLowerCase();
+  const acceptedJpegExtension = file.type === 'image/jpeg' && actualExtension === 'jpeg';
+  if (actualExtension !== rule.extension && !acceptedJpegExtension) {
+    throw new Error('The file extension does not match its type.');
+  }
+  if (rule.type === 'video') {
+    await validateVideoFile(file, rule.maxBytes);
+    return { type: rule.type, extension: rule.extension };
+  }
+
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const ascii = String.fromCharCode(...bytes);
+  const signatures: Record<string, boolean> = {
+    'image/jpeg': bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff,
+    'image/png': bytes[0] === 0x89 && ascii.slice(1, 4) === 'PNG',
+    'image/gif': ascii.startsWith('GIF87a') || ascii.startsWith('GIF89a'),
+    'image/webp': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WEBP',
+    'audio/mpeg': ascii.startsWith('ID3') || (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0),
+    'audio/mp4': ascii.slice(4, 8) === 'ftyp',
+    'audio/wav': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WAVE',
+    'audio/ogg': ascii.startsWith('OggS'),
+    'audio/webm': bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3,
+  };
+  if (!signatures[file.type]) throw new Error('The file content does not match its reported type.');
+  return { type: rule.type, extension: rule.extension };
+}
+
 /** Reject encrypted, malformed, or highly compressed ZIP containers before XLSX parsing. */
 export function validateSpreadsheetArchive(buffer: ArrayBuffer): void {
   const bytes = new Uint8Array(buffer);

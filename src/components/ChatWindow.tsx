@@ -3,10 +3,25 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   listChatMessages,
   sendChatMessage,
+  uploadChatAttachment,
+  getChatAttachmentUrl,
   subscribeToChatMessages,
   type ChatMessage,
 } from '../api/chat';
 import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
+
+function ChatAttachment({ path, type }: { path: string; type: 'image' | 'video' | 'audio' }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    getChatAttachmentUrl(path).then((value) => { if (active) setUrl(value); }).catch(() => {});
+    return () => { active = false; };
+  }, [path]);
+  if (!url) return <span className="muted">Loading media…</span>;
+  if (type === 'image') return <a href={url} target="_blank" rel="noreferrer"><img src={url} alt="Chat attachment" style={{ display: 'block', maxWidth: '100%', maxHeight: 280, borderRadius: 8 }} /></a>;
+  if (type === 'video') return <video src={url} controls preload="metadata" style={{ display: 'block', maxWidth: '100%', maxHeight: 280, borderRadius: 8 }} />;
+  return <audio src={url} controls preload="metadata" style={{ display: 'block', maxWidth: '100%' }} />;
+}
 
 export default function ChatWindow({
   coachId,
@@ -19,7 +34,9 @@ export default function ChatWindow({
 }) {
   const qc = useQueryClient();
   const [text, setText] = useState('');
+  const [uploading, setUploading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const key = ['chat', coachId, playerId] as const;
 
   // Reset unread counter when this chat is open
@@ -51,7 +68,7 @@ export default function ChatWindow({
   }, [messages.length]);
 
   const send = useMutation({
-    mutationFn: () => sendChatMessage(coachId, playerId, currentUserId, text.trim()),
+    mutationFn: (messageText: string) => sendChatMessage(coachId, playerId, currentUserId, messageText),
     onSuccess: (msg) => {
       qc.setQueryData<ChatMessage[]>(key, (prev = []) =>
         prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
@@ -60,10 +77,26 @@ export default function ChatWindow({
     },
   });
 
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      const attachment = await uploadChatAttachment(coachId, playerId, currentUserId, file);
+      const msg = await sendChatMessage(coachId, playerId, currentUserId, '', attachment.path, attachment.type);
+      qc.setQueryData<ChatMessage[]>(key, (prev = []) => prev.some((item) => item.id === msg.id) ? prev : [...prev, msg]);
+    } catch (error) {
+      alert((error as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (text.trim() && !send.isPending) send.mutate();
+      if (text.trim() && !send.isPending) send.mutate(text.trim());
     }
   };
 
@@ -106,7 +139,10 @@ export default function ChatWindow({
                   lineHeight: 1.45,
                 }}
               >
-                {msg.body}
+                {msg.body && <div>{msg.body}</div>}
+                {msg.attachment_path && msg.attachment_type && (
+                  <ChatAttachment path={msg.attachment_path} type={msg.attachment_type} />
+                )}
                 <div style={{ fontSize: '0.68rem', opacity: 0.65, marginTop: '0.25rem', textAlign: 'right' }}>
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -119,6 +155,23 @@ export default function ChatWindow({
 
       {/* Input */}
       <div className="row" style={{ gap: '0.5rem', alignItems: 'flex-end' }}>
+        <button
+          type="button"
+          className="secondary"
+          title="Send a picture, video, or audio file"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading || send.isPending}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          {uploading ? '…' : 'Attach'}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/mp4,audio/wav,audio/ogg,audio/webm"
+          onChange={handleFile}
+          style={{ display: 'none' }}
+        />
         <textarea
           rows={2}
           value={text}
@@ -126,11 +179,11 @@ export default function ChatWindow({
           onKeyDown={handleKeyDown}
           placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
           style={{ flex: 1, resize: 'none' }}
-          disabled={send.isPending}
+          disabled={send.isPending || uploading}
         />
         <button
-          onClick={() => send.mutate()}
-          disabled={!text.trim() || send.isPending}
+          onClick={() => send.mutate(text.trim())}
+          disabled={!text.trim() || send.isPending || uploading}
           style={{ alignSelf: 'flex-end', minWidth: 72 }}
         >
           {send.isPending ? '…' : 'Send'}

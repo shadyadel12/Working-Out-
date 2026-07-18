@@ -163,6 +163,8 @@ export type ChatMessage = {
   player_id: string;
   sender_id: string;
   body: string;
+  attachment_path: string | null;
+  attachment_type: 'image' | 'video' | 'audio' | null;
   created_at: string;
 }
 
@@ -456,6 +458,8 @@ export type Database = {
           player_id: string;
           sender_id: string;
           body: string;
+          attachment_path?: string | null;
+          attachment_type?: 'image' | 'video' | 'audio' | null;
           created_at?: string;
         };
         Update: {
@@ -464,6 +468,8 @@ export type Database = {
           player_id?: string;
           sender_id?: string;
           body?: string;
+          attachment_path?: string | null;
+          attachment_type?: 'image' | 'video' | 'audio' | null;
           created_at?: string;
         };
         Relationships: [];
