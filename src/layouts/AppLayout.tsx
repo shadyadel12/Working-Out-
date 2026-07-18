@@ -39,8 +39,8 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
     {regularLinks.slice(1).map((link) => navLink(link))}
   </nav>;
 
-  return <div className={isCoach ? 'app-shell coach-shell' : 'app-shell'}>
-    {isCoach && <aside className="coach-sidebar"><div className="coach-brand"><span className="coach-brand-mark">K</span><span>COACH</span></div><div className="coach-nav">{navigation}</div><div className="coach-sidebar-profile" title={profile?.name ?? profile?.email}>{(profile?.name ?? profile?.email ?? 'C').slice(0, 2).toUpperCase()}</div></aside>}
-    <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'Coach Platform'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
+  return <div className={isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'}>
+    {isCoach && <header className="coach-topnav"><div className="coach-brand"><span className="coach-brand-mark">ϟ</span><span>PULSE<strong>FIT</strong></span></div><div className="coach-nav">{navigation}</div><div className="coach-top-account"><span>{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header>}
+    <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
   </div>;
 }

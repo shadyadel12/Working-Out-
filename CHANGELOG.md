@@ -6,6 +6,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- The full website now uses a unified dark charcoal and energetic orange design inspired by PulseFit.
+- Coach and player dashboards now use top navigation, with a new gym-photo landing hero.
+
 - Exercise, workout, and program libraries are now grouped inside one expandable Library menu.
 
 - The client list now shows and filters players who still need a training program.

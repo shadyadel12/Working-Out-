@@ -645,3 +645,78 @@ label {
     gap: 0.6rem;
   }
 }
+
+/* ---------- PulseFit unified dark/orange design ---------- */
+.coach-shell { --bg:#0d0e0f;--surface:#171819;--surface-2:#222325;--border:#343638;--text:#f5f5f3;--text-dim:#9a9da1;--accent:#ff642f;--accent-hover:#ed5121;--accent-glow:rgba(255,100,47,.28);background:var(--bg);color:var(--text);color-scheme:dark; }
+.coach-top-shell,.player-top-shell { display:block; min-height:100vh; background:var(--bg); }
+.coach-top-shell .app-content { min-height:100vh; padding-top:68px; }
+.coach-top-shell .topbar { display:none; }
+.coach-topnav { position:fixed; z-index:100; inset:0 0 auto; height:68px; display:flex; align-items:center; gap:28px; padding:0 24px; background:rgba(12,13,14,.96); border-bottom:1px solid #292b2d; box-shadow:0 4px 18px rgba(0,0,0,.2); }
+.coach-topnav .coach-brand { flex:0 0 auto; padding:0; color:white; letter-spacing:.04em; }
+.coach-topnav .coach-brand strong { color:var(--accent); }
+.coach-topnav .coach-brand-mark { background:var(--accent);color:white; }
+.coach-topnav .coach-nav { flex:1; min-width:0; overflow:visible; }
+.coach-topnav .coach-nav nav { flex-direction:row; align-items:center; gap:4px; }
+.coach-topnav .coach-nav a,.coach-topnav .library-nav-group>button { padding:9px 10px;color:#b4b6b8;white-space:nowrap; }
+.coach-topnav .coach-nav a:hover,.coach-topnav .coach-nav a.active,.coach-topnav .library-nav-group>button:hover,.coach-topnav .library-nav-group>button.active { background:#262729;color:white; }
+.coach-topnav .library-nav-group { position:relative; }
+.coach-topnav .library-nav-children { position:absolute;top:calc(100% + 10px);left:0;min-width:150px;margin:0;padding:6px;background:#18191a;border:1px solid #343638;border-radius:8px;box-shadow:0 16px 30px rgba(0,0,0,.4); }
+.coach-topnav .library-nav-children a { padding:8px 10px; }
+.coach-top-account { display:flex;align-items:center;gap:10px;color:#a9abad;font-size:.82rem;white-space:nowrap; }
+.coach-shell .container { width:100%;max-width:1500px;margin:0 auto;padding:28px; }
+.coach-shell .topbar,.player-top-shell .topbar { background:#121314;border-color:#303234; }
+.coach-shell .card,.coach-shell .client-summary-card,.coach-shell .clients-table-card,.coach-shell .library-table-card,.coach-shell .team-stats>div,.coach-shell .team-invite-card,.coach-shell .pending-invites { background:var(--surface);border-color:var(--border);color:var(--text); }
+.coach-shell .coach-page-heading h1,.coach-shell .library-heading h1,.coach-shell .client-workspace-top h1,.coach-shell .player-profile-header h1 { color:var(--text); }
+.coach-shell .clients-table th { background:#202123;color:#a9abad;border-color:var(--border); }
+.coach-shell .clients-table td { color:#c9cbcd;border-color:var(--border); }
+.coach-shell .clients-table td strong { color:white; }
+.coach-shell input,.coach-shell select,.coach-shell textarea { background:#242527;border-color:#3a3c3f;color:white; }
+.coach-shell .client-filters select,.coach-shell .clients-search,.coach-shell .clients-search input { background:#202123;color:white;border-color:#3a3c3f; }
+.coach-shell .workout-modal,.coach-shell .multi-select-menu,.coach-shell .program-add-menu,.coach-shell .exercise-picker-menu { background:#18191a;color:white;border-color:#3a3c3f; }
+.coach-shell .multi-select-menu label,.coach-shell .exercise-picker-menu label { color:#e6e6e4; }
+.coach-shell .program-day-column,.coach-shell .client-identity-card dl div,.coach-shell .assign-program-summary { background:#222325;border-color:#383a3c; }
+.coach-shell .program-workout-chip,.coach-shell .inline-workout-editor { background:#171819; }
+.coach-shell .client-profile-tabs a:hover,.coach-shell .client-profile-tabs a.active { color:var(--accent);border-color:var(--accent); }
+.coach-shell footer,.player-top-shell footer { background:#101112;border-color:#292b2d;color:#777b7e; }
+.player-top-shell .topbar { position:sticky;top:0;z-index:80; }
+.player-top-shell .topbar>div:first-child { flex:1; }
+.player-top-shell .topbar nav { flex:1;justify-content:center; }
+.player-top-shell .topbar nav a { color:#aeb0b2;padding:8px 10px;border-radius:6px; }
+.player-top-shell .topbar nav a.active { color:white;background:#292a2c; }
+
+/* Public hero */
+.pulse-landing { min-height:100vh;display:flex;flex-direction:column;background:#090a0b;color:white; }
+.pulse-header { position:relative;z-index:2;height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,100px);background:rgba(10,11,12,.9);border-bottom:1px solid rgba(255,255,255,.1); }
+.pulse-logo { display:flex;align-items:center;gap:9px;color:white;font-size:1.3rem;font-weight:800; }
+.pulse-logo span { display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#ff642f;color:white; }
+.pulse-logo strong { color:#ff642f; }
+.pulse-header nav,.pulse-header>div { display:flex;align-items:center;gap:26px; }
+.pulse-header nav a,.pulse-header>div>a:first-child { color:#9b9da0;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em; }
+.pulse-hero { position:relative;flex:1;display:grid;grid-template-columns:minmax(0,620px) 320px;align-items:center;justify-content:center;gap:100px;padding:70px 40px;background-image:linear-gradient(90deg,rgba(7,8,9,.96) 0%,rgba(7,8,9,.72) 50%,rgba(7,8,9,.4) 100%),linear-gradient(0deg,rgba(7,8,9,.75),rgba(7,8,9,.15)),url('/hero.jpg');background-size:cover;background-position:center; }
+.pulse-copy { position:relative;z-index:1; }
+.pulse-pill { display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid #777;border-radius:99px;color:#ff642f;font-size:.72rem;text-transform:uppercase; }
+.pulse-pill i { width:7px;height:7px;border-radius:50%;background:#22c55e; }
+.pulse-copy h1 { margin:26px 0 18px;font-size:clamp(3rem,5vw,5.2rem);line-height:.95;letter-spacing:-.025em; }
+.pulse-copy h1 em { color:#ff642f;font-style:normal; }
+.pulse-copy>p { max-width:520px;color:#aeb1b5;font-size:1rem; }
+.pulse-actions { display:flex;align-items:center;gap:36px;margin-top:28px; }
+.pulse-actions>a:last-child { color:white;font-weight:800;text-transform:uppercase;font-size:.78rem; }
+.pulse-stats { display:flex;gap:50px;margin-top:44px; }
+.pulse-stats div { display:grid; }
+.pulse-stats strong { color:#ff642f;font-size:1.25rem; }
+.pulse-stats span { color:#8d9094;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em; }
+.pulse-workout-card { padding:22px;background:rgba(17,18,19,.94);border:1px solid #292b2d;border-radius:13px;box-shadow:0 20px 45px rgba(0,0,0,.45); }
+.pulse-workout-card header { display:flex;gap:12px;margin-bottom:16px; }
+.pulse-workout-card header>span { color:#ff642f;font-size:1.5rem; }
+.pulse-workout-card header div { display:grid; }
+.pulse-workout-card small { color:#8e9296; }
+.pulse-workout-card p { display:flex;align-items:center;gap:9px;color:#c0c3c6; }
+.pulse-workout-card p span { margin-left:auto;font-size:.75rem; }
+.pulse-workout-card i { width:17px;height:17px;border:1px solid #444;border-radius:50%; }
+.pulse-workout-card i.done { background:#22c55e;border-color:#22c55e; }
+.pulse-progress { height:4px;background:#303234;margin:17px 0 7px; }
+.pulse-progress b { display:block;width:65%;height:100%;background:linear-gradient(90deg,#ff642f,#55b9ff); }
+.pulse-footer { padding:12px;text-align:center;background:#090a0b;color:#666;font-size:.75rem; }
+
+@media(max-width:900px){.coach-topnav{padding:0 10px;gap:8px}.coach-topnav .coach-brand>span:last-child,.coach-topnav .coach-nav-icon,.coach-top-account>span{display:none}.coach-topnav .coach-nav{overflow-x:auto}.coach-topnav .coach-nav nav{width:max-content}.pulse-header nav{display:none}.pulse-hero{grid-template-columns:1fr;padding:55px 22px}.pulse-workout-card{display:none}}
+@media(max-width:640px){.pulse-header{padding:0 14px}.pulse-header>div>a:first-child{display:none}.pulse-copy h1{font-size:3.2rem}.pulse-stats{gap:20px}.player-top-shell .topbar{align-items:flex-start}.player-top-shell .topbar nav{overflow-x:auto;justify-content:flex-start;width:100%}}
