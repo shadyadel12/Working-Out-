@@ -40,7 +40,7 @@ $$;
 
 -- Keep the three-argument overload safe for older deployed clients.
 create or replace function public.coach_create_player_key(
-  p_player_id uuid, p_end_date date, p_is_vip boolean
+  p_player_id uuid, p_end_date date, p_is_vip boolean default false
 ) returns public.coach_player_links
 language sql security definer set search_path = public as $$
   select public.coach_create_player_key(p_player_id, p_end_date, p_is_vip, 3)

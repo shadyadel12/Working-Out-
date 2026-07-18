@@ -12,6 +12,10 @@ This page explains what the app can do and what has changed in everyday language
 - Mobile sign-in sessions now use the phone's protected storage.
 - A fresh 400-check safety and quality review now covers the website, mobile app, database, team roles, VIP priority, and weekly check-ups.
 
+### Fixes
+
+- The newest database safety update can now be applied cleanly over the existing VIP renewal functions.
+
 ## July 18, 2026
 
 ### New Features
