@@ -18,14 +18,16 @@ export default function PlayerProfile() {
   const [editField, setEditField] = useState<'notes' | 'goals' | null>(null);
   const [coachNotes, setCoachNotes] = useState('');
   const [clientGoals, setClientGoals] = useState('');
+  const [limitationsInjuries, setLimitationsInjuries] = useState('');
+  const [availableEquipment, setAvailableEquipment] = useState('');
   const playerQuery = useQuery({ queryKey: ['player', coachId, playerId], queryFn: () => getPlayerForCoach(coachId, playerId!), enabled: !!playerId });
   const progressQuery = useQuery({ queryKey: ['profile-progress-summary', playerId], queryFn: () => getProgressPage({ playerId: playerId!, range: 'all', page: 0, pageSize: 1 }), enabled: !!playerId });
   const dietQuery = useQuery({ queryKey: ['diet-logs', playerId], queryFn: () => listDietLogs(playerId!), enabled: !!playerId });
   const programQuery = useQuery({ queryKey: ['program', playerId], queryFn: () => listProgramDays(playerId!), enabled: !!playerId });
   const activityQuery = useQuery({ queryKey: ['last-activity', playerId], queryFn: () => getLastActivity(playerId!), enabled: !!playerId });
   const coachingQuery = useQuery({ queryKey: ['player-coaching-profile', coachId, playerId], queryFn: () => getPlayerCoachingProfile(coachId, playerId!), enabled: !!playerId });
-  useEffect(() => { if (coachingQuery.data) { setCoachNotes(coachingQuery.data.coach_notes); setClientGoals(coachingQuery.data.client_goals); } }, [coachingQuery.data]);
-  const saveCoaching = useMutation({ mutationFn: () => savePlayerCoachingProfile(coachId, playerId!, { coach_notes: coachNotes, client_goals: clientGoals }), onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: ['player-coaching-profile', coachId, playerId] }); setEditField(null); } });
+  useEffect(() => { if (coachingQuery.data) { setCoachNotes(coachingQuery.data.coach_notes); setClientGoals(coachingQuery.data.client_goals); setLimitationsInjuries(coachingQuery.data.limitations_injuries); setAvailableEquipment(coachingQuery.data.available_equipment); } }, [coachingQuery.data]);
+  const saveCoaching = useMutation({ mutationFn: () => savePlayerCoachingProfile(coachId, playerId!, { coach_notes: coachNotes, client_goals: clientGoals, limitations_injuries: limitationsInjuries, available_equipment: availableEquipment }), onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: ['player-coaching-profile', coachId, playerId] }); setEditField(null); } });
 
   if (playerQuery.isLoading) return <LoadingSkeleton rows={5} />;
   if (playerQuery.error) return <p className="error">{(playerQuery.error as Error).message}</p>;

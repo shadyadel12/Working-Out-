@@ -411,6 +411,20 @@ label {
 .assign-program-modal { width: min(520px,100%); }
 .assign-program-summary { display: grid; gap: 4px; padding: 13px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; }
 .assign-program-summary span,.assign-program-summary p { margin: 0; color: var(--text-dim); font-size: .82rem; }
+.player-context-drawer { position: fixed; z-index: 45; top: 110px; right: 0; width: 24px; min-height: 170px; background: white; border: 1px solid #dfe2e9; border-right: 0; border-radius: 10px 0 0 10px; box-shadow: 0 8px 24px rgba(25,30,50,.12); transition: width .2s ease; }
+.player-context-drawer.open { width: 310px; }
+.context-drawer-toggle { position: absolute; top: 10px; left: -28px; width: 29px; height: 42px; padding: 0; display: grid; place-items: center; background: #373681; color: white; border-radius: 8px 0 0 8px; font-size: 1.4rem; }
+.context-drawer-content { padding: 15px 12px; }
+.context-drawer-content h3 { margin: 0 0 12px; color: #202635; }
+.context-section { border-top: 1px solid #e3e5eb; }
+.context-section > button { width: 100%; display: flex; align-items: center; gap: 9px; padding: 11px 4px; background: transparent; color: #252b38; border: 0; text-align: left; text-transform: none; letter-spacing: normal; }
+.context-section > button:hover:not(:disabled) { background: #f7f7fa; box-shadow: none; }
+.context-icon { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 7px; background: #fff0dc; color: #f9702b; font-size: .72rem; font-weight: 800; }
+.context-arrow { margin-left: auto; font-size: 1.2rem; }
+.context-editor { padding: 0 3px 12px; }
+.context-editor textarea { margin-bottom: 7px; resize: vertical; }
+.context-editor > div { display: flex; justify-content: flex-end; gap: 6px; }
+.context-editor button { padding: 6px 9px; font-size: .7rem; }
 
 @media (max-width: 1180px) {
   .program-schedule-modal { width: calc(100vw - 16px); }
@@ -577,6 +591,8 @@ label {
   .workout-library-exercise { grid-template-columns: 1fr; }
   .program-details-grid { grid-template-columns: 1fr; }
   .program-top-actions { align-items: stretch; flex-direction: column; }
+  .player-context-drawer { top: 70px; }
+  .player-context-drawer.open { width: min(310px,calc(100vw - 35px)); }
   .program-days-grid { display: flex; overflow-x: auto; padding-bottom: 10px; }
   .client-identity-card, .client-communication-card { grid-row: auto; grid-column: auto; }
   .workout-modal-backdrop { padding: 0; align-items: end; }
