@@ -50,9 +50,9 @@ export default function WorkoutList({
       {templates.length > 0 && <div className="card row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}>
           <label>Use saved workout</label>
-          <select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from libraryÃ¢â‚¬Â¦</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select>
+          <select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from library…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select>
         </div>
-        <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'AddingÃ¢â‚¬Â¦' : 'Add to this player'}</button>
+        <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Adding…' : 'Add to this player'}</button>
         {useTemplate.error && <span className="error">{(useTemplate.error as Error).message}</span>}
       </div>}
       <button className="secondary" onClick={() => addWorkout.mutate()} disabled={addWorkout.isPending}>
@@ -61,4 +61,3 @@ export default function WorkoutList({
     </div>
   );
 }
-

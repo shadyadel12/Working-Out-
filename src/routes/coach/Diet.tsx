@@ -46,7 +46,7 @@ export default function CoachDiet() {
   const [selectedDow, setSelectedDow] = useState<number>(todayDayOfWeek());
   const existing = byDow.get(selectedDow) ?? null;
 
-  // Duplicate full week â†’ next N weeks
+  // Duplicate the full week into the next selected weeks.
   const [dupN, setDupN] = useState(1);
   const dupWeek = useMutation({
     mutationFn: () => {
@@ -61,10 +61,10 @@ export default function CoachDiet() {
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div>
           <Link to="/coach/dashboard" className="muted" style={{ fontSize: '0.85rem' }}>
-            â† Dashboard
+            ← Dashboard
           </Link>
           <h1 style={{ margin: '0.2rem 0 0' }}>
-            Diet â€” {player?.profile?.name ?? player?.profile?.email ?? 'â€¦'}
+            Diet — {player?.profile?.name ?? player?.profile?.email ?? '…'}
           </h1>
         </div>
         <div className="row" style={{ alignItems: 'flex-end' }}>
@@ -99,7 +99,7 @@ export default function CoachDiet() {
               ))}
             </select>
             <span className="muted" style={{ fontSize: '0.8rem' }}>
-              â†’ W{week + 1}{dupN > 1 ? `â€“W${week + dupN}` : ''}
+              → W{week + 1}{dupN > 1 ? `–W${week + dupN}` : ''}
             </span>
             <button
               onClick={() => {
@@ -109,11 +109,11 @@ export default function CoachDiet() {
               }}
               disabled={dupWeek.isPending}
             >
-              {dupWeek.isPending ? 'Copyingâ€¦' : 'Duplicate week'}
+              {dupWeek.isPending ? 'Copying…' : 'Duplicate week'}
             </button>
           </div>
           {dupWeek.isSuccess && (
-            <span className="badge active">Copied to {dupWeek.data} week{dupWeek.data === 1 ? '' : 's'} âœ“</span>
+            <span className="badge active">Copied to {dupWeek.data} week{dupWeek.data === 1 ? '' : 's'} ✓</span>
           )}
           {dupWeek.error && <span className="error">{(dupWeek.error as Error).message}</span>}
         </div>

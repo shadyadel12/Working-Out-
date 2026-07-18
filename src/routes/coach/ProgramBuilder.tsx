@@ -62,10 +62,10 @@ export default function ProgramBuilder() {
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div>
           <Link to="/coach/dashboard" className="muted" style={{ fontSize: '0.85rem' }}>
-            â† Dashboard
+            ← Dashboard
           </Link>
           <h1 style={{ margin: '0.2rem 0 0' }}>
-            Program â€” {player?.profile?.name ?? player?.profile?.email ?? 'â€¦'}
+            Program — {player?.profile?.name ?? player?.profile?.email ?? '…'}
           </h1>
         </div>
         <div className="field" style={{ margin: 0, minWidth: 120 }}>
@@ -99,7 +99,7 @@ export default function ProgramBuilder() {
               ))}
             </select>
             <span className="muted" style={{ fontSize: '0.8rem' }}>
-              â†’ W{week + 1}{dupN > 1 ? `â€“W${week + dupN}` : ''}
+              → W{week + 1}{dupN > 1 ? `–W${week + dupN}` : ''}
             </span>
             <button
               onClick={() => {
@@ -109,11 +109,11 @@ export default function ProgramBuilder() {
               }}
               disabled={duplicate.isPending || week >= totalWeeks}
             >
-              {duplicate.isPending ? 'Copyingâ€¦' : 'Duplicate week'}
+              {duplicate.isPending ? 'Copying…' : 'Duplicate week'}
             </button>
           </div>
           {duplicate.isSuccess && (
-            <span className="badge active">Copied to {duplicate.data} week{duplicate.data === 1 ? '' : 's'} âœ“</span>
+            <span className="badge active">Copied to {duplicate.data} week{duplicate.data === 1 ? '' : 's'} ✓</span>
           )}
           {duplicate.error && <span className="error">{(duplicate.error as Error).message}</span>}
         </div>

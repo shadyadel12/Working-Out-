@@ -57,7 +57,7 @@ export default function DraftWorkoutsEditor({
       <strong style={{ fontSize: '0.9rem' }}>Workouts</strong>
       {drafts.length === 0 && (
         <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
-          Add workouts and exercises now Ã¢â‚¬â€ they'll be saved together with the day.
+          Add workouts and exercises now — they'll be saved together with the day.
         </p>
       )}
       {drafts.map((w, wi) => (
@@ -129,4 +129,3 @@ export default function DraftWorkoutsEditor({
     </div>
   );
 }
-

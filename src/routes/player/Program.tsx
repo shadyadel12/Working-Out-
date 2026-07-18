@@ -60,7 +60,7 @@ export default function PlayerProgram() {
           <strong>Messages from your coach</strong>
           {general.map((m) => (
             <div key={m.id}>
-              ðŸ’¬ {m.body}
+              💬 {m.body}
               <span className="muted" style={{ fontSize: '0.75rem', marginLeft: '0.5rem' }}>
                 {new Date(m.created_at).toLocaleDateString()}
               </span>

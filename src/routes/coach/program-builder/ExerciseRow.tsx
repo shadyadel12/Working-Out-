@@ -89,10 +89,10 @@ export default function ExerciseRow({
       <VideoInput ownerId={playerId} value={video} onChange={setVideo} />
       <div className="row" style={{ flexWrap: 'wrap' }}>
         <button onClick={() => save.mutate()} disabled={save.isPending}>
-          {save.isPending ? 'SavingÃ¢â‚¬Â¦' : 'Save'}
+          {save.isPending ? 'Saving…' : 'Save'}
         </button>
         <button className="secondary" type="button" onClick={() => setDupOpen((o) => !o)}>
-          {dupOpen ? 'Cancel' : 'DuplicateÃ¢â‚¬Â¦'}
+          {dupOpen ? 'Cancel' : 'Duplicate…'}
         </button>
         <button className="danger" onClick={() => del.mutate()} disabled={del.isPending}>
           Delete
@@ -111,9 +111,8 @@ export default function ExerciseRow({
       )}
       {dupEx.error && <span className="error">{(dupEx.error as Error).message}</span>}
       {dupEx.isSuccess && (
-        <span className="badge active">Duplicated to {dupEx.data} week{dupEx.data === 1 ? '' : 's'} Ã¢Å“â€œ</span>
+        <span className="badge active">Duplicated to {dupEx.data} week{dupEx.data === 1 ? '' : 's'} ✓</span>
       )}
     </div>
   );
 }
-

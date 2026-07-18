@@ -96,7 +96,7 @@ export default function ExerciseBody({
     <div className="stack">
       {(exercise.target_weight || exercise.target_sets || exercise.target_reps) && (
         <div className="muted" style={{ fontSize: '0.85rem' }}>
-          Target: {exercise.target_sets ?? 'â€”'} sets Ã— {exercise.target_reps ?? 'â€”'} reps
+          Target: {exercise.target_sets ?? '—'} sets × {exercise.target_reps ?? '—'} reps
           {exercise.target_weight ? ` @ ${exercise.target_weight}` : ''}
         </div>
       )}
@@ -115,7 +115,7 @@ export default function ExerciseBody({
       {messages && messages.length > 0 && (
         <div className="stack" style={{ gap: '0.3rem' }}>
           {messages.map((m) => (
-            <div key={m.id} className="muted" style={{ fontSize: '0.85rem' }}>ðŸ’¬ {m.body}</div>
+            <div key={m.id} className="muted" style={{ fontSize: '0.85rem' }}>💬 {m.body}</div>
           ))}
         </div>
       )}
@@ -145,7 +145,7 @@ export default function ExerciseBody({
               </div>
               {rows.length > 1 && (
                 <button className="secondary" type="button" onClick={() => removeRow(i)} title="Remove this set">
-                  âœ•
+                  ✕
                 </button>
               )}
             </div>
@@ -165,7 +165,7 @@ export default function ExerciseBody({
         </div>
         <div className="row" style={{ marginTop: '0.7rem' }}>
           <button className={done ? 'danger' : ''} onClick={() => save.mutate(!done)} disabled={save.isPending}>
-            {save.isPending ? 'Savingâ€¦' : done ? 'Mark not done' : 'Mark done âœ“'}
+            {save.isPending ? 'Saving…' : done ? 'Mark not done' : 'Mark done ✓'}
           </button>
           {save.error && <span className="error">{(save.error as Error).message}</span>}
         </div>

@@ -44,8 +44,8 @@ export default function WorkoutCard({
         </button>
       </div>
       <div className="row">
-        <button type="button" className="secondary" onClick={() => saveTemplate.mutate()} disabled={saveTemplate.isPending}>{saveTemplate.isPending ? 'SavingÃ¢â‚¬Â¦' : 'Save to workout library'}</button>
-        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse Ã¢Å“â€œ</span>}
+        <button type="button" className="secondary" onClick={() => saveTemplate.mutate()} disabled={saveTemplate.isPending}>{saveTemplate.isPending ? 'Saving…' : 'Save to workout library'}</button>
+        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse ✓</span>}
         {saveTemplate.error && <span className="error">{(saveTemplate.error as Error).message}</span>}
       </div>
       <ExerciseEditor
@@ -58,4 +58,3 @@ export default function WorkoutCard({
     </div>
   );
 }
-

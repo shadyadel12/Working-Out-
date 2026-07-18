@@ -126,11 +126,11 @@ export default function DietDayCard({
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div>
           <strong>{dayName}</strong>{' '}
-          <span className="muted">â€” {existing ? `${existing.meals.length} items` : 'not set'}</span>
+          <span className="muted">— {existing ? `${existing.meals.length} items` : 'not set'}</span>
         </div>
         {existing && (
           <button type="button" className="secondary" onClick={() => setDupOpen((o) => !o)}>
-            {dupOpen ? 'Cancel' : 'Duplicate dayâ€¦'}
+            {dupOpen ? 'Cancel' : 'Duplicate day…'}
           </button>
         )}
       </div>
@@ -147,20 +147,20 @@ export default function DietDayCard({
       )}
       {dupDay.error && <span className="error">{(dupDay.error as Error).message}</span>}
       {dupDay.isSuccess && (
-        <span className="badge active">Duplicated to {dupDay.data} week{dupDay.data === 1 ? '' : 's'} âœ“</span>
+        <span className="badge active">Duplicated to {dupDay.data} week{dupDay.data === 1 ? '' : 's'} ✓</span>
       )}
 
       <div className="card stack" style={{ background: 'var(--surface-2)' }}>
         <strong>Saved diet library</strong>
         {templates.length > 0 && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Use saved diet</label><select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from libraryâ€¦</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></div>
-          <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Addingâ€¦' : 'Add to this player/day'}</button>
+          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Use saved diet</label><select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from library…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></div>
+          <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Adding…' : 'Add to this player/day'}</button>
         </div>}
         {existing && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
           <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Library name</label><input value={templateName} maxLength={200} onChange={(event) => setTemplateName(event.target.value)} /></div>
-          <button type="button" className="secondary" disabled={!templateName.trim() || saveTemplate.isPending} onClick={() => saveTemplate.mutate()}>{saveTemplate.isPending ? 'Savingâ€¦' : 'Save diet once for reuse'}</button>
+          <button type="button" className="secondary" disabled={!templateName.trim() || saveTemplate.isPending} onClick={() => saveTemplate.mutate()}>{saveTemplate.isPending ? 'Saving…' : 'Save diet once for reuse'}</button>
         </div>}
-        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse âœ“</span>}
+        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse ✓</span>}
         {(saveTemplate.error || useTemplate.error) && <span className="error">{((saveTemplate.error || useTemplate.error) as Error).message}</span>}
       </div>
 
@@ -235,7 +235,7 @@ export default function DietDayCard({
                   onClick={() => removeItem(mi, ii)}
                   style={{ padding: '0.55em 0.8em' }}
                 >
-                  âœ•
+                  ✕
                 </button>
               </div>
             ))}
@@ -257,14 +257,14 @@ export default function DietDayCard({
             rows={3}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Optional note to the player about this day's dietâ€¦"
+            placeholder="Optional note to the player about this day's diet…"
             style={{ resize: 'vertical' }}
           />
         </div>
 
         <div className="row" style={{ flexWrap: 'wrap' }}>
           <button onClick={() => save.mutate()} disabled={save.isPending || meals.length === 0}>
-            {save.isPending ? 'Savingâ€¦' : existing ? 'Save day' : 'Create day'}
+            {save.isPending ? 'Saving…' : existing ? 'Save day' : 'Create day'}
           </button>
           {existing && (
             <button
@@ -275,7 +275,7 @@ export default function DietDayCard({
               Delete day
             </button>
           )}
-          {save.isSuccess && <span className="badge active">Saved âœ“</span>}
+          {save.isSuccess && <span className="badge active">Saved ✓</span>}
           {save.error && <span className="error">{(save.error as Error).message}</span>}
           {del.error && <span className="error">{(del.error as Error).message}</span>}
         </div>
@@ -283,5 +283,4 @@ export default function DietDayCard({
     </div>
   );
 }
-
 

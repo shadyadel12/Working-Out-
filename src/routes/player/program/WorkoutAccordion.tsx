@@ -22,7 +22,7 @@ export default function WorkoutAccordion({ workout, playerId }: { workout: Worko
         onClick={() => setOpen((o) => !o)}
       >
         <strong>{workout.name}</strong>
-        <span>{open ? 'â–¾' : 'â–¸'}</span>
+        <span>{open ? '▾' : '▸'}</span>
       </button>
 
       {open &&
@@ -37,4 +37,3 @@ export default function WorkoutAccordion({ workout, playerId }: { workout: Worko
 }
 
 /** Level 3: an exercise. Collapsed by default; expands to log/upload. */
-

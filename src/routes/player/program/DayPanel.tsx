@@ -16,7 +16,7 @@ export default function DayPanel({ day, playerId }: { day: ProgramDay; playerId:
     <div className="card stack" style={{ gap: '0.5rem' }}>
       <div>
         <strong>{DAY_NAMES[day.day_of_week]}</strong>
-        <span className="muted"> â€” {day.day_type === 'rest' ? 'Rest day' : 'Training'}</span>
+        <span className="muted"> — {day.day_type === 'rest' ? 'Rest day' : 'Training'}</span>
       </div>
 
       {day.day_type === 'training' &&

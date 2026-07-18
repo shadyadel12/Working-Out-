@@ -28,10 +28,10 @@ export default function ExerciseAccordion({ exercise, playerId }: { exercise: Ex
         <span>
           <strong>{exercise.name}</strong>
           <span className="muted" style={{ fontSize: '0.8rem' }}>
-            {' '}Â· {exercise.target_sets ?? 'â€”'}Ã—{exercise.target_reps ?? 'â€”'}
+            {' '}· {exercise.target_sets ?? '—'}×{exercise.target_reps ?? '—'}
           </span>
         </span>
-        <span>{done ? 'âœ“ ' : ''}{open ? 'â–¾' : 'â–¸'}</span>
+        <span>{done ? '✓ ' : ''}{open ? '▾' : '▸'}</span>
       </button>
 
       {open && <ExerciseBody exercise={exercise} playerId={playerId} logDate={logDate} />}

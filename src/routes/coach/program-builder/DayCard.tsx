@@ -69,10 +69,10 @@ export default function DayCard({
           <strong>{dayName}</strong>{' '}
           {existing ? (
             <span className="muted">
-              Ã¢â‚¬â€ {existing.day_type === 'rest' ? 'Rest day' : 'Training'}
+              — {existing.day_type === 'rest' ? 'Rest day' : 'Training'}
             </span>
           ) : (
-            <span className="muted">Ã¢â‚¬â€ not set</span>
+            <span className="muted">— not set</span>
           )}
         </div>
         {existing && (
@@ -81,7 +81,7 @@ export default function DayCard({
             className="secondary"
             onClick={() => setDupOpen((o) => !o)}
           >
-            {dupOpen ? 'Cancel' : 'Duplicate dayÃ¢â‚¬Â¦'}
+            {dupOpen ? 'Cancel' : 'Duplicate day…'}
           </button>
         )}
       </div>
@@ -97,7 +97,7 @@ export default function DayCard({
       )}
       {dupDay.error && <span className="error">{(dupDay.error as Error).message}</span>}
       {dupDay.isSuccess && (
-        <span className="badge active">Duplicated to {dupDay.data} week{dupDay.data === 1 ? '' : 's'} Ã¢Å“â€œ</span>
+        <span className="badge active">Duplicated to {dupDay.data} week{dupDay.data === 1 ? '' : 's'} ✓</span>
       )}
       <div className="stack" style={{ borderTop: '1px solid var(--border)', paddingTop: '0.9rem' }}>
         <div className="row">
@@ -118,7 +118,7 @@ export default function DayCard({
 
         <div className="row">
           <button onClick={() => saveDay.mutate()} disabled={saveDay.isPending}>
-            {saveDay.isPending ? 'SavingÃ¢â‚¬Â¦' : existing ? 'Save day' : 'Create day'}
+            {saveDay.isPending ? 'Saving…' : existing ? 'Save day' : 'Create day'}
           </button>
           {saveDay.error && <span className="error">{(saveDay.error as Error).message}</span>}
         </div>
@@ -139,4 +139,3 @@ export default function DayCard({
 }
 
 // ---- Draft editors (for a day that doesn't exist in the DB yet) ----
-
