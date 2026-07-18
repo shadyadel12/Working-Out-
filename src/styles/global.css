@@ -361,6 +361,20 @@ label {
 .workout-library-exercise { display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
 .workout-library-exercise .modal-remove { font-size: 1.2rem; }
 .program-library-modal { width: min(500px,100%); }
+.program-schedule-modal { width: min(1180px,calc(100vw - 32px)); }
+.program-details-grid { display: grid; grid-template-columns: 1fr 220px; gap: 0 14px; }
+.program-description { grid-row: 2; }
+.program-week-tabs { display: flex; gap: 5px; margin: 12px 0; overflow-x: auto; }
+.program-week-tabs button { padding: 7px 10px; background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); text-transform: none; letter-spacing: normal; white-space: nowrap; }
+.program-week-tabs button.active { background: var(--accent); color: white; }
+.program-days-grid { display: grid; grid-template-columns: repeat(7,minmax(130px,1fr)); gap: 5px; overflow-x: auto; }
+.program-day-column { position: relative; min-height: 210px; padding: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; }
+.program-day-column > header { display: flex; justify-content: space-between; align-items: center; }
+.program-day-column > header button { display: grid; place-items: center; width: 23px; height: 23px; padding: 0; border-radius: 50%; }
+.program-add-menu { position: absolute; z-index: 5; top: 38px; left: 7px; right: 7px; display: grid; gap: 5px; padding: 7px; background: white; border: 1px solid #dfe2e9; border-radius: 7px; box-shadow: 0 8px 20px rgba(0,0,0,.14); }
+.program-add-menu button { text-transform: none; letter-spacing: normal; }
+.program-workout-chip { display: flex; justify-content: space-between; gap: 5px; margin-top: 8px; padding: 8px; background: white; border: 1px solid var(--border); border-radius: 7px; font-size: .76rem; }
+.program-workout-chip button { padding: 0 3px; background: transparent; color: var(--danger); box-shadow: none; }
 .multi-select { position: relative; }
 .multi-select-trigger { width: 100%; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; text-transform: none; letter-spacing: normal; font-weight: 400; }
 .multi-select-trigger:hover:not(:disabled) { box-shadow: none; filter: none; border-color: var(--accent); }
@@ -516,6 +530,8 @@ label {
   .library-heading { align-items: stretch; flex-direction: column; }
   .exercise-library-form { grid-template-columns: 1fr; }
   .workout-library-exercise { grid-template-columns: 1fr; }
+  .program-details-grid { grid-template-columns: 1fr; }
+  .program-days-grid { grid-template-columns: repeat(7,150px); }
   .client-identity-card, .client-communication-card { grid-row: auto; grid-column: auto; }
   .workout-modal-backdrop { padding: 0; align-items: end; }
   .workout-modal { max-height: 94vh; border-radius: 14px 14px 0 0; }
