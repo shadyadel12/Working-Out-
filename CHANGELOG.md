@@ -4,7 +4,13 @@ This page explains what the app can do and what has changed in everyday language
 
 ## July 18, 2026
 
+### New Features
+
+- The complete website can now switch between English and Arabic from the language button on every page.
+
 ### Improvements
+
+- Arabic mode now uses a full right-to-left layout across dashboards, forms, menus, dropdowns, popups, and public pages.
 
 - Player subscription key generation and renewals now live on a dedicated Subs page instead of Settings.
 

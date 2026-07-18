@@ -747,3 +747,39 @@ label {
 
 @media(max-width:900px){.coach-topnav{padding:0 10px;gap:8px}.coach-topnav .coach-brand>span:last-child,.coach-topnav .coach-nav-icon,.coach-top-account>span{display:none}.coach-topnav .coach-nav{overflow-x:auto}.coach-topnav .coach-nav nav{width:max-content}.pulse-header nav{display:none}.pulse-hero{grid-template-columns:1fr;padding:55px 22px}.pulse-workout-card{display:none}}
 @media(max-width:640px){.pulse-header{padding:0 14px}.pulse-header>div>a:first-child{display:none}.pulse-copy h1{font-size:3.2rem}.pulse-stats{gap:20px}.player-top-shell .topbar{align-items:flex-start}.player-top-shell .topbar nav{overflow-x:auto;justify-content:flex-start;width:100%}}
+
+/* Arabic language and right-to-left layout */
+.language-toggle { position:fixed; right:18px; bottom:18px; z-index:1000; min-width:92px; padding:10px 16px; border:1px solid rgba(255,255,255,.25); border-radius:999px; background:#ff642f; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.3); font:700 .85rem/1 inherit; cursor:pointer; }
+.language-toggle:hover { background:#ed5121; transform:translateY(-1px); }
+html[dir="rtl"] body { text-align:right; }
+html[dir="rtl"] .language-toggle { right:auto; left:18px; }
+html[dir="rtl"] .coach-topnav,
+html[dir="rtl"] .topbar,
+html[dir="rtl"] .pulse-header,
+html[dir="rtl"] .pulse-actions,
+html[dir="rtl"] .pulse-stats,
+html[dir="rtl"] .workout-accordion-header,
+html[dir="rtl"] .client-workspace-top,
+html[dir="rtl"] .library-heading,
+html[dir="rtl"] .player-profile-header { direction:rtl; }
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select { text-align:right; }
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="tel"],
+html[dir="rtl"] input[type="number"],
+html[dir="rtl"] input[type="date"],
+html[dir="rtl"] input[type="time"],
+html[dir="rtl"] code,
+html[dir="rtl"] audio,
+html[dir="rtl"] video { direction:ltr; text-align:left; }
+html[dir="rtl"] .coach-topnav .library-nav-children { left:auto; right:0; }
+html[dir="rtl"] .pulse-workout-card p span { margin-left:0; margin-right:auto; }
+html[dir="rtl"] .player-profile-header > .badge { margin-left:0; margin-right:auto; }
+html[dir="rtl"] .workout-add-exercise { margin-left:0; margin-right:10px; }
+html[dir="rtl"] .workout-row-action.danger-text { margin-right:0; margin-left:10px; }
+html[dir="rtl"] .player-context-drawer { left:auto; right:0; }
+html[dir="rtl"] table { direction:rtl; }
+html[dir="rtl"] .pulse-hero { background-image:linear-gradient(270deg,rgba(7,8,9,.96) 0%,rgba(7,8,9,.72) 50%,rgba(7,8,9,.4) 100%),linear-gradient(0deg,rgba(7,8,9,.75),rgba(7,8,9,.15)),url('/hero.jpg'); }
+
+@media(max-width:640px){.language-toggle{right:10px;bottom:10px;padding:9px 13px}html[dir="rtl"] .language-toggle{right:auto;left:10px}}

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './styles/global.css';
+import { LanguageProvider } from './i18n/LanguageProvider';
 
 // Security warning — deters casual DevTools abuse (same pattern as Facebook/Twitter)
 console.log(
@@ -25,7 +26,7 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <LanguageProvider><App /></LanguageProvider>
     </QueryClientProvider>
   </StrictMode>
 );
