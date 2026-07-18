@@ -5,6 +5,9 @@ dist-ssr
 .env.local
 .env
 !.env.example
+mobile/.expo
+mobile/android
+mobile/ios
 
 # Editor
 .vscode/*

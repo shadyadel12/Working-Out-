@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Coach Platform",
+    "slug": "coach-platform",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.coachplatform.app" },
+    "android": { "package": "com.coachplatform.app", "adaptiveIcon": { "backgroundColor": "#111113" } },
+    "plugins": [],
+    "extra": {}
+  }
+}

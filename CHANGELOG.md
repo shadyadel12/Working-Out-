@@ -6,6 +6,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- The first Android and iOS app foundation is now available, with shared sign-in, role-based navigation, player program and diet views, and a coach player list connected to the same accounts as the website.
 - A public Changelog page is now available before sign-in, so visitors can review the app's features and latest improvements.
 - Coaches can create accounts with an approved invitation key and players can join with an active subscription key.
 - Coaches can see all linked players, their subscription status, expiry date, and recent activity from the dashboard.
