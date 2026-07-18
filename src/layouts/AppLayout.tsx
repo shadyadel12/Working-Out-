@@ -8,79 +8,25 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { chatCount, supportCount } = useUnreadCounts();
+  const isCoach = profile?.role === 'coach';
+  const countFor = (key?: 'chat' | 'support') => key === 'chat' ? chatCount : key === 'support' ? supportCount : 0;
+  async function handleSignOut() { await signOut(); navigate('/', { replace: true }); }
 
-  const countFor = (key?: 'chat' | 'support') => {
-    if (key === 'chat') return chatCount;
-    if (key === 'support') return supportCount;
-    return 0;
-  };
+  const navigation = <nav>{links.map((link) => {
+    const count = countFor(link.badgeKey);
+    const label = isCoach && link.label === 'Dashboard' ? 'Clients' : link.label;
+    return <NavLink key={link.to} to={link.to} className={({ isActive }) => isActive ? 'active' : ''}>
+      {isCoach && <span className="coach-nav-icon" aria-hidden="true">{label.slice(0, 1)}</span>}<span>{label}</span>
+      {count > 0 && <span className="nav-count">{count > 99 ? '99+' : count}</span>}
+    </NavLink>;
+  })}</nav>;
 
-  async function handleSignOut() {
-    await signOut();
-    navigate('/', { replace: true });
-  }
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <header className="topbar">
-        <div className="row" style={{ gap: '1.5rem' }}>
-          <strong>Coach Platform</strong>
-          <nav>
-            {links.map((l) => {
-              const count = countFor(l.badgeKey);
-              return (
-                <NavLink key={l.to} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
-                  {l.label}
-                  {count > 0 && (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        minWidth: 18,
-                        height: 18,
-                        padding: '0 5px',
-                        borderRadius: 9,
-                        background: 'var(--accent)',
-                        color: 'var(--accent-text)',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        marginLeft: 6,
-                        verticalAlign: 'middle',
-                        lineHeight: 1,
-                      }}
-                    >
-                      {count > 99 ? '99+' : count}
-                    </span>
-                  )}
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="row">
-          <span className="muted" style={{ fontSize: '0.85rem' }}>
-            {profile?.name ?? profile?.email}
-          </span>
-          <button className="secondary" onClick={handleSignOut}>
-            Sign out
-          </button>
-        </div>
-      </header>
-      <main className="container" style={{ flex: 1 }}>
-        <Outlet />
-      </main>
-      <footer style={{
-        textAlign: 'center',
-        padding: '1rem',
-        fontSize: '0.78rem',
-        color: 'var(--text-muted, #888)',
-        borderTop: '1px solid var(--border)',
-        marginTop: 'auto',
-      }}>
-        © {new Date().getFullYear()} Coach Platform. All rights reserved. · Unauthorized reproduction or redistribution is prohibited.{' '}
-        <a href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>Terms of Use</a>
-      </footer>
+  return <div className={isCoach ? 'app-shell coach-shell' : 'app-shell'}>
+    {isCoach && <aside className="coach-sidebar"><div className="coach-brand"><span className="coach-brand-mark">K</span><span>COACH</span></div><div className="coach-nav">{navigation}</div><div className="coach-sidebar-profile" title={profile?.name ?? profile?.email}>{(profile?.name ?? profile?.email ?? 'C').slice(0, 2).toUpperCase()}</div></aside>}
+    <div className="app-content">
+      <header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'Coach Platform'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header>
+      <main className="container"><Outlet /></main>
+      <footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer>
     </div>
-  );
+  </div>;
 }

@@ -4,6 +4,10 @@ This page explains what the app can do and what has changed in everyday language
 
 ## July 18, 2026
 
+### Improvements
+
+- The coach workspace now has a cleaner sidebar and client table with search, renewal filters, status filters, and compact client actions.
+
 ### New Features
 
 - The first Android and iOS app foundation is now available, with shared sign-in, role-based navigation, player program and diet views, and a coach player list connected to the same accounts as the website.
