@@ -77,6 +77,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- The program schedule editor now fits all seven day columns cleanly on desktop without clipping the workout editor.
+
 - Administrator verification now recovers correctly if a previous setup was interrupted.
 - Coach and player chat updates appear promptly for both participants.
 - Program, diet, duplication, exercise, and template labels now display correctly.
