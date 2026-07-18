@@ -311,6 +311,15 @@ label {
 .modal-library-check input { width: auto; margin-top: 3px; }
 .modal-library-check span { display: grid; gap: 2px; }
 .modal-library-check small { color: var(--text-dim); }
+.workout-accordion { overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
+.workout-accordion-trigger { width: 100%; min-height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 17px; background: transparent; color: var(--text); border: 0; border-radius: 0; text-align: left; text-transform: none; letter-spacing: normal; }
+.workout-accordion-trigger:hover:not(:disabled) { background: rgba(128,128,128,.08); box-shadow: none; filter: none; }
+.workout-accordion-trigger > span:first-child { display: grid; gap: 2px; }
+.workout-accordion-trigger small { color: var(--text-dim); font-size: .72rem; font-weight: 500; }
+.workout-accordion-trigger strong { font-size: .96rem; }
+.workout-accordion-chevron { color: var(--text-dim); font-size: 1.45rem; line-height: 1; transition: transform .18s ease; }
+.workout-accordion.expanded .workout-accordion-chevron { transform: rotate(180deg); }
+.workout-accordion-content { padding: 17px; border-top: 1px solid var(--border); }
 
 /* Scrollable table wrapper — apply around wide tables */
 .table-scroll {
