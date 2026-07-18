@@ -27,6 +27,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches can mark a player subscription as VIP when generating or renewing a key.
+- VIP players appear first in daily check-ups, and their unread conversations stay above every other message thread.
+
 - Coach owners can generate invitation keys for Read Only, Chat Support, Head Coach, and Sales team roles, then assign clients and revoke access from Team Management.
 - Team members can register from the coach signup page using their team invitation key.
 

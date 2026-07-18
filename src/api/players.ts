@@ -87,11 +87,13 @@ export async function getLastActivity(playerId: string): Promise<string | null> 
  */
 export async function coachCreatePlayerKey(
   playerId: string,
-  endDate: string   // ISO date YYYY-MM-DD
+  endDate: string,
+  isVip = false
 ): Promise<CoachPlayerLink> {
   const { data, error } = await supabase.rpc('coach_create_player_key', {
     p_player_id: playerId,
     p_end_date: endDate,
+    p_is_vip: isVip,
   });
   if (error) throw error;
   return data as CoachPlayerLink;
@@ -102,10 +104,12 @@ export async function coachCreatePlayerKey(
  * A new player claims it at login with claim_subscription_key(key).
  */
 export async function coachCreateUnclaimedKey(
-  endDate: string   // ISO date YYYY-MM-DD
+  endDate: string,
+  isVip = false
 ): Promise<CoachPlayerLink> {
   const { data, error } = await supabase.rpc('coach_create_unclaimed_key', {
     p_end_date: endDate,
+    p_is_vip: isVip,
   });
   if (error) throw error;
   return data as CoachPlayerLink;

@@ -12,6 +12,24 @@ export interface ChatMessage {
   created_at: string;
 }
 
+export interface CoachChatThread { player_id: string; latest_at: string; latest_body: string; unread: boolean }
+
+export async function listCoachChatThreads(coachId: string): Promise<CoachChatThread[]> {
+  const { data, error } = await supabase.from('chat_messages').select('player_id,sender_id,body,attachment_type,created_at').eq('coach_id', coachId).order('created_at', { ascending: false }).limit(1000);
+  if (error) throw error;
+  const latest = new Map<string, CoachChatThread>();
+  for (const row of data ?? []) {
+    if (latest.has(row.player_id)) continue;
+    const lastRead = localStorage.getItem(`lastRead_${coachId}_chat_${row.player_id}`) ?? new Date(0).toISOString();
+    latest.set(row.player_id, { player_id: row.player_id, latest_at: row.created_at, latest_body: row.body || (row.attachment_type ? `${row.attachment_type} attachment` : 'Message'), unread: row.sender_id !== coachId && row.created_at > lastRead });
+  }
+  return [...latest.values()];
+}
+
+export function markCoachThreadRead(coachId: string, playerId: string) {
+  localStorage.setItem(`lastRead_${coachId}_chat_${playerId}`, new Date().toISOString());
+}
+
 /** Last N messages between a coach and player, oldest first. */
 export async function listChatMessages(
   coachId: string,

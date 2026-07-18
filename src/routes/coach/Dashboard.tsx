@@ -58,7 +58,7 @@ function PlayerRow({ player }: { player: PlayerWithLink }) {
   const claimed = player.profile !== null;
   const displayName = player.profile?.name ?? player.profile?.email ?? 'Unclaimed key';
   return <tr>
-    <td>{player.profile ? <Link className="client-name-link" to={`/coach/players/${player.profile.id}`}><strong>{displayName}</strong><small>{player.profile.email}</small></Link> : <><strong>{displayName}</strong><small>Waiting for player signup</small></>}</td>
+    <td>{player.profile ? <Link className="client-name-link" to={`/coach/players/${player.profile.id}`}><strong>{displayName} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>{player.profile.email}</small></Link> : <><strong>{displayName} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>Waiting for player signup</small></>}</td>
     <td>{claimed ? <span className={`programming-status ${player.needsProgramming ? 'needed' : 'ready'}`}>{player.needsProgramming ? 'Yes' : 'No'}</span> : <span className="muted">—</span>}</td>
     <td>{player.link.subscription_end_date}</td>
     <td><span className={`badge ${claimed ? (active ? 'active' : 'expired') : 'pending'}`}>{claimed ? (active ? 'Active' : 'Expired') : 'Pending'}</span></td>

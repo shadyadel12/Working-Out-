@@ -31,7 +31,7 @@ export default function Checkups() {
   });
 
   // Only claimed players can be checked (they have a profile + id).
-  const claimed = (players ?? []).filter((p) => p.profile !== null);
+  const claimed = (players ?? []).filter((p) => p.profile !== null).sort((a, b) => Number(b.link.is_vip) - Number(a.link.is_vip));
 
   return (
     <div className="stack">
@@ -54,7 +54,7 @@ export default function Checkups() {
           return (
             <div key={p.profile!.id} className="card row" style={{ justifyContent: 'space-between' }}>
               <div>
-                <strong>{p.profile!.name ?? p.profile!.email}</strong>
+                <strong>{p.profile!.name ?? p.profile!.email} {p.link.is_vip && <span className="badge vip">VIP</span>}</strong>
                 <div className="muted" style={{ fontSize: '0.8rem' }}>{p.profile!.email}</div>
               </div>
               <label className="row" style={{ gap: '0.5rem' }}>

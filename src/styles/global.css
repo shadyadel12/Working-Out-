@@ -161,6 +161,7 @@ label {
 .badge.active { background: rgba(70, 201, 139, 0.15); color: var(--success); }
 .badge.expired, .badge.revoked { background: rgba(255, 92, 92, 0.15); color: var(--danger); }
 .badge.pending { background: rgba(251, 191, 36, 0.16); color: #d99b00; }
+.badge.vip { background: linear-gradient(135deg,#ffb020,#ff642f); color:#17110b; }
 
 .trend-up { color: var(--success); font-weight: 600; }
 .trend-down { color: var(--danger); font-weight: 600; }
@@ -375,6 +376,20 @@ label {
 .sub-row small,.sub-row>span { color: var(--text-dim); }
 .subscription-player { border-bottom: 1px solid var(--border); }
 .subs-renew-controls { padding: 12px; margin-bottom: 10px; background: var(--surface-2); border-radius: 8px; }
+.subs-renew-panel { padding:12px;margin-bottom:10px;background:var(--surface-2);border-radius:8px; }
+.vip-choice { display:flex;align-items:flex-start;gap:10px;width:fit-content;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;cursor:pointer; }
+.vip-choice input { width:auto;margin-top:3px;accent-color:#ff8b24; }
+.vip-choice span { display:grid;gap:2px; }
+.vip-choice small { color:var(--text-dim); }
+.chat-inbox-list { padding:0;overflow:hidden; }
+.chat-inbox-row { display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;padding:14px 16px;color:var(--text);border-bottom:1px solid var(--border); }
+.chat-inbox-row:hover { background:var(--surface-2); }
+.chat-inbox-row.unread { background:rgba(255,100,47,.08); }
+.chat-inbox-avatar { display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#2b2c2e;color:var(--accent);font-weight:800; }
+.chat-inbox-row p { margin:3px 0 0;color:var(--text-dim);font-size:.82rem; }
+.chat-inbox-row>div:last-child { display:grid;justify-items:end;gap:7px; }
+.chat-inbox-row time { color:var(--text-dim);font-size:.7rem; }
+.unread-dot { width:9px;height:9px;border-radius:50%;background:var(--accent); }
 .exercise-library-page { display: flex; flex-direction: column; gap: 16px; }
 .library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .library-heading h1 { margin: 0; color: #111827; text-transform: none; }

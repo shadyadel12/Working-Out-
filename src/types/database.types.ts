@@ -24,6 +24,7 @@ export type CoachPlayerLink = {
   subscription_key: string;
   subscription_end_date: string;
   status: LinkStatus;
+  is_vip: boolean;
   created_at: string;
 }
 
@@ -219,6 +220,7 @@ export type Database = {
           subscription_key: string;
           subscription_end_date: string;
           status?: LinkStatus;
+          is_vip?: boolean;
           created_at?: string;
         };
         Update: {
@@ -228,6 +230,7 @@ export type Database = {
           subscription_key?: string;
           subscription_end_date?: string;
           status?: LinkStatus;
+          is_vip?: boolean;
           created_at?: string;
         };
         Relationships: [];
