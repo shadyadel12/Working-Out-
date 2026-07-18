@@ -11,13 +11,14 @@ export default function AnalysisView({ playerId, coachView = false }: { playerId
   const [workout, setWorkout] = useState('');
   const [exercise, setExercise] = useState('');
   const [range, setRange] = useState<ProgressRange>('all');
+  const [applied, setApplied] = useState<{ workout: string; exercise: string; range: ProgressRange }>({ workout: '', exercise: '', range: 'all' });
   const [page, setPage] = useState(0);
   const [openVideos, setOpenVideos] = useState<Set<string>>(new Set());
   const [markedViewed, setMarkedViewed] = useState<Set<string>>(new Set());
   const options = useQuery({ queryKey: ['progress-options', playerId], queryFn: () => getProgressOptions(playerId) });
   const progress = useQuery({
-    queryKey: ['progress-page', playerId, workout, exercise, range, page],
-    queryFn: () => getProgressPage({ playerId, workout, exercise, range, page, pageSize: PAGE_SIZE }),
+    queryKey: ['progress-page', playerId, applied.workout, applied.exercise, applied.range, page],
+    queryFn: () => getProgressPage({ playerId, workout: applied.workout, exercise: applied.exercise, range: applied.range, page, pageSize: PAGE_SIZE }),
     placeholderData: (previous) => previous,
   });
   const groups = useMemo(() => {
@@ -29,19 +30,20 @@ export default function AnalysisView({ playerId, coachView = false }: { playerId
     }
     return [...map.values()];
   }, [progress.data]);
-  const change = (setter: (value: string) => void, value: string) => { setter(value); setPage(0); };
   if (options.isLoading || progress.isLoading) return <LoadingSkeleton rows={7} />;
   const error = options.error || progress.error;
   if (error) return <p className="error">{(error as Error).message}</p>;
   const data = progress.data;
   if (!data) return null;
-  const filterActive = !!workout || !!exercise || range !== 'all';
+  const filterActive = !!applied.workout || !!applied.exercise || applied.range !== 'all';
+  const filtersChanged = workout !== applied.workout || exercise !== applied.exercise || range !== applied.range;
   return <div className="stack">
     <div className="card row" style={{ flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' }}>
-      <Filter label="Workout" value={workout} all="All workouts" options={options.data?.workouts ?? []} onChange={(value) => change(setWorkout, value)} />
-      <Filter label="Exercise" value={exercise} all="All exercises" options={options.data?.exercises ?? []} onChange={(value) => change(setExercise, value)} />
-      <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}><label>Range</label><select value={range} onChange={(event) => { setRange(event.target.value as ProgressRange); setPage(0); }}><option value="all">All time</option><option value="today">Today only</option><option value="week">This week (Sat–Fri)</option><option value="month">This month</option></select></div>
-      {filterActive && <button className="secondary" onClick={() => { setWorkout(''); setExercise(''); setRange('all'); setPage(0); }}>Clear</button>}
+      <Filter label="Workout" value={workout} all="All workouts" options={options.data?.workouts ?? []} onChange={setWorkout} />
+      <Filter label="Exercise" value={exercise} all="All exercises" options={options.data?.exercises ?? []} onChange={setExercise} />
+      <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}><label>Range</label><select value={range} onChange={(event) => setRange(event.target.value as ProgressRange)}><option value="all">All time</option><option value="today">Today only</option><option value="week">This week (Sat–Fri)</option><option value="month">This month</option></select></div>
+      <button disabled={!filtersChanged || progress.isFetching} onClick={() => { setApplied({ workout, exercise, range }); setPage(0); }}>Apply</button>
+      {filterActive && <button className="secondary" onClick={() => { setWorkout(''); setExercise(''); setRange('all'); setApplied({ workout: '', exercise: '', range: 'all' }); setPage(0); }}>Clear</button>}
     </div>
     {progress.isFetching && <span className="muted" aria-live="polite">Updating results…</span>}
     <div className="row" style={{ gap: '1rem' }}><Stat label={filterActive ? 'Completed (filtered)' : 'Workouts completed'} value={data.totalCompleted} /><Stat label={filterActive ? 'Sessions (filtered)' : 'Sessions logged'} value={data.totalLogged} /><Stat label="Exercises shown" value={data.totalExercises} /></div>
