@@ -9,6 +9,7 @@ import {
   type ChatMessage,
 } from '../api/chat';
 import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
+import LoadingSkeleton from './LoadingSkeleton';
 
 function ChatAttachment({ path, type }: { path: string; type: 'image' | 'video' | 'audio' }) {
   const [url, setUrl] = useState<string | null>(null);
@@ -186,7 +187,7 @@ export default function ChatWindow({
           background: 'var(--surface)',
         }}
       >
-        {isLoading && <p className="muted" style={{ margin: 'auto', fontSize: '0.85rem' }}>Loading…</p>}
+        {isLoading && <LoadingSkeleton rows={4} />}
         {!isLoading && messages.length === 0 && (
           <p className="muted" style={{ margin: 'auto', fontSize: '0.85rem' }}>
             No messages yet. Say hello!

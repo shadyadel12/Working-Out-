@@ -584,6 +584,14 @@ export type Database = {
         Args: { p_log_id: string };
         Returns: string;
       };
+      get_progress_options: {
+        Args: { p_player_id: string };
+        Returns: unknown;
+      };
+      get_progress_page: {
+        Args: { p_player_id: string; p_workout?: string | null; p_exercise?: string | null; p_start?: string | null; p_end?: string | null; p_limit?: number; p_offset?: number };
+        Returns: unknown;
+      };
       replace_program_import: {
         Args: { p_player_id: string; p_days: unknown };
         Returns: { daysCreated: number; workoutsCreated: number; exercisesCreated: number };

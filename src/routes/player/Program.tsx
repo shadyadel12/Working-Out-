@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 import {
   DAY_NAMES,
   DAY_SHORT,
@@ -59,7 +60,7 @@ export default function PlayerProgram() {
         )}
       </div>
 
-      {isLoading && <p className="muted">Loading your program…</p>}
+      {isLoading && <LoadingSkeleton rows={6} />}
 
       {general.length > 0 && (
         <div className="card stack" style={{ gap: '0.4rem' }}>

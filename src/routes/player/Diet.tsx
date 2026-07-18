@@ -6,6 +6,7 @@ import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, todayDayOfWeek } from '../.
 import { listDietDays } from '../../api/diet';
 import { saveDietLog } from '../../api/dietProgress';
 import type { DietDay } from '../../types/database.types';
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 
 export default function PlayerDiet() {
   const { session, profile } = useAuth();
@@ -40,7 +41,7 @@ export default function PlayerDiet() {
         )}
       </div>
 
-      {isLoading && <p className="muted">Loading your diet plan…</p>}
+      {isLoading && <LoadingSkeleton rows={6} />}
 
       {!isLoading && weekDays.length === 0 && (
         <div className="card">

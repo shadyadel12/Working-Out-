@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { listPlayersForCoach, type PlayerWithLink } from '../../api/players';
 import { isSubscriptionActive } from '../../api/auth';
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 
 export default function CoachDashboard() {
   const { session } = useAuth();
@@ -19,7 +20,7 @@ export default function CoachDashboard() {
         <h1>Your Players</h1>
       </div>
 
-      {isLoading && <p className="muted">Loading players…</p>}
+      {isLoading && <LoadingSkeleton rows={5} />}
       {error && <p className="error">{(error as Error).message}</p>}
 
       {data && data.length === 0 && (

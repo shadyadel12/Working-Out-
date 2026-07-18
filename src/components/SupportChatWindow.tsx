@@ -9,6 +9,7 @@ import {
   type AdminMessage,
 } from '../api/adminChat';
 import { useMarkReadOnMount, markRead } from '../hooks/useUnreadCounts';
+import LoadingSkeleton from './LoadingSkeleton';
 
 /** Renders one attachment — image preview, video player, or download link. */
 function Attachment({ path, type }: { path: string; type: string }) {
@@ -143,7 +144,7 @@ export default function SupportChatWindow({
           background: 'var(--surface)',
         }}
       >
-        {isLoading && <p className="muted" style={{ margin: 'auto', fontSize: '0.85rem' }}>Loading…</p>}
+        {isLoading && <LoadingSkeleton rows={4} />}
         {!isLoading && messages.length === 0 && (
           <p className="muted" style={{ margin: 'auto', fontSize: '0.85rem' }}>
             No messages yet. Send a message to the admin team.

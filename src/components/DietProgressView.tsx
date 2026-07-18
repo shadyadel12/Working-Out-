@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listDietLogs } from '../api/dietProgress';
+import LoadingSkeleton from './LoadingSkeleton';
 
 type Range = 'all' | 'week' | 'month';
 
@@ -18,7 +19,7 @@ export default function DietProgressView({ playerId }: { playerId: string }) {
   const completed = filtered.reduce((sum, log) => sum + log.completed_meals, 0);
   const total = filtered.reduce((sum, log) => sum + log.total_meals, 0);
   const adherence = total ? Math.round(completed / total * 100) : 0;
-  if (isLoading) return <p className="muted">Loading diet progress…</p>;
+  if (isLoading) return <LoadingSkeleton rows={6} />;
   if (error) return <p className="error">{(error as Error).message}</p>;
   return <div className="stack">
     <div className="card row" style={{ alignItems: 'flex-end' }}>
