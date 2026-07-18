@@ -233,6 +233,12 @@ label {
 .coach-nav nav { display: flex; flex-direction: column; gap: 4px; }
 .coach-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 7px; color: #fff; font-size: .9rem; }
 .coach-nav a:hover, .coach-nav a.active { background: rgba(255,255,255,.13); }
+.library-nav-group > button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: transparent; color: white; border: 0; border-radius: 7px; text-transform: none; letter-spacing: normal; font-size: .9rem; font-weight: 400; }
+.library-nav-group > button:hover:not(:disabled), .library-nav-group > button.active { background: rgba(255,255,255,.13); box-shadow: none; filter: none; }
+.library-chevron { margin-left: auto; transition: transform .16s ease; }
+.library-nav-group.open .library-chevron { transform: rotate(180deg); }
+.library-nav-children { margin: 2px 0 5px 20px; padding-left: 8px; border-left: 1px solid rgba(255,255,255,.28); }
+.coach-nav a.library-child { padding: 7px 10px; font-size: .82rem; }
 .coach-nav-icon { display: inline-grid; place-items: center; width: 20px; height: 20px; border: 1px solid rgba(255,255,255,.45); border-radius: 5px; font-size: .68rem; font-weight: 800; }
 .coach-sidebar-profile { margin: auto auto 0; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #c9c7ff; color: #373681; font-size: .72rem; font-weight: 800; }
 .coach-shell { --bg: #f7f8fb; --surface: #ffffff; --surface-2: #f4f5f8; --border: #dfe2e9; --text: #172033; --text-dim: #747b89; --accent: #3b3987; --accent-hover: #302e73; --accent-glow: rgba(59,57,135,.18); background: #f7f8fb; color: #172033; color-scheme: light; }
@@ -489,6 +495,9 @@ label {
   .coach-nav { flex: 1; overflow-x: auto; }
   .coach-nav nav { flex-direction: row; }
   .coach-nav a { white-space: nowrap; padding: 8px 10px; }
+  .library-nav-group { position: relative; }
+  .library-nav-group > button { white-space: nowrap; padding: 8px 10px; }
+  .library-nav-children { position: absolute; z-index: 30; top: 100%; left: 0; min-width: 140px; margin: 3px 0 0; padding: 5px; background: #373681; border: 0; border-radius: 7px; box-shadow: 0 10px 25px rgba(0,0,0,.2); }
   .coach-shell .topbar { display: none; }
   .coach-shell .container { padding: 20px 12px; }
   .client-filters { overflow-x: auto; }

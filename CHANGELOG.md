@@ -6,6 +6,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Exercise, workout, and program libraries are now grouped inside one expandable Library menu.
+
 - The client list now shows and filters players who still need a training program.
 
 - The coach workspace now has a cleaner sidebar and client table with search, renewal filters, status filters, and compact client actions.

@@ -39,9 +39,9 @@ import AdminSupport from './routes/admin/Support';
 
 const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard', badgeKey: 'chat' as const },
-  { to: '/coach/exercise-library', label: 'Exercise Library' },
-  { to: '/coach/workout-library', label: 'Workout Library' },
-  { to: '/coach/program-library', label: 'Program Library' },
+  { to: '/coach/exercise-library', label: 'Exercises', group: 'library' as const },
+  { to: '/coach/workout-library', label: 'Workouts', group: 'library' as const },
+  { to: '/coach/program-library', label: 'Programs', group: 'library' as const },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/settings', label: 'Settings' },
   { to: '/coach/support', label: 'Support', badgeKey: 'support' as const },
