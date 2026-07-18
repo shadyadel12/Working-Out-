@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getVideoUrl } from '../api/storage';
+import { validateExternalVideoUrl } from '../lib/security';
 
 /** Renders a coach/player video: external link (embed or anchor) or stored file. */
 export default function VideoPlayer({
@@ -27,7 +28,13 @@ export default function VideoPlayer({
   if (!url) return null;
 
   if (isExternal) {
-    const embed = toYouTubeEmbed(url);
+    let safeUrl: string;
+    try {
+      safeUrl = validateExternalVideoUrl(url);
+    } catch {
+      return <span className="error">Invalid video link.</span>;
+    }
+    const embed = toYouTubeEmbed(safeUrl);
     if (embed) {
       return (
         <iframe
@@ -39,7 +46,7 @@ export default function VideoPlayer({
       );
     }
     return (
-      <a href={url} target="_blank" rel="noreferrer">
+      <a href={safeUrl} target="_blank" rel="noopener noreferrer">
         Open video ↗
       </a>
     );

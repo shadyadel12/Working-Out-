@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { validateVideoFile } from '../lib/security';
 
 export interface AdminMessage {
   id: string;
@@ -111,6 +112,7 @@ export async function uploadSupportAttachment(
   const ext = allowedTypes.get(file.type);
   if (!ext) throw new Error('This file type is not allowed.');
   if (file.size <= 0 || file.size > 25 * 1024 * 1024) throw new Error('Attachment must be smaller than 25 MB.');
+  if (file.type.startsWith('video/')) await validateVideoFile(file, 25 * 1024 * 1024);
   const path = `${coachId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage.from('support').upload(path, file);
   if (error) throw error;

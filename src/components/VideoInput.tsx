@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { uploadVideo } from '../api/storage';
+import { validateExternalVideoUrl } from '../lib/security';
 
 export interface VideoValue {
   url: string | null;
@@ -44,16 +45,34 @@ export default function VideoInput({
         <input
           placeholder="https://youtube.com/…"
           value={value.isExternal ? value.url ?? '' : ''}
-          onChange={(e) =>
-            onChange({ url: e.target.value || null, isExternal: true })
-          }
+          onChange={(e) => {
+            const raw = e.target.value;
+            try {
+              setErr(null);
+              if (!raw) onChange({ url: null, isExternal: true });
+              else onChange({ url: raw, isExternal: true });
+            } catch (error) {
+              setErr(error instanceof Error ? error.message : 'Invalid video link.');
+            }
+          }}
+          onBlur={(e) => {
+            try {
+              const safeUrl = validateExternalVideoUrl(e.target.value);
+              setErr(null);
+              onChange({ url: safeUrl || null, isExternal: true });
+            } catch (error) {
+              setErr(error instanceof Error ? error.message : 'Invalid video link.');
+              onChange({ url: null, isExternal: true });
+            }
+          }}
+          maxLength={2048}
         />
       </div>
       <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
         <span className="muted" style={{ fontSize: '0.8rem' }}>
           or upload:
         </span>
-        <input type="file" accept="video/*" onChange={handleFile} disabled={uploading} />
+        <input type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={handleFile} disabled={uploading} />
         {uploading && <span className="muted">Uploading…</span>}
       </div>
       {value.url && !value.isExternal && (
