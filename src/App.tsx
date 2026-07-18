@@ -30,6 +30,7 @@ import CoachExerciseLibrary from './routes/coach/ExerciseLibrary';
 import CoachWorkoutLibrary from './routes/coach/WorkoutLibrary';
 import CoachProgramLibrary from './routes/coach/ProgramLibrary';
 import CoachTeam from './routes/coach/Team';
+import CoachSubs from './routes/coach/Subs';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
@@ -47,6 +48,7 @@ const coachLinks = [
   { to: '/coach/program-library', label: 'Programs', group: 'library' as const },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/team', label: 'Team' },
+  { to: '/coach/subs', label: 'Subs' },
   { to: '/coach/settings', label: 'Settings' },
   { to: '/coach/support', label: 'Support', badgeKey: 'support' as const },
 ];
@@ -100,6 +102,7 @@ export default function App() {
             <Route path="players/:playerId/chat" element={<CoachChat />} />
             <Route path="checkups" element={<Checkups />} />
             <Route path="team" element={<CoachTeam />} />
+            <Route path="subs" element={<CoachSubs />} />
             <Route path="settings" element={<CoachSettings />} />
             <Route path="support" element={<CoachSupport />} />
           </Route>

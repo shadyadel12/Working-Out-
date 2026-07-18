@@ -366,6 +366,15 @@ label {
 .pending-invites { padding: 18px; background: white; border: 1px solid #e1e4ea; border-radius: 10px; }
 .pending-invites > div { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid #eceef2; }
 .pending-invites code { min-width: 190px; }
+.subs-page h2 { margin: 0; text-transform: none; }
+.subs-key-controls,.subs-renew-controls { display: grid; grid-template-columns: 180px 190px auto; gap: 10px; align-items: end; }
+.generated-sub-key { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; }
+.generated-sub-key code { flex: 1; color: var(--accent); font-size: 1rem; letter-spacing: .07em; }
+.sub-row { display: grid; grid-template-columns: minmax(190px,1fr) auto auto auto; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); }
+.sub-row div { display: grid; }
+.sub-row small,.sub-row>span { color: var(--text-dim); }
+.subscription-player { border-bottom: 1px solid var(--border); }
+.subs-renew-controls { padding: 12px; margin-bottom: 10px; background: var(--surface-2); border-radius: 8px; }
 .exercise-library-page { display: flex; flex-direction: column; gap: 16px; }
 .library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .library-heading h1 { margin: 0; color: #111827; text-transform: none; }
@@ -612,6 +621,7 @@ label {
   .client-summary-grid { grid-template-columns: 1fr; }
   .player-details-form { grid-template-columns: 1fr; padding: 15px; }
   .team-stats,.team-invite-card { grid-template-columns: 1fr; }
+  .subs-key-controls,.subs-renew-controls,.sub-row { grid-template-columns: 1fr; align-items: stretch; }
   .generated-team-key { align-items: flex-start; flex-direction: column; }
   .player-details-form > .error,.player-details-actions { grid-column: auto; }
   .library-heading { align-items: stretch; flex-direction: column; }

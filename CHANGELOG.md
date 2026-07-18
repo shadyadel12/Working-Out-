@@ -6,6 +6,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Player subscription key generation and renewals now live on a dedicated Subs page instead of Settings.
+
 - The full website now uses a unified dark charcoal and energetic orange design inspired by PulseFit.
 - Coach and player dashboards now use top navigation, with a new gym-photo landing hero.
 

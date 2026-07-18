@@ -1,0 +1,34 @@
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../../auth/AuthContext';
+import { coachCreatePlayerKey, coachCreateUnclaimedKey, listPlayersForCoach } from '../../api/players';
+import { fmtDate, isExpired, monthsFromToday } from './settings/dateUtils';
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return <button className="secondary" onClick={() => navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); })}>{copied ? 'Copied ✓' : 'Copy'}</button>;
+}
+
+export default function Subs() {
+  const { session } = useAuth();
+  const coachId = session!.user.id;
+  const qc = useQueryClient();
+  const [newKeyDate, setNewKeyDate] = useState(monthsFromToday(1));
+  const [lastKey, setLastKey] = useState<string | null>(null);
+  const [renewPlayer, setRenewPlayer] = useState<string | null>(null);
+  const [renewDate, setRenewDate] = useState(monthsFromToday(1));
+  const { data: players = [], isLoading, error } = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
+  const pending = players.filter((player) => !player.profile);
+  const claimed = players.filter((player) => player.profile);
+  const generate = useMutation({ mutationFn: () => coachCreateUnclaimedKey(newKeyDate), onSuccess: async (link) => { setLastKey(link.subscription_key); await qc.invalidateQueries({ queryKey: ['players', coachId] }); } });
+  const renew = useMutation({ mutationFn: ({ playerId, date }: { playerId: string; date: string }) => coachCreatePlayerKey(playerId, date), onSuccess: async () => { setRenewPlayer(null); await qc.invalidateQueries({ queryKey: ['players', coachId] }); } });
+  const duration = (value: string, set: (value: string) => void) => <><select value={value} onChange={(event) => set(event.target.value)}><option value={monthsFromToday(1)}>1 month</option><option value={monthsFromToday(3)}>3 months</option><option value={monthsFromToday(6)}>6 months</option><option value={monthsFromToday(12)}>1 year</option></select><input type="date" min={new Date().toISOString().slice(0, 10)} value={value} onChange={(event) => set(event.target.value)} /></>;
+
+  return <div className="subs-page stack">
+    <div><h1>Subs</h1><p className="muted">Create player subscription keys and renew existing access.</p></div>
+    <section className="card stack"><div><h2>Generate Player Key</h2><p className="muted">Share this key with a new player so they can register and join your account.</p></div><div className="subs-key-controls">{duration(newKeyDate, setNewKeyDate)}<button disabled={generate.isPending} onClick={() => { setLastKey(null); generate.mutate(); }}>{generate.isPending ? 'Generating…' : 'Generate Key'}</button></div>{lastKey && <div className="generated-sub-key"><code>{lastKey}</code><CopyButton text={lastKey} /></div>}{generate.error && <p className="error">{(generate.error as Error).message}</p>}</section>
+    {isLoading && <p className="muted">Loading subscriptions…</p>}{error && <p className="error">{(error as Error).message}</p>}
+    {pending.length > 0 && <section className="card stack"><h2>Pending Keys</h2>{pending.map(({ link }) => <div className="sub-row" key={link.id}><code>{link.subscription_key}</code><span>Expires {fmtDate(link.subscription_end_date)}</span><CopyButton text={link.subscription_key} /></div>)}</section>}
+    <section className="card stack"><h2>Player Subscriptions</h2>{claimed.length === 0 && <p className="muted">No registered players yet.</p>}{claimed.map((player) => { const profile = player.profile!; const open = renewPlayer === profile.id; const expired = isExpired(player.link); return <div className="subscription-player" key={profile.id}><div className="sub-row"><div><strong>{profile.name ?? profile.email}</strong><small>{profile.email}</small></div><span className={`badge ${expired ? 'expired' : 'active'}`}>{player.link.status === 'revoked' ? 'Revoked' : expired ? 'Expired' : 'Active'}</span><span>Expires {fmtDate(player.link.subscription_end_date)}</span><button className="secondary" onClick={() => { setRenewPlayer(open ? null : profile.id); setRenewDate(monthsFromToday(1)); }}>{open ? 'Cancel' : 'Renew'}</button></div>{open && <div className="subs-renew-controls">{duration(renewDate, setRenewDate)}<button disabled={renew.isPending} onClick={() => confirm(`Renew ${profile.name ?? profile.email} until ${fmtDate(renewDate)}?`) && renew.mutate({ playerId: profile.id, date: renewDate })}>{renew.isPending ? 'Renewing…' : 'Confirm Renewal'}</button></div>}</div>; })}</section>
+  </div>;
+}
