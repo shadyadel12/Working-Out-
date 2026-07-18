@@ -2,6 +2,16 @@
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
+## July 19, 2026
+
+### Security
+
+- Player renewals now verify that the selected player belongs to the coach making the change.
+- Team invitations can no longer be used to convert an existing player account into a staff account.
+- VIP and weekly check-up schedules now stay consistent when subscriptions are created or renewed.
+- Mobile sign-in sessions now use the phone's protected storage.
+- A fresh 400-check safety and quality review now covers the website, mobile app, database, team roles, VIP priority, and weekly check-ups.
+
 ## July 18, 2026
 
 ### New Features
