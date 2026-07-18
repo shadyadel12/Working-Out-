@@ -149,6 +149,16 @@ label {
 .diet-checkin-meal input { flex:0 0 17px; width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; }
 .diet-checkin-meal span { min-width:0; line-height:1.35; }
 html[dir="rtl"] .diet-checkin-card { border-left:1px solid var(--border); border-right:3px solid var(--success); }
+.player-meal-dropdown { padding:0; overflow:hidden; border-left:3px solid var(--accent); }
+.player-meal-dropdown.snack { border-left-color:var(--warning, #fbbf24); }
+.player-meal-dropdown summary { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.2rem; cursor:pointer; list-style:none; user-select:none; }
+.player-meal-dropdown summary::-webkit-details-marker { display:none; }
+.player-meal-dropdown summary span { color:var(--text-dim); font-size:1.1rem; transition:transform .18s ease; }
+.player-meal-dropdown[open] summary span { transform:rotate(180deg); }
+.player-meal-dropdown-body { display:grid; gap:.45rem; padding:0 1.2rem 1rem; font-size:.92rem; }
+.player-meal-item { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+html[dir="rtl"] .player-meal-dropdown { border-left:1px solid var(--border); border-right:3px solid var(--accent); }
+html[dir="rtl"] .player-meal-dropdown.snack { border-right-color:var(--warning, #fbbf24); }
 .history-back { width: fit-content; padding: 2px 0; background: transparent; border: 0; border-radius: 0; color: var(--text-dim); font-size: .85rem; font-weight: 500; text-transform: none; letter-spacing: normal; }
 .history-back:hover:not(:disabled) { color: var(--accent); background: transparent; box-shadow: none; filter: none; }
 

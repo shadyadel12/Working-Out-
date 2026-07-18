@@ -72,35 +72,20 @@ export default function PlayerDiet() {
             <div className="card stack" style={{ gap: '0.6rem' }}>
               <strong>{DAY_NAMES[selectedDay.day_of_week]}</strong>
               {selectedDay.meals.map((m, i) => (
-                <div
+                <details
                   key={i}
-                  className="card stack"
+                  className={`card player-meal-dropdown ${m.type === 'snack' ? 'snack' : ''}`}
                   style={{
                     background: 'var(--surface-2)',
-                    gap: '0.3rem',
-                    borderLeft: m.type === 'snack' ? '3px solid var(--warning, #fbbf24)' : '3px solid var(--accent)',
                   }}
                 >
-                  <strong style={{ fontSize: '0.9rem' }}>{m.label}</strong>
-                  {(m.items ?? []).length > 0 ? (
-                    <div className="stack" style={{ gap: '0.25rem' }}>
-                      {(m.items ?? []).map((it, j) => (
-                        <div
-                          key={j}
-                          className="row"
-                          style={{ justifyContent: 'space-between', fontSize: '0.92rem' }}
-                        >
-                          <span>{it.food}</span>
-                          <span className="muted">{it.grams ? `${it.grams} g` : ''}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.92rem' }}>
-                      {m.content || <span className="muted">—</span>}
-                    </div>
-                  )}
-                </div>
+                  <summary><strong>{m.label}</strong><span aria-hidden="true">⌄</span></summary>
+                  <div className="player-meal-dropdown-body">
+                    {(m.items ?? []).length > 0 ? (
+                      (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.grams ? `${it.grams} g` : ''}</span></div>)
+                    ) : <div style={{ whiteSpace: 'pre-wrap' }}>{m.content || <span className="muted">—</span>}</div>}
+                  </div>
+                </details>
               ))}
               {selectedDay.comment && (
                 <div
