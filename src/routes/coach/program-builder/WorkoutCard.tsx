@@ -4,9 +4,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createExercise } from '../../../api/exercises';
 import { updateWorkout, deleteWorkout } from '../../../api/workouts';
 import { saveWorkoutAsTemplate } from '../../../api/workoutTemplates';
+import { duplicateWorkoutToWeeks } from '../../../api/programs';
 import type { Workout } from '../../../types/database.types';
 import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import ExerciseEditor from './ExerciseEditor';
+import WeekPicker from '../../../components/WeekPicker';
 
 const emptyVideo: VideoValue = { url: null, isExternal: false };
 
@@ -15,6 +17,8 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
   const [name, setName] = useState(workout.name);
   const [expanded, setExpanded] = useState(false);
   const [exerciseOpen, setExerciseOpen] = useState(false);
+  const [duplicateOpen, setDuplicateOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState('');
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
@@ -23,6 +27,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
   const [video, setVideo] = useState<VideoValue>(emptyVideo);
   const rename = useMutation({ mutationFn: () => updateWorkout(workout.id, name), onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }) });
   const del = useMutation({ mutationFn: () => deleteWorkout(workout.id), onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }) });
+  const duplicate = useMutation({ mutationFn: (weeks: number[]) => duplicateWorkoutToWeeks(playerId, coachId, workout.id, weeks), onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['program', playerId] }); setDuplicateOpen(false); } });
   const saveTemplate = useMutation({ mutationFn: () => saveWorkoutAsTemplate(workout.id), onSuccess: () => qc.invalidateQueries({ queryKey: ['workout-templates', coachId] }) });
   const addExercise = useMutation({
     mutationFn: () => {
@@ -47,6 +52,8 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
         <span><small>Workout</small><strong>{workout.name}</strong></span><span className="workout-accordion-chevron" aria-hidden="true">⌄</span>
       </button>
       <button type="button" className="workout-add-exercise" onClick={() => setExerciseOpen(true)}>+ Add exercise</button>
+      <button type="button" className="workout-row-action" onClick={() => setDuplicateOpen(true)}>Duplicate</button>
+      <button type="button" className="workout-row-action danger-text" onClick={() => setDeleteOpen(true)}>Delete</button>
     </div>
     {expanded && <div id={`workout-${workout.id}`} className="workout-accordion-content stack">
       <div className="row" style={{ justifyContent: 'space-between' }}><div className="field" style={{ margin: 0, flex: 1 }}><label>Workout name</label><input value={name} onChange={(event) => setName(event.target.value)} placeholder="Push" onBlur={() => name !== workout.name && rename.mutate()} /></div><button className="danger" style={{ alignSelf: 'flex-end' }} onClick={() => del.mutate()} disabled={del.isPending}>Delete workout</button></div>
@@ -67,5 +74,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
         <footer><button type="button" className="secondary" onClick={closeExercise}>Cancel</button><button type="button" onClick={() => addExercise.mutate()} disabled={addExercise.isPending}>{addExercise.isPending ? 'Saving…' : 'Save exercise'}</button></footer>
       </section>
     </div>}
+    {duplicateOpen && <div className="workout-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && !duplicate.isPending && setDuplicateOpen(false)}><section className="workout-modal workout-action-modal" role="dialog" aria-modal="true"><header><div><h2>Duplicate Workout</h2><small>{workout.name} and all its exercises</small></div><button type="button" className="modal-close" onClick={() => setDuplicateOpen(false)}>×</button></header><div className="workout-modal-body"><WeekPicker excludeWeek={currentWeek} totalWeeks={totalWeeks} busy={duplicate.isPending} onDuplicate={(weeks) => duplicate.mutate(weeks)} onCancel={() => setDuplicateOpen(false)} label="Choose where to copy this workout" />{duplicate.error && <p className="error">{(duplicate.error as Error).message}</p>}</div></section></div>}
+    {deleteOpen && <div className="workout-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && !del.isPending && setDeleteOpen(false)}><section className="workout-modal workout-action-modal" role="alertdialog" aria-modal="true"><header><h2>Delete Workout?</h2><button type="button" className="modal-close" onClick={() => setDeleteOpen(false)}>×</button></header><div className="workout-modal-body"><p>This will delete <strong>{workout.name}</strong> and all its exercises from this day.</p>{del.error && <p className="error">{(del.error as Error).message}</p>}</div><footer><button type="button" className="secondary" onClick={() => setDeleteOpen(false)}>Cancel</button><button type="button" className="danger" disabled={del.isPending} onClick={() => del.mutate()}>{del.isPending ? 'Deleting…' : 'Delete workout'}</button></footer></section></div>}
   </div>;
 }

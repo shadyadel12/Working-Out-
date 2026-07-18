@@ -629,6 +629,44 @@ export async function importProgramFromCsv(
   return replaceProgramImport(playerId, days);
 }
 
+/** Copy one complete workout and all its exercises to the same day in later weeks. */
+export async function duplicateWorkoutToWeeks(
+  playerId: string,
+  coachId: string,
+  sourceWorkoutId: string,
+  targetWeeks: number[]
+): Promise<number> {
+  const { data: workout, error: workoutError } = await supabase.from('workouts').select('*').eq('id', sourceWorkoutId).single();
+  if (workoutError || !workout) throw workoutError ?? new Error('Workout not found');
+  const { data: sourceDay, error: dayError } = await supabase.from('program_days').select('*').eq('id', workout.program_day_id).single();
+  if (dayError || !sourceDay) throw dayError ?? new Error('Training day not found');
+  const { data: exercises, error: exerciseError } = await supabase.from('exercises').select('*').eq('workout_id', sourceWorkoutId).order('position');
+  if (exerciseError) throw exerciseError;
+
+  let copied = 0;
+  for (const week of targetWeeks) {
+    if (week === sourceDay.week_number) continue;
+    let day = await getProgramDay(playerId, week, sourceDay.day_of_week);
+    if (!day) {
+      day = await upsertProgramDay({ player_id: playerId, coach_id: coachId, week_number: week, day_of_week: sourceDay.day_of_week, day_type: 'training', title: sourceDay.title, diet_plan: null });
+    } else if (day.day_type !== 'training') {
+      const { data: updated, error } = await supabase.from('program_days').update({ day_type: 'training' }).eq('id', day.id).select().single();
+      if (error) throw error;
+      day = updated;
+    }
+    const { count, error: countError } = await supabase.from('workouts').select('id', { count: 'exact', head: true }).eq('program_day_id', day.id);
+    if (countError) throw countError;
+    const { data: targetWorkout, error: createError } = await supabase.from('workouts').insert({ program_day_id: day.id, name: workout.name, position: count ?? 0 }).select().single();
+    if (createError) throw createError;
+    if (exercises?.length) {
+      const { error } = await supabase.from('exercises').insert(exercises.map((exercise) => ({ workout_id: targetWorkout.id, position: exercise.position, name: exercise.name, target_sets: exercise.target_sets, target_reps: exercise.target_reps, target_weight: exercise.target_weight, coach_video_url: exercise.coach_video_url, coach_video_is_external: exercise.coach_video_is_external, coach_comment: exercise.coach_comment })));
+      if (error) throw error;
+    }
+    copied++;
+  }
+  return copied;
+}
+
 function worksheetRows(worksheet: ExcelJS.Worksheet): Record<string, string>[] {
   const headerRow = worksheet.getRow(1);
   const headers = Array.from({ length: headerRow.cellCount }, (_, index) =>

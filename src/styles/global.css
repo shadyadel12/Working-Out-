@@ -321,8 +321,12 @@ label {
 .workout-accordion-chevron { color: var(--text-dim); font-size: 1.45rem; line-height: 1; transition: transform .18s ease; }
 .workout-accordion.expanded .workout-accordion-chevron { transform: rotate(180deg); }
 .workout-accordion-content { padding: 17px; border-top: 1px solid var(--border); }
-.workout-add-exercise { align-self: center; margin-right: 54px; padding: 8px 12px; background: var(--surface); color: var(--accent); border: 1px solid var(--border); text-transform: none; letter-spacing: normal; white-space: nowrap; }
+.workout-add-exercise { align-self: center; padding: 8px 12px; background: var(--surface); color: var(--accent); border: 1px solid var(--border); text-transform: none; letter-spacing: normal; white-space: nowrap; }
 .workout-add-exercise:hover:not(:disabled) { background: var(--border); box-shadow: none; }
+.workout-row-action { align-self: center; padding: 8px 10px; background: transparent; color: var(--text-dim); border: 0; text-transform: none; letter-spacing: normal; white-space: nowrap; }
+.workout-row-action:hover:not(:disabled) { color: var(--accent); background: rgba(128,128,128,.08); box-shadow: none; }
+.workout-row-action.danger-text { margin-right: 52px; color: var(--danger); }
+.workout-action-modal { width: min(520px, 100%); }
 .exercise-modal { width: min(650px, 100%); }
 .exercise-modal > header > div { display: grid; gap: 2px; }
 .exercise-modal > header small { color: var(--text-dim); }
@@ -421,7 +425,11 @@ label {
   .workout-modal-body { padding: 14px; }
   .modal-target-grid { grid-template-columns: 1fr; gap: 0; }
   .workout-library-choice { align-items: stretch; flex-direction: column; }
-  .workout-add-exercise { margin-right: 8px; padding: 7px 9px; font-size: .74rem; }
+  .workout-accordion-header { flex-wrap: wrap; }
+  .workout-accordion-trigger { flex-basis: 100%; }
+  .workout-add-exercise { margin-left: 10px; padding: 7px 9px; font-size: .74rem; }
+  .workout-row-action { padding: 7px; font-size: .74rem; }
+  .workout-row-action.danger-text { margin-right: 10px; }
 }
 
 @media (max-width: 400px) {
