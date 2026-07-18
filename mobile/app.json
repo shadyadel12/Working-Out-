@@ -5,9 +5,33 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.coachplatform.app" },
-    "android": { "package": "com.coachplatform.app", "adaptiveIcon": { "backgroundColor": "#111113" } },
-    "plugins": [],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.coachplatform.app"
+    },
+    "android": {
+      "package": "com.coachplatform.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#111113"
+      }
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Coach Platform to record voice messages."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Coach Platform to attach workout and chat media.",
+          "cameraPermission": "Allow Coach Platform to take workout and chat photos."
+        }
+      ],
+      "expo-document-picker",
+      "expo-asset"
+    ],
     "extra": {}
   }
 }

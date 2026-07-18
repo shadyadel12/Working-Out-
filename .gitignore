@@ -8,6 +8,7 @@ dist-ssr
 mobile/.expo
 mobile/android
 mobile/ios
+mobile/dist-mobile
 
 # Editor
 .vscode/*
