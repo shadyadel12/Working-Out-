@@ -147,6 +147,19 @@ export type DietDay = {
   updated_at: string;
 }
 
+export type DietLog = {
+  id: string;
+  diet_day_id: string;
+  player_id: string;
+  coach_id: string;
+  log_date: string;
+  completed_meals: number;
+  total_meals: number;
+  player_comment: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type AdminMessage = {
   id: string;
   coach_id: string;
@@ -445,6 +458,34 @@ export type Database = {
           day_of_week?: number;
           meals?: DietMeal[];
           comment?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      diet_logs: {
+        Row: DietLog;
+        Insert: {
+          id?: string;
+          diet_day_id: string;
+          player_id: string;
+          coach_id: string;
+          log_date: string;
+          completed_meals: number;
+          total_meals: number;
+          player_comment?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          diet_day_id?: string;
+          player_id?: string;
+          coach_id?: string;
+          log_date?: string;
+          completed_meals?: number;
+          total_meals?: number;
+          player_comment?: string | null;
           created_at?: string;
           updated_at?: string;
         };

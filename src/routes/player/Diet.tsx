@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, todayDayOfWeek } from '../../lib/dates';
 import { listDietDays } from '../../api/diet';
+import { saveDietLog } from '../../api/dietProgress';
+import type { DietDay } from '../../types/database.types';
 
 export default function PlayerDiet() {
   const { session, profile } = useAuth();
@@ -114,6 +117,7 @@ export default function PlayerDiet() {
                   {selectedDay.comment}
                 </div>
               )}
+              {selectedDay.meals.length > 0 && <DietCheckIn day={selectedDay} />}
             </div>
           ) : (
             <div className="card">
@@ -124,4 +128,23 @@ export default function PlayerDiet() {
       )}
     </div>
   );
+}
+
+function DietCheckIn({ day }: { day: DietDay }) {
+  const qc = useQueryClient();
+  const [done, setDone] = useState<boolean[]>(() => day.meals.map(() => false));
+  const [comment, setComment] = useState('');
+  const save = useMutation({
+    mutationFn: () => saveDietLog(day, done.filter(Boolean).length, comment),
+    onSuccess: () => { void qc.invalidateQueries({ queryKey: ['diet-progress', day.player_id] }); },
+  });
+  return <div className="card stack" style={{ borderLeft: '3px solid var(--success)' }}>
+    <strong>Today’s diet check-in</strong>
+    <span className="muted" style={{ fontSize: '0.85rem' }}>Tick each meal you followed, then save.</span>
+    {day.meals.map((meal, index) => <label key={index} className="row" style={{ justifyContent: 'flex-start' }}><input type="checkbox" checked={done[index]} onChange={(e) => setDone((current) => current.map((value, i) => i === index ? e.target.checked : value))} /> {meal.label}</label>)}
+    <textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={5000} placeholder="Optional note for your coach" rows={2} />
+    <button type="button" onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save today’s progress'}</button>
+    {save.isSuccess && <span style={{ color: 'var(--success)' }}>Diet progress saved.</span>}
+    {save.error && <span className="error">{(save.error as Error).message}</span>}
+  </div>;
 }

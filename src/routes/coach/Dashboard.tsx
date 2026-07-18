@@ -77,6 +77,9 @@ function PlayerRow({ player }: { player: PlayerWithLink }) {
             <Link to={`/coach/players/${player.profile.id}/analysis`}>
               <button className="secondary">Analysis</button>
             </Link>
+            <Link to={`/coach/players/${player.profile.id}/diet-progress`}>
+              <button className="secondary">Diet Progress</button>
+            </Link>
             <Link to={`/coach/players/${player.profile.id}/chat`}>
               <button className="secondary">Chat</button>
             </Link>

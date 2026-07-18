@@ -35,8 +35,14 @@ export default function ChatWindow({
   const qc = useQueryClient();
   const [text, setText] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const recordingStreamRef = useRef<MediaStream | null>(null);
+  const recordingTimerRef = useRef<number | null>(null);
+  const discardRecordingRef = useRef(false);
   const key = ['chat', coachId, playerId] as const;
 
   // Reset unread counter when this chat is open
@@ -92,6 +98,69 @@ export default function ChatWindow({
       setUploading(false);
     }
   }
+
+  async function sendRecordedAudio(file: File) {
+    setUploading(true);
+    try {
+      const attachment = await uploadChatAttachment(coachId, playerId, currentUserId, file);
+      const msg = await sendChatMessage(coachId, playerId, currentUserId, '', attachment.path, attachment.type);
+      qc.setQueryData<ChatMessage[]>(key, (prev = []) => prev.some((item) => item.id === msg.id) ? prev : [...prev, msg]);
+    } catch (error) {
+      alert((error as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function toggleRecording() {
+    if (recording) {
+      recorderRef.current?.stop();
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      alert('Audio recording is not supported by this browser.');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm']
+        .find((type) => MediaRecorder.isTypeSupported(type)) ?? '';
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      discardRecordingRef.current = false;
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (event) => { if (event.data.size > 0) chunks.push(event.data); };
+      recorder.onstop = () => {
+        if (recordingTimerRef.current !== null) window.clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+        recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+        recordingStreamRef.current = null;
+        recorderRef.current = null;
+        setRecording(false);
+        setRecordingSeconds(0);
+        const recordedType = recorder.mimeType.split(';')[0] || 'audio/webm';
+        const extension = recordedType === 'audio/mp4' ? 'm4a' : 'webm';
+        const blob = new Blob(chunks, { type: recordedType });
+        if (!discardRecordingRef.current && blob.size > 0) {
+          void sendRecordedAudio(new File([blob], `voice-${Date.now()}.${extension}`, { type: recordedType }));
+        }
+      };
+      recorderRef.current = recorder;
+      recordingStreamRef.current = stream;
+      recorder.start(1000);
+      setRecording(true);
+      setRecordingSeconds(0);
+      recordingTimerRef.current = window.setInterval(() => setRecordingSeconds((seconds) => seconds + 1), 1000);
+    } catch {
+      alert('Microphone permission is required to record audio.');
+    }
+  }
+
+  useEffect(() => () => {
+    discardRecordingRef.current = true;
+    if (recordingTimerRef.current !== null) window.clearInterval(recordingTimerRef.current);
+    if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
+    recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -157,10 +226,21 @@ export default function ChatWindow({
       <div className="row" style={{ gap: '0.5rem', alignItems: 'flex-end' }}>
         <button
           type="button"
+          className={recording ? '' : 'secondary'}
+          title={recording ? 'Stop and send recording' : 'Record a voice message'}
+          aria-label={recording ? 'Stop and send voice message' : 'Record voice message'}
+          onClick={toggleRecording}
+          disabled={uploading || send.isPending}
+          style={recording ? { alignSelf: 'flex-end', background: '#c62828' } : { alignSelf: 'flex-end' }}
+        >
+          {recording ? `Stop ${Math.floor(recordingSeconds / 60)}:${String(recordingSeconds % 60).padStart(2, '0')}` : 'Mic'}
+        </button>
+        <button
+          type="button"
           className="secondary"
           title="Send a picture, video, or audio file"
           onClick={() => fileRef.current?.click()}
-          disabled={uploading || send.isPending}
+          disabled={uploading || send.isPending || recording}
           style={{ alignSelf: 'flex-end' }}
         >
           {uploading ? '…' : 'Attach'}
@@ -179,11 +259,11 @@ export default function ChatWindow({
           onKeyDown={handleKeyDown}
           placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
           style={{ flex: 1, resize: 'none' }}
-          disabled={send.isPending || uploading}
+          disabled={send.isPending || uploading || recording}
         />
         <button
           onClick={() => send.mutate(text.trim())}
-          disabled={!text.trim() || send.isPending || uploading}
+          disabled={!text.trim() || send.isPending || uploading || recording}
           style={{ alignSelf: 'flex-end', minWidth: 72 }}
         >
           {send.isPending ? '…' : 'Send'}
