@@ -351,6 +351,10 @@ label {
 .exercise-library-modal { width: min(760px, 100%); }
 .exercise-library-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
 .exercise-library-form > .error { grid-column: 1 / -1; }
+.workout-library-modal { width: min(680px,100%); }
+.workout-library-exercise { display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.workout-library-exercise .modal-remove { font-size: 1.2rem; }
+.program-library-modal { width: min(500px,100%); }
 .multi-select { position: relative; }
 .multi-select-trigger { width: 100%; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; text-transform: none; letter-spacing: normal; font-weight: 400; }
 .multi-select-trigger:hover:not(:disabled) { box-shadow: none; filter: none; border-color: var(--accent); }
@@ -502,6 +506,7 @@ label {
   .client-summary-grid { grid-template-columns: 1fr; }
   .library-heading { align-items: stretch; flex-direction: column; }
   .exercise-library-form { grid-template-columns: 1fr; }
+  .workout-library-exercise { grid-template-columns: 1fr; }
   .client-identity-card, .client-communication-card { grid-row: auto; grid-column: auto; }
   .workout-modal-backdrop { padding: 0; align-items: end; }
   .workout-modal { max-height: 94vh; border-radius: 14px 14px 0 0; }

@@ -20,6 +20,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches can create reusable workout templates with descriptions, difficulty, notes, exercise selections, and sections.
+- Coaches can create, search, copy, and delete reusable program templates with difficulty and duration.
+
 - Coaches can build a reusable exercise library with categories, target muscle groups, and movement patterns, then select saved exercises while creating player workouts.
 - Library exercises can also include equipment, instructions, a default note, video, and up to three tracking fields.
 - Muscle groups, movement patterns, and tracking fields now use click-to-open checkbox menus with clear selected choices.

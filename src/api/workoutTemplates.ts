@@ -1,21 +1,9 @@
 import { supabase } from '../lib/supabase';
-
-export interface WorkoutTemplate { id: string; coach_id: string; name: string; created_at: string }
-
-export async function listWorkoutTemplates(coachId: string): Promise<WorkoutTemplate[]> {
-  const { data, error } = await supabase.from('workout_templates').select('*').eq('coach_id', coachId).order('name');
-  if (error) throw error;
-  return data ?? [];
-}
-
-export async function saveWorkoutAsTemplate(workoutId: string): Promise<string> {
-  const { data, error } = await supabase.rpc('save_workout_as_template', { p_workout_id: workoutId });
-  if (error) throw error;
-  return data;
-}
-
-export async function assignWorkoutTemplate(programDayId: string, templateId: string, position: number): Promise<string> {
-  const { data, error } = await supabase.rpc('assign_workout_template', { p_program_day_id: programDayId, p_template_id: templateId, p_position: position });
-  if (error) throw error;
-  return data;
-}
+export interface WorkoutTemplate { id: string; coach_id: string; name: string; description: string | null; difficulty: string | null; notes: string | null; created_at: string }
+export interface WorkoutTemplateExercise { id: string; template_id: string; position: number; name: string; section_name: string | null; target_sets: number | null; target_reps: string | null; target_weight: string | null; coach_comment: string | null; coach_video_url: string | null; coach_video_is_external: boolean }
+export async function listWorkoutTemplates(coachId: string): Promise<WorkoutTemplate[]> { const { data,error }=await supabase.from('workout_templates').select('*').eq('coach_id',coachId).order('name');if(error)throw error;return data as WorkoutTemplate[]??[] }
+export async function getWorkoutTemplate(id:string){const [{data:template,error},{data:exercises,error:exError}]=await Promise.all([(supabase.from('workout_templates') as any).select('*').eq('id',id).single(),(supabase.from('workout_template_exercises') as any).select('*').eq('template_id',id).order('position')]);if(error)throw error;if(exError)throw exError;return{template:template as WorkoutTemplate,exercises:exercises as WorkoutTemplateExercise[]}}
+export async function createWorkoutTemplate(coachId:string,input:{name:string;description:string|null;difficulty:string|null;notes:string|null;exercises:Array<{name:string;section_name:string|null}>}){const templates=supabase.from('workout_templates') as any;const templateExercises=supabase.from('workout_template_exercises') as any;const{data,error}=await templates.insert({coach_id:coachId,name:input.name,description:input.description,difficulty:input.difficulty,notes:input.notes}).select().single();if(error)throw error;try{if(input.exercises.length){const{error:e}=await templateExercises.insert(input.exercises.map((x,i)=>({template_id:data.id,position:i,name:x.name,section_name:x.section_name})));if(e)throw e}return data}catch(e){await templates.delete().eq('id',data.id);throw e}}
+export async function deleteWorkoutTemplate(id:string){const{error}=await supabase.from('workout_templates').delete().eq('id',id);if(error)throw error}
+export async function saveWorkoutAsTemplate(workoutId:string):Promise<string>{const{data,error}=await supabase.rpc('save_workout_as_template',{p_workout_id:workoutId});if(error)throw error;return data}
+export async function assignWorkoutTemplate(programDayId:string,templateId:string,position:number):Promise<string>{const{data,error}=await supabase.rpc('assign_workout_template',{p_program_day_id:programDayId,p_template_id:templateId,p_position:position});if(error)throw error;return data}
