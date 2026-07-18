@@ -14,6 +14,7 @@ This page explains what the app can do and what has changed in everyday language
 - Duplicate and Delete controls now appear beside Add Exercise on every workout, with week selection and deletion confirmation.
 - Each client now has a summary workspace showing account details, training activity, workout completion, diet adherence, and direct tabs for training and both analysis pages.
 - Back buttons in the coach workspace now return to the previous screen instead of always opening the main client list.
+- Coaches can save and edit private coach notes and client goals directly from each client’s summary.
 
 ### New Features
 

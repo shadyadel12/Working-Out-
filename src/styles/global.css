@@ -325,6 +325,14 @@ label {
 .client-communication-card h2 { margin: 0; font-size: 1rem; }
 .client-communication-card p { color: #858b98; font-size: .78rem; }
 .client-communication-card > div { display: flex; gap: 9px; }
+.client-text-card { min-height: 150px; }
+.client-text-card header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.client-text-card h2 { margin: 0; font-size: 1rem; }
+.client-text-card header button { padding: 4px 7px; background: transparent; color: #514fbc; text-transform: none; letter-spacing: normal; }
+.client-text-card header button:hover:not(:disabled) { box-shadow: none; background: #f0efff; }
+.client-text-card p { margin: 24px 0 0; color: #7f8593; font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.coaching-text-modal { width: min(600px, 100%); }
+.coaching-text-modal textarea { margin-top: 7px; resize: vertical; }
 .workout-modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(15,18,25,.56); backdrop-filter: blur(1px); }
 .workout-modal { width: min(720px, 100%); max-height: calc(100vh - 48px); display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
 .workout-modal > header, .workout-modal > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--border); }
