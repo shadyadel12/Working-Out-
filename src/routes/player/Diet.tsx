@@ -139,10 +139,12 @@ function DietCheckIn({ day }: { day: DietDay }) {
     mutationFn: () => saveDietLog(day, done.filter(Boolean).length, comment),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['diet-progress', day.player_id] }); },
   });
-  return <div className="card stack" style={{ borderLeft: '3px solid var(--success)' }}>
+  return <div className="card stack diet-checkin-card">
     <strong>Today’s diet check-in</strong>
     <span className="muted" style={{ fontSize: '0.85rem' }}>Tick each meal you followed, then save.</span>
-    {day.meals.map((meal, index) => <label key={index} className="row" style={{ justifyContent: 'flex-start' }}><input type="checkbox" checked={done[index]} onChange={(e) => setDone((current) => current.map((value, i) => i === index ? e.target.checked : value))} /> {meal.label}</label>)}
+    <div className="diet-checkin-meals">
+      {day.meals.map((meal, index) => <label key={index} className="diet-checkin-meal"><input type="checkbox" checked={done[index]} onChange={(e) => setDone((current) => current.map((value, i) => i === index ? e.target.checked : value))} /><span>{meal.label}</span></label>)}
+    </div>
     <textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={5000} placeholder="Optional note for your coach" rows={2} />
     <button type="button" onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save today’s progress'}</button>
     {save.isSuccess && <span style={{ color: 'var(--success)' }}>Diet progress saved.</span>}

@@ -143,6 +143,12 @@ label {
 .muted {
   color: var(--text-dim);
 }
+.diet-checkin-card { border-left:3px solid var(--success); }
+.diet-checkin-meals { display:grid; gap:.55rem; }
+.diet-checkin-meal { display:flex; align-items:center; justify-content:flex-start; gap:.7rem; min-height:32px; cursor:pointer; }
+.diet-checkin-meal input { flex:0 0 17px; width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; }
+.diet-checkin-meal span { min-width:0; line-height:1.35; }
+html[dir="rtl"] .diet-checkin-card { border-left:1px solid var(--border); border-right:3px solid var(--success); }
 .history-back { width: fit-content; padding: 2px 0; background: transparent; border: 0; border-radius: 0; color: var(--text-dim); font-size: .85rem; font-weight: 500; text-transform: none; letter-spacing: normal; }
 .history-back:hover:not(:disabled) { color: var(--accent); background: transparent; box-shadow: none; filter: none; }
 
