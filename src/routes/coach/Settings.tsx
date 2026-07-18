@@ -4,21 +4,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { listPlayersForCoach, coachCreateUnclaimedKey, coachCreatePlayerKey } from '../../api/players';
 import { generateXlsxTemplate, importFromXlsx } from '../../api/programs';
 import { generateDietXlsxTemplate, importDietFromXlsx } from '../../api/diet';
-import type { CoachPlayerLink } from '../../types/database.types';
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
-function isExpired(link: CoachPlayerLink) {
-  return new Date(link.subscription_end_date) < new Date();
-}
-
-function monthsFromToday(n: number) {
-  const d = new Date();
-  d.setMonth(d.getMonth() + n);
-  return d.toISOString().slice(0, 10);
-}
+import { fmtDate, isExpired, monthsFromToday } from './settings/dateUtils';
 
 function CopyButton({ text }: { text: string }) {
   const [done, setDone] = useState(false);
