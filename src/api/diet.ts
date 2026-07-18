@@ -37,13 +37,13 @@ export async function addCoachFood(coachId: string, name: string): Promise<Coach
   return data as CoachFood;
 }
 
-export async function listDietDays(playerId: string): Promise<DietDay[]> {
-  const { data, error } = await supabase
+export async function listDietDays(playerId: string, week?: number): Promise<DietDay[]> {
+  let query = supabase
     .from('diet_days')
     .select('*')
-    .eq('player_id', playerId)
-    .order('week_number')
-    .order('day_of_week');
+    .eq('player_id', playerId);
+  if (week != null) query = query.eq('week_number', week);
+  const { data, error } = await query.order('week_number').order('day_of_week');
   if (error) throw error;
   return (data ?? []) as DietDay[];
 }

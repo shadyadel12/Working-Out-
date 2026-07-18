@@ -18,6 +18,7 @@ import {
 import type { DietDay, DietFoodItem, DietMeal } from '../../types/database.types';
 import WeekPicker from '../../components/WeekPicker';
 import FoodPicker from '../../components/FoodPicker';
+import LoadingSkeleton from '../../components/LoadingSkeleton';
 
 /** Build meal slots from counts: snacks are spread evenly between meals. */
 function buildSlots(meals: number, snacks: number): DietMeal[] {
@@ -45,6 +46,7 @@ export default function CoachDiet() {
   const { playerId } = useParams<{ playerId: string }>();
   const { session } = useAuth();
   const coachId = session!.user.id;
+  const [selectedWeek, setSelectedWeek] = useState(1);
   const [week, setWeek] = useState(1);
   const qc = useQueryClient();
 
@@ -63,13 +65,13 @@ export default function CoachDiet() {
     return Math.max(1, Math.ceil(days / 7));
   })();
 
-  const { data: dietDays } = useQuery({
-    queryKey: ['diet', playerId],
-    queryFn: () => listDietDays(playerId!),
+  const { data: dietDays, isLoading: dietLoading } = useQuery({
+    queryKey: ['diet', playerId, week],
+    queryFn: () => listDietDays(playerId!, week),
     enabled: !!playerId,
   });
 
-  const weekDays = (dietDays ?? []).filter((d) => d.week_number === week);
+  const weekDays = dietDays ?? [];
   const byDow = new Map(weekDays.map((d) => [d.day_of_week, d]));
 
   const [selectedDow, setSelectedDow] = useState<number>(todayDayOfWeek());
@@ -114,15 +116,20 @@ export default function CoachDiet() {
             Diet — {player?.profile?.name ?? player?.profile?.email ?? '…'}
           </h1>
         </div>
-        <div className="field" style={{ margin: 0, minWidth: 120 }}>
-          <label>Week</label>
-          <select value={week} onChange={(e) => setWeek(Number(e.target.value))}>
-            {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((w) => (
-              <option key={w} value={w}>Week {w}</option>
-            ))}
-          </select>
+        <div className="row" style={{ alignItems: 'flex-end' }}>
+          <div className="field" style={{ margin: 0, minWidth: 120 }}>
+            <label>Week</label>
+            <select value={selectedWeek} onChange={(e) => setSelectedWeek(Number(e.target.value))}>
+              {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((w) => (
+                <option key={w} value={w}>Week {w}</option>
+              ))}
+            </select>
+          </div>
+          <button type="button" disabled={selectedWeek === week || dietLoading} onClick={() => setWeek(selectedWeek)}>Apply</button>
         </div>
       </div>
+
+      {dietLoading && <LoadingSkeleton rows={6} />}
 
       <div className="card stack">
         <strong>Diet Excel import</strong>
@@ -196,6 +203,7 @@ export default function CoachDiet() {
         </div>
       )}
 
+      {!dietLoading && <>
       <div className="day-tabs">
         {WEEK_ORDER_SAT_FIRST.map((dow) => {
           const has = byDow.has(dow);
@@ -223,6 +231,7 @@ export default function CoachDiet() {
         existing={existing}
         totalWeeks={totalWeeks}
       />
+      </>}
     </div>
   );
 }
