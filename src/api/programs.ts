@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { supabase } from '../lib/supabase';
-import { validateSpreadsheetArchive } from '../lib/security';
+import { sanitizeSpreadsheetCell, validateSpreadsheetArchive } from '../lib/security';
 import type { ProgramDay, DayType } from '../types/database.types';
 
 /** All program days for a player, ordered by week then day-of-week. */
@@ -73,6 +73,33 @@ export interface DraftExerciseData {
 export interface DraftWorkoutData {
   name: string;
   exercises: DraftExerciseData[];
+}
+
+type ImportProgramDay = {
+  week: number;
+  dow: number;
+  day_type: DayType;
+  diet_plan: string | null;
+  workouts: Map<string, DraftWorkoutData>;
+};
+
+async function replaceProgramImport(
+  playerId: string,
+  days: Map<string, ImportProgramDay>
+): Promise<{ daysCreated: number; workoutsCreated: number; exercisesCreated: number }> {
+  const payload = [...days.values()].map((day) => ({
+    week: day.week,
+    dow: day.dow,
+    day_type: day.day_type,
+    diet_plan: day.diet_plan,
+    workouts: [...day.workouts.values()],
+  }));
+  const { data, error } = await supabase.rpc('replace_program_import', {
+    p_player_id: playerId,
+    p_days: payload,
+  });
+  if (error) throw error;
+  return data;
 }
 
 /**
@@ -396,7 +423,7 @@ export function generateCsvTemplate(): string {
     ['1', 'Sun', 'rest',     '',         '',              '',  '',     '',       '',                  '', 'Rest day - hydrate'],
     ['1', 'Mon', 'training', 'Pull Day', 'Barbell Row',   '4', '8',    '50kg',  'Squeeze at top',    '', ''],
   ];
-  return [header, ...examples.map((r) => r.map(csvEscape).join(','))].join('\n');
+  return [header, ...examples.map((r) => r.map((value) => csvEscape(String(sanitizeSpreadsheetCell(value)))).join(','))].join('\n');
 }
 
 // ---------------------------------------------------------------------------
@@ -416,7 +443,8 @@ export function generateXlsxTemplate(): void {
     [1, 'Sun', 'rest',     '',         '',               '', '',     '',     '',                  '', 'Rest day - hydrate'],
     [1, 'Mon', 'training', 'Pull Day', 'Barbell Row',    4, '8',    '50kg', 'Squeeze at top',    '', ''],
   ];
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
+  const safeExamples = examples.map((row) => row.map(sanitizeSpreadsheetCell));
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...safeExamples]);
 
   // Column widths for readability.
   ws['!cols'] = [
@@ -459,10 +487,7 @@ export async function importFromXlsx(
 
   // Reuse the same grouping / upsert logic as importProgramFromCsv.
   type DayKey = string;
-  const days = new Map<DayKey, {
-    week: number; dow: number; day_type: DayType; diet_plan: string | null;
-    workouts: Map<string, DraftWorkoutData>;
-  }>();
+  const days = new Map<DayKey, ImportProgramDay>();
 
   for (const [idx, r] of rows.entries()) {
     const line = idx + 2;
@@ -495,28 +520,8 @@ export async function importFromXlsx(
     });
   }
 
-  await supabase.from('program_days').delete().eq('player_id', playerId);
-
-  let daysCreated = 0, workoutsCreated = 0, exercisesCreated = 0;
-  for (const d of days.values()) {
-    const drafts = [...d.workouts.values()];
-    await createFullDay(
-      {
-        player_id: playerId,
-        coach_id: coachId,
-        week_number: d.week,
-        day_of_week: d.dow,
-        day_type: d.day_type,
-        title: null,
-        diet_plan: d.diet_plan,
-      },
-      drafts
-    );
-    daysCreated++;
-    workoutsCreated += drafts.length;
-    exercisesCreated += drafts.reduce((s, w) => s + w.exercises.length, 0);
-  }
-  return { daysCreated, workoutsCreated, exercisesCreated };
+  void coachId;
+  return replaceProgramImport(playerId, days);
 }
 
 function csvEscape(v: string): string {
@@ -591,10 +596,7 @@ export async function importProgramFromCsv(
 
   // Validate + group.
   type DayKey = string; // "week|dow"
-  const days = new Map<DayKey, {
-    week: number; dow: number; day_type: DayType; diet_plan: string | null;
-    workouts: Map<string, DraftWorkoutData>;
-  }>();
+  const days = new Map<DayKey, ImportProgramDay>();
 
   for (const [idx, r] of rows.entries()) {
     const line = idx + 2; // 1-indexed + header row
@@ -627,27 +629,6 @@ export async function importProgramFromCsv(
     });
   }
 
-  // Wipe entire program for this player.
-  await supabase.from('program_days').delete().eq('player_id', playerId);
-
-  let daysCreated = 0, workoutsCreated = 0, exercisesCreated = 0;
-  for (const d of days.values()) {
-    const drafts = [...d.workouts.values()];
-    await createFullDay(
-      {
-        player_id: playerId,
-        coach_id: coachId,
-        week_number: d.week,
-        day_of_week: d.dow,
-        day_type: d.day_type,
-        title: null,
-        diet_plan: d.diet_plan,
-      },
-      drafts
-    );
-    daysCreated++;
-    workoutsCreated += drafts.length;
-    exercisesCreated += drafts.reduce((s, w) => s + w.exercises.length, 0);
-  }
-  return { daysCreated, workoutsCreated, exercisesCreated };
+  void coachId;
+  return replaceProgramImport(playerId, days);
 }

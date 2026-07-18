@@ -527,6 +527,14 @@ export type Database = {
         Args: { p_key_id: string };
         Returns: CoachKey;
       };
+      replace_program_import: {
+        Args: { p_player_id: string; p_days: unknown };
+        Returns: { daysCreated: number; workoutsCreated: number; exercisesCreated: number };
+      };
+      replace_diet_import: {
+        Args: { p_player_id: string; p_days: unknown; p_foods: unknown };
+        Returns: { daysCreated: number; mealsCreated: number; foodsCreated: number };
+      };
     };
     Enums: {
       user_role: UserRole;

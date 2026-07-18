@@ -93,3 +93,9 @@ export function validateSpreadsheetArchive(buffer: ArrayBuffer): void {
     throw new Error('The Excel workbook is compressed too aggressively.');
   }
 }
+
+/** Prevent Excel/CSV from interpreting user-controlled text as a formula. */
+export function sanitizeSpreadsheetCell(value: string | number): string | number {
+  if (typeof value !== 'string') return value;
+  return /^[=+\-@]/.test(value) ? `'${value}` : value;
+}

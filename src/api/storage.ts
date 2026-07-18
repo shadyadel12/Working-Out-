@@ -2,10 +2,12 @@ import { supabase } from '../lib/supabase';
 import { validateVideoFile } from '../lib/security';
 
 const BUCKET = 'videos';
+const QUARANTINE_BUCKET = 'video-quarantine';
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 
 /**
- * Upload a video file to the private bucket under {ownerId}/{timestamp}-{name}.
+ * Upload a video to private quarantine, then ask the server-side scanner to
+ * copy it into the final private bucket only after a clean result.
  * ownerId must be the player_id folder (RLS enforces the caller may write there:
  * a player writes their own folder; a coach may write a linked player's folder).
  * Returns the storage path (store this in *_video_url with is_external=false).
@@ -13,13 +15,21 @@ const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 export async function uploadVideo(ownerId: string, file: File): Promise<string> {
   await validateVideoFile(file, MAX_VIDEO_BYTES);
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `${ownerId}/${Date.now()}-${safeName}`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+  const quarantinePath = `${ownerId}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+  const { error } = await supabase.storage.from(QUARANTINE_BUCKET).upload(quarantinePath, file, {
     cacheControl: '3600',
     upsert: false,
+    contentType: file.type,
   });
   if (error) throw error;
-  return path;
+  const { data, error: scanError } = await supabase.functions.invoke('scan-video', {
+    body: { quarantinePath, ownerId, fileName: safeName, contentType: file.type },
+  });
+  if (scanError || !data?.path) {
+    await supabase.storage.from(QUARANTINE_BUCKET).remove([quarantinePath]).catch(() => {});
+    throw new Error(data?.error ?? scanError?.message ?? 'Video scan failed.');
+  }
+  return data.path as string;
 }
 
 /** Signed URL for a stored (private) video path. Expires in `seconds`. */

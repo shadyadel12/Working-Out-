@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { supabase } from '../lib/supabase';
-import { validateSpreadsheetArchive } from '../lib/security';
+import { sanitizeSpreadsheetCell, validateSpreadsheetArchive } from '../lib/security';
 import type { CoachFood, DietDay, DietMeal } from '../types/database.types';
 
 const DAY_TO_DOW: Record<string, number> = {
@@ -149,7 +149,8 @@ export function generateDietXlsxTemplate(): void {
     [1, 'Sat', 'snack', 'Snack 1', 'Banana', 120, ''],
     [1, 'Sun', 'meal', 'Meal 1', 'Chicken breast', 200, ''],
   ];
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
+  const safeExamples = examples.map((row) => row.map(sanitizeSpreadsheetCell));
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...safeExamples]);
   ws['!cols'] = [
     { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 18 },
     { wch: 26 }, { wch: 12 }, { wch: 32 },
@@ -229,27 +230,20 @@ export async function importDietFromXlsx(
   }
 
   const dietRows = [...days.values()].map((day) => ({
-    player_id: playerId,
-    coach_id: coachId,
-    week_number: day.week,
-    day_of_week: day.dow,
+    week: day.week,
+    dow: day.dow,
     meals: [...day.meals.values()],
     comment: day.comment,
-    updated_at: new Date().toISOString(),
   }));
-
-  const { error: deleteError } = await supabase.from('diet_days').delete().eq('player_id', playerId);
-  if (deleteError) throw deleteError;
-  const { error: insertError } = await supabase.from('diet_days').insert(dietRows);
-  if (insertError) throw insertError;
 
   const foodNames = new Map<string, string>();
   for (const row of rows) foodNames.set(row.food.toLowerCase(), row.food);
-  for (const name of foodNames.values()) await addCoachFood(coachId, name);
-
-  return {
-    daysCreated: dietRows.length,
-    mealsCreated: dietRows.reduce((total, day) => total + day.meals.length, 0),
-    foodsCreated: rows.length,
-  };
+  const { data, error } = await supabase.rpc('replace_diet_import', {
+    p_player_id: playerId,
+    p_days: dietRows,
+    p_foods: [...foodNames.values()],
+  });
+  if (error) throw error;
+  void coachId;
+  return data;
 }
