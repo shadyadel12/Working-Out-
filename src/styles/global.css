@@ -405,6 +405,14 @@ label {
 .inline-workout-editor:not(.expanded-editor) .inline-workout-actions button { min-width: 0; padding: 6px; font-size: .7rem; }
 .program-workout-chip > span { display: grid; gap: 2px; }
 .program-workout-chip small { color: var(--text-dim); }
+
+@media (max-width: 1180px) {
+  .program-schedule-modal { width: calc(100vw - 16px); }
+  .program-days-grid { display: flex; overflow-x: auto; overflow-y: visible; padding: 2px 2px 12px; scroll-snap-type: x proximity; }
+  .program-day-column { width: 180px; flex: 0 0 180px; scroll-snap-align: start; }
+  .program-day-column.editing { width: 280px; flex-basis: 280px; }
+  .exercise-picker-menu { min-width: 240px; }
+}
 .multi-select { position: relative; }
 .multi-select-trigger { width: 100%; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; text-transform: none; letter-spacing: normal; font-weight: 400; }
 .multi-select-trigger:hover:not(:disabled) { box-shadow: none; filter: none; border-color: var(--accent); }
@@ -561,7 +569,7 @@ label {
   .exercise-library-form { grid-template-columns: 1fr; }
   .workout-library-exercise { grid-template-columns: 1fr; }
   .program-details-grid { grid-template-columns: 1fr; }
-  .program-days-grid { grid-template-columns: repeat(7,170px); overflow-x: auto; padding-bottom: 8px; }
+  .program-days-grid { display: flex; overflow-x: auto; padding-bottom: 10px; }
   .client-identity-card, .client-communication-card { grid-row: auto; grid-column: auto; }
   .workout-modal-backdrop { padding: 0; align-items: end; }
   .workout-modal { max-height: 94vh; border-radius: 14px 14px 0 0; }

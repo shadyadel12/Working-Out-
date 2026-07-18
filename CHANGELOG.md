@@ -77,6 +77,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- The program schedule now keeps day cards and workout controls readable on medium-sized screens instead of squeezing them together.
 - The program schedule editor now fits all seven day columns cleanly on desktop without clipping the workout editor.
 
 - Administrator verification now recovers correctly if a previous setup was interrupted.
