@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import BackButton from '../../components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { getPlayerForCoach } from '../../api/players';
@@ -18,9 +19,7 @@ export default function CoachChat() {
   return (
     <div className="stack">
       <div>
-        <Link to="/coach/dashboard" className="muted" style={{ fontSize: '0.85rem' }}>
-          ← Dashboard
-        </Link>
+        <BackButton />
         <h1 style={{ margin: '0.2rem 0 0' }}>
           Chat — {player?.profile?.name ?? player?.profile?.email ?? '…'}
         </h1>

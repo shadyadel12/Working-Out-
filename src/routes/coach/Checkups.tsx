@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { listPlayersForCoach } from '../../api/players';
 import { listCheckupsForDate, setCheckup } from '../../api/checkups';
 import { todayISO } from '../../lib/dates';
+import BackButton from '../../components/BackButton';
 
 export default function Checkups() {
   const { session } = useAuth();
@@ -37,9 +37,7 @@ export default function Checkups() {
     <div className="stack">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div>
-          <Link to="/coach/dashboard" className="muted" style={{ fontSize: '0.85rem' }}>
-            ← Dashboard
-          </Link>
+          <BackButton />
           <h1 style={{ margin: '0.2rem 0 0' }}>Daily check-ups</h1>
         </div>
         <div className="field" style={{ margin: 0 }}>

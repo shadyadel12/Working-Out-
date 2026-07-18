@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import BackButton from '../../components/BackButton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, todayDayOfWeek } from '../../lib/dates';
@@ -61,9 +62,7 @@ export default function ProgramBuilder() {
     <div className="stack">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <div>
-          <Link to="/coach/dashboard" className="muted" style={{ fontSize: '0.85rem' }}>
-            ← Dashboard
-          </Link>
+          <BackButton />
           <h1 style={{ margin: '0.2rem 0 0' }}>
             Program — {player?.profile?.name ?? player?.profile?.email ?? '…'}
           </h1>

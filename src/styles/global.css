@@ -143,6 +143,8 @@ label {
 .muted {
   color: var(--text-dim);
 }
+.history-back { width: fit-content; padding: 2px 0; background: transparent; border: 0; border-radius: 0; color: var(--text-dim); font-size: .85rem; font-weight: 500; text-transform: none; letter-spacing: normal; }
+.history-back:hover:not(:disabled) { color: var(--accent); background: transparent; box-shadow: none; filter: none; }
 
 .error {
   color: var(--danger);
