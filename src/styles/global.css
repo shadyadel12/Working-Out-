@@ -342,6 +342,15 @@ label {
 .client-text-card p { margin: 24px 0 0; color: #7f8593; font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
 .coaching-text-modal { width: min(600px, 100%); }
 .coaching-text-modal textarea { margin-top: 7px; resize: vertical; }
+.player-details-page { width: min(760px,100%); margin: 0 auto; }
+.player-details-heading { display: flex; align-items: center; gap: 15px; margin-bottom: 18px; }
+.player-details-heading h1 { margin: 0; }
+.player-details-heading p { margin: 3px 0 0; color: var(--text-dim); }
+.player-large-initials { display: grid; place-items: center; width: 62px; height: 62px; flex: 0 0 62px; border-radius: 50%; background: #e2e1ff; color: #373681; font-weight: 800; }
+.player-details-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.player-details-form > .error,.player-details-actions { grid-column: 1 / -1; }
+.player-details-actions { display: flex; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border); }
+.player-personal-details { grid-template-columns: 1fr 1fr !important; }
 .exercise-library-page { display: flex; flex-direction: column; gap: 16px; }
 .library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .library-heading h1 { margin: 0; color: #111827; text-transform: none; }
@@ -586,6 +595,8 @@ label {
   .client-profile-tabs { order: 3; width: 100%; margin: 5px 0 0; overflow-x: auto; }
   .client-profile-tabs a { min-height: 38px; white-space: nowrap; }
   .client-summary-grid { grid-template-columns: 1fr; }
+  .player-details-form { grid-template-columns: 1fr; padding: 15px; }
+  .player-details-form > .error,.player-details-actions { grid-column: auto; }
   .library-heading { align-items: stretch; flex-direction: column; }
   .exercise-library-form { grid-template-columns: 1fr; }
   .workout-library-exercise { grid-template-columns: 1fr; }

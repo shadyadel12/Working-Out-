@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthContext';
 import RequireRole from './auth/RequireRole';
 import RequireActiveSubscription from './auth/RequireActiveSubscription';
 import RequireAdminMfa from './auth/RequireAdminMfa';
+import RequirePlayerDetails from './auth/RequirePlayerDetails';
 import AppLayout from './layouts/AppLayout';
 
 import Landing from './routes/Landing';
@@ -34,6 +35,7 @@ import PlayerChat from './routes/player/Chat';
 import PlayerDiet from './routes/player/Diet';
 import PlayerDietProgress from './routes/player/DietProgress';
 import Blocked from './routes/player/Blocked';
+import PlayerProfileDetails from './routes/player/Profile';
 import AdminCoaches from './routes/admin/Coaches';
 import AdminSupport from './routes/admin/Support';
 
@@ -52,6 +54,7 @@ const playerLinks = [
   { to: '/player/analysis', label: 'Progress' },
   { to: '/player/diet-progress', label: 'Diet Progress' },
   { to: '/player/chat', label: 'Chat', badgeKey: 'chat' as const },
+  { to: '/player/profile', label: 'My Profile' },
 ];
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
@@ -108,11 +111,12 @@ export default function App() {
             }
           >
             <Route index element={<Navigate to="program" replace />} />
-            <Route path="program" element={<RequireActiveSubscription><PlayerProgram /></RequireActiveSubscription>} />
-            <Route path="diet" element={<RequireActiveSubscription><PlayerDiet /></RequireActiveSubscription>} />
-            <Route path="analysis" element={<RequireActiveSubscription><PlayerAnalysis /></RequireActiveSubscription>} />
-            <Route path="diet-progress" element={<RequireActiveSubscription><PlayerDietProgress /></RequireActiveSubscription>} />
-            <Route path="chat" element={<RequireActiveSubscription><PlayerChat /></RequireActiveSubscription>} />
+            <Route path="program" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerProgram /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="diet" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerDiet /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="analysis" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerAnalysis /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="diet-progress" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerDietProgress /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="chat" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerChat /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="profile" element={<RequireActiveSubscription><PlayerProfileDetails /></RequireActiveSubscription>} />
             <Route path="blocked" element={<Blocked />} />
           </Route>
 

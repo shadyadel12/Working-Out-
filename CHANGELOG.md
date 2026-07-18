@@ -22,6 +22,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Players must complete their personal and sports profile before using their plan, and coaches can review those details from the client summary.
+
 - The player program page now has a collapsible information bar for limitations and injuries, notes, goals, and available equipment.
 
 - Coaches can assign a complete saved program to a player from any starting week, using the program’s configured duration and full schedule.

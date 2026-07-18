@@ -3,12 +3,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { isSubscriptionActive } from '../../api/auth';
-import { getLastActivity, getPlayerForCoach } from '../../api/players';
+import { getPlayerForCoach } from '../../api/players';
 import { getProgressPage } from '../../api/analysis';
 import { listDietLogs } from '../../api/dietProgress';
 import { listProgramDays } from '../../api/programs';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import { getPlayerCoachingProfile, savePlayerCoachingProfile } from '../../api/playerCoachingProfile';
+import { getPlayerDetails } from '../../api/playerDetails';
 
 export default function PlayerProfile() {
   const { playerId } = useParams<{ playerId: string }>();
@@ -24,8 +25,8 @@ export default function PlayerProfile() {
   const progressQuery = useQuery({ queryKey: ['profile-progress-summary', playerId], queryFn: () => getProgressPage({ playerId: playerId!, range: 'all', page: 0, pageSize: 1 }), enabled: !!playerId });
   const dietQuery = useQuery({ queryKey: ['diet-logs', playerId], queryFn: () => listDietLogs(playerId!), enabled: !!playerId });
   const programQuery = useQuery({ queryKey: ['program', playerId], queryFn: () => listProgramDays(playerId!), enabled: !!playerId });
-  const activityQuery = useQuery({ queryKey: ['last-activity', playerId], queryFn: () => getLastActivity(playerId!), enabled: !!playerId });
   const coachingQuery = useQuery({ queryKey: ['player-coaching-profile', coachId, playerId], queryFn: () => getPlayerCoachingProfile(coachId, playerId!), enabled: !!playerId });
+  const detailsQuery = useQuery({ queryKey: ['player-details', playerId], queryFn: () => getPlayerDetails(playerId!), enabled: !!playerId });
   useEffect(() => { if (coachingQuery.data) { setCoachNotes(coachingQuery.data.coach_notes); setClientGoals(coachingQuery.data.client_goals); setLimitationsInjuries(coachingQuery.data.limitations_injuries); setAvailableEquipment(coachingQuery.data.available_equipment); } }, [coachingQuery.data]);
   const saveCoaching = useMutation({ mutationFn: () => savePlayerCoachingProfile(coachId, playerId!, { coach_notes: coachNotes, client_goals: clientGoals, limitations_injuries: limitationsInjuries, available_equipment: availableEquipment }), onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: ['player-coaching-profile', coachId, playerId] }); setEditField(null); } });
 
@@ -44,6 +45,8 @@ export default function PlayerProfile() {
   const mealsPlanned = dietLogs.reduce((total, log) => total + log.total_meals, 0);
   const dietRate = mealsPlanned ? Math.round((mealsDone / mealsPlanned) * 100) : 0;
   const trainingDays = (programQuery.data ?? []).filter((day) => day.day_type === 'training').length;
+  const details = detailsQuery.data;
+  const age = details?.date_of_birth ? Math.max(0, Math.floor((Date.now() - new Date(details.date_of_birth).getTime()) / 31557600000)) : null;
 
   return <div className="client-workspace">
     <header className="client-workspace-top">
@@ -61,7 +64,7 @@ export default function PlayerProfile() {
     <div className="client-summary-grid">
       <section className="client-summary-card client-identity-card">
         <div className="client-large-avatar">{initials}</div><h2>{name}</h2><p>{player.profile.email}</p>
-        <dl><div><dt>Member since</dt><dd>{new Date(player.profile.created_at).toLocaleDateString()}</dd></div><div><dt>Last workout</dt><dd>{activityQuery.data ?? 'No activity yet'}</dd></div><div><dt>Renew date</dt><dd>{player.link.subscription_end_date}</dd></div><div><dt>Subscription key</dt><dd>{player.link.subscription_key}</dd></div></dl>
+        <dl className="player-personal-details"><div><dt>Gender</dt><dd>{details?.gender ?? 'Not completed'}</dd></div><div><dt>Age</dt><dd>{age ?? '—'}</dd></div><div><dt>Date of Birth</dt><dd>{details?.date_of_birth ?? '—'}</dd></div><div><dt>Height</dt><dd>{details?.height ?? '—'}</dd></div><div><dt>Country</dt><dd>{details?.country ?? '—'}</dd></div><div><dt>Mobile Number</dt><dd>{details?.mobile_number ?? '—'}</dd></div><div><dt>Sport</dt><dd>{details?.sport ?? '—'}</dd></div><div><dt>Position</dt><dd>{details?.position ?? '—'}</dd></div><div><dt>Sport Level</dt><dd>{details?.sport_level ?? '—'}</dd></div><div><dt>Experience Level</dt><dd>{details?.experience_level ?? '—'}</dd></div></dl>
       </section>
       <section className="client-summary-card client-metric-card"><span>Workout Completion</span><strong>{completion}<small>%</small></strong><p>{progress?.totalCompleted ?? 0} completed of {progress?.totalLogged ?? 0} logged exercises</p><Link to={`/coach/players/${playerId}/analysis`}>Open workout analysis →</Link></section>
       <section className="client-summary-card client-metric-card"><span>Diet Adherence</span><strong>{dietRate}<small>%</small></strong><p>{mealsDone} of {mealsPlanned} planned meals completed</p><Link to={`/coach/players/${playerId}/diet-progress`}>Open diet analysis →</Link></section>
