@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 
 const BUCKET = 'videos';
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+const VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
 
 /**
  * Upload a video file to the private bucket under {ownerId}/{timestamp}-{name}.
@@ -9,6 +11,8 @@ const BUCKET = 'videos';
  * Returns the storage path (store this in *_video_url with is_external=false).
  */
 export async function uploadVideo(ownerId: string, file: File): Promise<string> {
+  if (!VIDEO_TYPES.has(file.type)) throw new Error('Only MP4, WebM, and MOV videos are allowed.');
+  if (file.size <= 0 || file.size > MAX_VIDEO_BYTES) throw new Error('Video must be smaller than 50 MB.');
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const path = `${ownerId}/${Date.now()}-${safeName}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {

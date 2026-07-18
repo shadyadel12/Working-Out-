@@ -101,7 +101,16 @@ export async function uploadSupportAttachment(
   coachId: string,
   file: File
 ): Promise<{ path: string; type: 'image' | 'video' | 'file' }> {
-  const ext = file.name.split('.').pop() ?? 'bin';
+  const allowedTypes = new Map<string, string>([
+    ['image/jpeg', 'jpg'], ['image/png', 'png'], ['image/webp', 'webp'], ['image/gif', 'gif'],
+    ['video/mp4', 'mp4'], ['video/webm', 'webm'], ['video/quicktime', 'mov'],
+    ['application/pdf', 'pdf'],
+    ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx'],
+    ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx'],
+  ]);
+  const ext = allowedTypes.get(file.type);
+  if (!ext) throw new Error('This file type is not allowed.');
+  if (file.size <= 0 || file.size > 25 * 1024 * 1024) throw new Error('Attachment must be smaller than 25 MB.');
   const path = `${coachId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage.from('support').upload(path, file);
   if (error) throw error;

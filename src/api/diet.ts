@@ -167,6 +167,7 @@ export async function importDietFromXlsx(
   playerId: string,
   coachId: string,
 ): Promise<{ daysCreated: number; mealsCreated: number; foodsCreated: number }> {
+  if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: 'array' });
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -179,6 +180,7 @@ export async function importDietFromXlsx(
     )
   ) as Record<string, string>[];
   if (rows.length === 0) throw new Error('The Excel file has no data rows.');
+  if (rows.length > 5000) throw new Error('The Excel file cannot contain more than 5,000 rows.');
 
   type ParsedDay = {
     week: number;

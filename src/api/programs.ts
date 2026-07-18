@@ -438,6 +438,7 @@ export async function importFromXlsx(
   playerId: string,
   coachId: string,
 ): Promise<{ daysCreated: number; workoutsCreated: number; exercisesCreated: number }> {
+  if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
   const wb = XLSX.read(buffer, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -452,6 +453,7 @@ export async function importFromXlsx(
   ) as Record<string, string>[];
 
   if (rows.length === 0) throw new Error('The Excel file has no data rows.');
+  if (rows.length > 5000) throw new Error('The Excel file cannot contain more than 5,000 rows.');
 
   // Reuse the same grouping / upsert logic as importProgramFromCsv.
   type DayKey = string;

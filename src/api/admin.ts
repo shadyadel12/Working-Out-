@@ -25,17 +25,19 @@ export async function listAllKeys(): Promise<CoachPlayerLink[]> {
 /** Generate a readable random key like KEY-AB12-CD34. */
 export function generateKey(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const block = () =>
-    Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  return `KEY-${block()}-${block()}`;
+  const block = (length: number) => {
+    const bytes = crypto.getRandomValues(new Uint8Array(length));
+    return Array.from(bytes, (byte) => chars[byte % chars.length]).join('');
+  };
+  return `KEY-${block(8)}-${block(8)}`;
 }
 
 /** Generate a coach key like KEY-COACH-AB12. */
 export function generateCoachKey(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const block = () =>
-    Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  return `KEY-COACH-${block()}`;
+  const bytes = crypto.getRandomValues(new Uint8Array(20));
+  const key = Array.from(bytes, (byte) => chars[byte % chars.length]).join('');
+  return `KEY-COACH-${key}`;
 }
 
 // ---- Coach keys (single-use, admin-issued) ----
