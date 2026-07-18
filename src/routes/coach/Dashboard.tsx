@@ -12,6 +12,7 @@ export default function CoachDashboard() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [renew, setRenew] = useState('all');
+  const [programming, setProgramming] = useState('all');
   const { data, isLoading, error } = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
 
   const players = useMemo(() => (data ?? []).filter((player) => {
@@ -22,6 +23,8 @@ export default function CoachDashboard() {
     if (status === 'active' && !active) return false;
     if (status === 'expired' && active) return false;
     if (status === 'pending' && player.profile) return false;
+    if (programming === 'needed' && (!player.profile || !player.needsProgramming)) return false;
+    if (programming === 'ready' && (!player.profile || player.needsProgramming)) return false;
     if (renew !== 'all') {
       const days = Math.ceil((new Date(`${player.link.subscription_end_date}T23:59:59`).getTime() - Date.now()) / 86400000);
       if (renew === '7' && (days < 0 || days > 7)) return false;
@@ -29,12 +32,13 @@ export default function CoachDashboard() {
       if (renew === 'overdue' && days >= 0) return false;
     }
     return true;
-  }), [data, renew, search, status]);
+  }), [data, programming, renew, search, status]);
 
   return <div className="coach-clients-page">
     <div className="coach-page-heading"><div><h1>Clients</h1><p>Manage your players and open their coaching tools.</p></div></div>
     <div className="client-filters" aria-label="Client filters">
       <select aria-label="Renew date" value={renew} onChange={(event) => setRenew(event.target.value)}><option value="all">Renew Date</option><option value="7">Next 7 days</option><option value="30">Next 30 days</option><option value="overdue">Overdue</option></select>
+      <select aria-label="Needs programming" value={programming} onChange={(event) => setProgramming(event.target.value)}><option value="all">Needs Programming</option><option value="needed">Yes</option><option value="ready">No</option></select>
       <select aria-label="Status" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Status</option><option value="active">Active</option><option value="expired">Expired</option><option value="pending">Pending</option></select>
     </div>
     {isLoading && <LoadingSkeleton rows={5} />}
@@ -42,7 +46,7 @@ export default function CoachDashboard() {
     {data?.length === 0 && <div className="card"><p className="muted">No players yet. Create a subscription key in Settings — once a player signs up with it, they will appear here.</p></div>}
     {data && data.length > 0 && <div className="clients-table-card">
       <div className="clients-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search clients" aria-label="Search clients" /></div>
-      <div className="clients-table-scroll"><table className="clients-table"><thead><tr><th>Name</th><th>Subscription key</th><th>Renew date</th><th>Status</th><th><span className="sr-only">Open profile</span></th></tr></thead><tbody>{players.map((player) => <PlayerRow key={player.link.id} player={player} />)}</tbody></table></div>
+      <div className="clients-table-scroll"><table className="clients-table"><thead><tr><th>Name</th><th>Needs Programming</th><th>Renew date</th><th>Status</th><th><span className="sr-only">Open profile</span></th></tr></thead><tbody>{players.map((player) => <PlayerRow key={player.link.id} player={player} />)}</tbody></table></div>
       {players.length === 0 && <div className="clients-empty">No clients match these filters.</div>}
       <div className="clients-table-footer">Showing {players.length} of {data.length} clients</div>
     </div>}
@@ -55,7 +59,7 @@ function PlayerRow({ player }: { player: PlayerWithLink }) {
   const displayName = player.profile?.name ?? player.profile?.email ?? 'Unclaimed key';
   return <tr>
     <td>{player.profile ? <Link className="client-name-link" to={`/coach/players/${player.profile.id}`}><strong>{displayName}</strong><small>{player.profile.email}</small></Link> : <><strong>{displayName}</strong><small>Waiting for player signup</small></>}</td>
-    <td><span className="client-key">{player.link.subscription_key}</span></td>
+    <td>{claimed ? <span className={`programming-status ${player.needsProgramming ? 'needed' : 'ready'}`}>{player.needsProgramming ? 'Yes' : 'No'}</span> : <span className="muted">—</span>}</td>
     <td>{player.link.subscription_end_date}</td>
     <td><span className={`badge ${claimed ? (active ? 'active' : 'expired') : 'pending'}`}>{claimed ? (active ? 'Active' : 'Expired') : 'Pending'}</span></td>
     <td className="client-actions">{claimed && player.profile ? <Link className="open-client-profile" aria-label={`Open ${displayName}'s profile`} to={`/coach/players/${player.profile.id}`}>›</Link> : <span className="muted">—</span>}</td>

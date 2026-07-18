@@ -259,6 +259,9 @@ label {
 .client-name-link strong { color: #302e73; }
 .client-name-link:hover strong { text-decoration: underline; }
 .client-key { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+.programming-status { display: inline-flex; padding: 3px 8px; border-radius: 999px; font-size: .74rem; font-weight: 700; }
+.programming-status.needed { background: #fff1d6; color: #a76600; }
+.programming-status.ready { background: #ddf7e9; color: #087b45; }
 .client-actions { width: 54px; text-align: right; }
 .open-client-profile { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; color: #3b3987; font-size: 1.45rem; }
 .open-client-profile:hover { background: #f0f1f6; }

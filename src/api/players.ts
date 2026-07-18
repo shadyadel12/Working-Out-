@@ -4,6 +4,7 @@ import type { Profile, CoachPlayerLink } from '../types/database.types';
 export interface PlayerWithLink {
   profile: Profile | null; // null when the key is issued but not yet claimed
   link: CoachPlayerLink;
+  needsProgramming: boolean;
 }
 
 /**
@@ -24,18 +25,22 @@ export async function listPlayersForCoach(coachId: string): Promise<PlayerWithLi
     .filter((id): id is string => id !== null);
 
   let byId = new Map<string, Profile>();
+  let programmedPlayerIds = new Set<string>();
   if (playerIds.length > 0) {
-    const { data: profiles, error: pErr } = await supabase
-      .from('profiles')
-      .select('*')
-      .in('id', playerIds);
+    const [{ data: profiles, error: pErr }, { data: programDays, error: programError }] = await Promise.all([
+      supabase.from('profiles').select('*').in('id', playerIds),
+      supabase.from('program_days').select('player_id').in('player_id', playerIds).eq('day_type', 'training'),
+    ]);
     if (pErr) throw pErr;
+    if (programError) throw programError;
     byId = new Map((profiles ?? []).map((p) => [p.id, p]));
+    programmedPlayerIds = new Set((programDays ?? []).map((day) => day.player_id));
   }
 
   return links.map((link) => ({
     profile: link.player_id ? byId.get(link.player_id) ?? null : null,
     link,
+    needsProgramming: link.player_id ? !programmedPlayerIds.has(link.player_id) : true,
   }));
 }
 
@@ -59,7 +64,7 @@ export async function getPlayerForCoach(
     .eq('id', playerId)
     .maybeSingle();
   if (pErr) throw pErr;
-  return profile ? { profile, link } : null;
+  return profile ? { profile, link, needsProgramming: false } : null;
 }
 
 /** Most recent exercise-log date for a player (for "last activity"). */
