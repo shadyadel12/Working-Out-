@@ -25,6 +25,8 @@ export type CoachPlayerLink = {
   subscription_end_date: string;
   status: LinkStatus;
   is_vip: boolean;
+  checkup_days_per_week: number;
+  checkup_weekdays: number[];
   created_at: string;
 }
 
@@ -221,6 +223,8 @@ export type Database = {
           subscription_end_date: string;
           status?: LinkStatus;
           is_vip?: boolean;
+          checkup_days_per_week?: number;
+          checkup_weekdays?: number[];
           created_at?: string;
         };
         Update: {
@@ -231,6 +235,8 @@ export type Database = {
           subscription_end_date?: string;
           status?: LinkStatus;
           is_vip?: boolean;
+          checkup_days_per_week?: number;
+          checkup_weekdays?: number[];
           created_at?: string;
         };
         Relationships: [];

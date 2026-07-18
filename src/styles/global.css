@@ -381,6 +381,8 @@ label {
 .vip-choice input { width:auto;margin-top:3px;accent-color:#ff8b24; }
 .vip-choice span { display:grid;gap:2px; }
 .vip-choice small { color:var(--text-dim); }
+.checkup-frequency { max-width:360px;margin:0; }
+.checkup-frequency small { display:block;margin-top:4px;color:var(--text-dim); }
 .chat-inbox-list { padding:0;overflow:hidden; }
 .chat-inbox-row { display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;padding:14px 16px;color:var(--text);border-bottom:1px solid var(--border); }
 .chat-inbox-row:hover { background:var(--surface-2); }

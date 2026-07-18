@@ -31,7 +31,8 @@ export default function Checkups() {
   });
 
   // Only claimed players can be checked (they have a profile + id).
-  const claimed = (players ?? []).filter((p) => p.profile !== null).sort((a, b) => Number(b.link.is_vip) - Number(a.link.is_vip));
+  const selectedWeekday = new Date(`${date}T12:00:00`).getDay();
+  const claimed = (players ?? []).filter((p) => p.profile !== null && (p.link.is_vip || p.link.checkup_weekdays.includes(selectedWeekday))).sort((a, b) => Number(b.link.is_vip) - Number(a.link.is_vip));
 
   return (
     <div className="stack">

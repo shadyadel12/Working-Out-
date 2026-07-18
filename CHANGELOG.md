@@ -27,6 +27,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Standard player keys can include one, two, or three spaced check-up days each week; VIP players remain visible every day.
+
 - Coaches can mark a player subscription as VIP when generating or renewing a key.
 - VIP players appear first in daily check-ups, and their unread conversations stay above every other message thread.
 
