@@ -10,6 +10,7 @@ This page explains what the app can do and what has changed in everyday language
 - Coaches can now click a client’s name to open their profile and choose the coaching tool they need.
 - Coaches can add a complete workout from one popup, including exercises, targets, notes, videos, or a saved workout from their library.
 - Saved workouts now stay collapsed until the coach selects one to view or edit its details.
+- Every workout now has its own Add Exercise button, which opens a complete exercise popup without expanding the workout.
 
 ### New Features
 
