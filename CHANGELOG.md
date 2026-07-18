@@ -7,6 +7,7 @@ This page explains what the app can do and what has changed in everyday language
 ### Improvements
 
 - The coach workspace now has a cleaner sidebar and client table with search, renewal filters, status filters, and compact client actions.
+- Coaches can now click a client’s name to open their profile and choose the coaching tool they need.
 
 ### New Features
 

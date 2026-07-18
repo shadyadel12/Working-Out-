@@ -24,6 +24,7 @@ import CoachDiet from './routes/coach/Diet';
 import CoachSettings from './routes/coach/Settings';
 import CoachSupport from './routes/coach/Support';
 import CoachDietProgress from './routes/coach/DietProgress';
+import CoachPlayerProfile from './routes/coach/PlayerProfile';
 import PlayerProgram from './routes/player/Program';
 import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
@@ -76,6 +77,7 @@ export default function App() {
           >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<CoachDashboard />} />
+            <Route path="players/:playerId" element={<CoachPlayerProfile />} />
             <Route path="players/:playerId/program" element={<ProgramBuilder />} />
             <Route path="players/:playerId/diet" element={<CoachDiet />} />
             <Route path="players/:playerId/analysis" element={<CoachPlayerAnalysis />} />

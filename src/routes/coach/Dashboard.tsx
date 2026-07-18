@@ -42,7 +42,7 @@ export default function CoachDashboard() {
     {data?.length === 0 && <div className="card"><p className="muted">No players yet. Create a subscription key in Settings — once a player signs up with it, they will appear here.</p></div>}
     {data && data.length > 0 && <div className="clients-table-card">
       <div className="clients-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search clients" aria-label="Search clients" /></div>
-      <div className="clients-table-scroll"><table className="clients-table"><thead><tr><th>Name</th><th>Subscription key</th><th>Renew date</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{players.map((player) => <PlayerRow key={player.link.id} player={player} />)}</tbody></table></div>
+      <div className="clients-table-scroll"><table className="clients-table"><thead><tr><th>Name</th><th>Subscription key</th><th>Renew date</th><th>Status</th><th><span className="sr-only">Open profile</span></th></tr></thead><tbody>{players.map((player) => <PlayerRow key={player.link.id} player={player} />)}</tbody></table></div>
       {players.length === 0 && <div className="clients-empty">No clients match these filters.</div>}
       <div className="clients-table-footer">Showing {players.length} of {data.length} clients</div>
     </div>}
@@ -54,12 +54,10 @@ function PlayerRow({ player }: { player: PlayerWithLink }) {
   const claimed = player.profile !== null;
   const displayName = player.profile?.name ?? player.profile?.email ?? 'Unclaimed key';
   return <tr>
-    <td><strong>{displayName}</strong>{player.profile && <small>{player.profile.email}</small>}</td>
+    <td>{player.profile ? <Link className="client-name-link" to={`/coach/players/${player.profile.id}`}><strong>{displayName}</strong><small>{player.profile.email}</small></Link> : <><strong>{displayName}</strong><small>Waiting for player signup</small></>}</td>
     <td><span className="client-key">{player.link.subscription_key}</span></td>
     <td>{player.link.subscription_end_date}</td>
     <td><span className={`badge ${claimed ? (active ? 'active' : 'expired') : 'pending'}`}>{claimed ? (active ? 'Active' : 'Expired') : 'Pending'}</span></td>
-    <td className="client-actions">{claimed && player.profile ? <details><summary aria-label={`Open actions for ${displayName}`}>⋮</summary><div className="client-action-menu">
-      <Link to={`/coach/players/${player.profile.id}/program`}>Program</Link><Link to={`/coach/players/${player.profile.id}/diet`}>Diet</Link><Link to={`/coach/players/${player.profile.id}/analysis`}>Analysis</Link><Link to={`/coach/players/${player.profile.id}/diet-progress`}>Diet Progress</Link><Link to={`/coach/players/${player.profile.id}/chat`}>Chat</Link><Link to={`/coach/players/${player.profile.id}/messages`}>Messages</Link>
-    </div></details> : <span className="muted">Not claimed</span>}</td>
+    <td className="client-actions">{claimed && player.profile ? <Link className="open-client-profile" aria-label={`Open ${displayName}'s profile`} to={`/coach/players/${player.profile.id}`}>›</Link> : <span className="muted">—</span>}</td>
   </tr>;
 }
