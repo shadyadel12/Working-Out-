@@ -29,9 +29,9 @@ export default function PlayerLogin() {
       // AuthContext loads the subscription; the route guard decides program vs.
       // the Blocked (renewal) page if it has expired.
       navigate('/player/program', { replace: true });
-    } catch (err) {
+    } catch {
       await signOut().catch(() => {});
-      setError(err instanceof Error ? err.message : 'Sign in failed.');
+      setError('Invalid email, password, or account type.');
     } finally {
       setBusy(false);
     }

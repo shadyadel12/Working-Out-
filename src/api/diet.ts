@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { supabase } from '../lib/supabase';
+import { validateSpreadsheetArchive } from '../lib/security';
 import type { CoachFood, DietDay, DietMeal } from '../types/database.types';
 
 const DAY_TO_DOW: Record<string, number> = {
@@ -169,6 +170,7 @@ export async function importDietFromXlsx(
 ): Promise<{ daysCreated: number; mealsCreated: number; foodsCreated: number }> {
   if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
+  validateSpreadsheetArchive(buffer);
   const workbook = XLSX.read(buffer, { type: 'array' });
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!firstSheet) throw new Error('The Excel file has no worksheet.');

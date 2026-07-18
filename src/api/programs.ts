@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { supabase } from '../lib/supabase';
+import { validateSpreadsheetArchive } from '../lib/security';
 import type { ProgramDay, DayType } from '../types/database.types';
 
 /** All program days for a player, ordered by week then day-of-week. */
@@ -440,6 +441,7 @@ export async function importFromXlsx(
 ): Promise<{ daysCreated: number; workoutsCreated: number; exercisesCreated: number }> {
   if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
+  validateSpreadsheetArchive(buffer);
   const wb = XLSX.read(buffer, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
   const raw = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws, { defval: '' });

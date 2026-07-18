@@ -35,8 +35,8 @@ export function RoleLogin({
         throw new Error(`This account is not a ${expectedRole} account.`);
       }
       navigate(home, { replace: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign in failed.');
+    } catch {
+      setError('Invalid email, password, or account type.');
     } finally {
       setBusy(false);
     }

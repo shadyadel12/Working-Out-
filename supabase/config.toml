@@ -28,6 +28,16 @@ enable_signup = true
 enable_signup = true
 enable_confirmations = false
 
+# Local/staging Auth abuse controls. Mirror these values in the hosted
+# Supabase dashboard; hosted projects do not read this repository file.
+[auth.rate_limit]
+email_sent = 2
+sms_sent = 2
+anonymous_users = 5
+token_refresh = 30
+sign_in_sign_ups = 5
+token_verifications = 10
+
 [storage]
 enabled = true
 file_size_limit = "50MiB"
