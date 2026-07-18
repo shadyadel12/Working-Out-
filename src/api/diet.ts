@@ -1,5 +1,16 @@
+import * as XLSX from 'xlsx';
 import { supabase } from '../lib/supabase';
 import type { CoachFood, DietDay, DietMeal } from '../types/database.types';
+
+const DAY_TO_DOW: Record<string, number> = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tuesday: 2,
+  wed: 3, wednesday: 3,
+  thu: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6,
+};
 
 // ---- Coach food library ----
 
@@ -126,4 +137,115 @@ export async function duplicateDietWeek(
     .upsert(rows, { onConflict: 'player_id,week_number,day_of_week' });
   if (upErr) throw upErr;
   return targetWeeks.length;
+}
+
+/** Download an Excel template for importing a complete diet plan. */
+export function generateDietXlsxTemplate(): void {
+  const headers = ['week', 'day', 'meal_type', 'meal_label', 'food', 'grams', 'coach_comment'];
+  const examples = [
+    [1, 'Sat', 'meal', 'Meal 1', 'Eggs', 150, 'Drink plenty of water'],
+    [1, 'Sat', 'meal', 'Meal 1', 'Whole-grain bread', 80, ''],
+    [1, 'Sat', 'snack', 'Snack 1', 'Banana', 120, ''],
+    [1, 'Sun', 'meal', 'Meal 1', 'Chicken breast', 200, ''],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...examples]);
+  ws['!cols'] = [
+    { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 18 },
+    { wch: 26 }, { wch: 12 }, { wch: 32 },
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Diet');
+  XLSX.writeFile(wb, 'diet-template.xlsx');
+}
+
+/**
+ * Import a complete diet workbook. The sheet is fully validated before the
+ * player's existing diet is replaced.
+ */
+export async function importDietFromXlsx(
+  file: File,
+  playerId: string,
+  coachId: string,
+): Promise<{ daysCreated: number; mealsCreated: number; foodsCreated: number }> {
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  if (!firstSheet) throw new Error('The Excel file has no worksheet.');
+
+  const raw = XLSX.utils.sheet_to_json<Record<string, string | number>>(firstSheet, { defval: '' });
+  const rows = raw.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [key.trim().toLowerCase(), String(value ?? '').trim()])
+    )
+  ) as Record<string, string>[];
+  if (rows.length === 0) throw new Error('The Excel file has no data rows.');
+
+  type ParsedDay = {
+    week: number;
+    dow: number;
+    comment: string | null;
+    meals: Map<string, DietMeal>;
+  };
+  const days = new Map<string, ParsedDay>();
+
+  for (const [index, row] of rows.entries()) {
+    const line = index + 2;
+    const week = Number.parseInt(row.week, 10);
+    if (!week || week < 1) throw new Error(`Row ${line}: invalid week "${row.week}".`);
+
+    const dayKey = row.day.toLowerCase();
+    if (!(dayKey in DAY_TO_DOW)) {
+      throw new Error(`Row ${line}: invalid day "${row.day}" (use Sat, Sun, Mon...).`);
+    }
+
+    const mealType = row.meal_type.toLowerCase();
+    if (mealType !== 'meal' && mealType !== 'snack') {
+      throw new Error(`Row ${line}: meal_type must be "meal" or "snack".`);
+    }
+    if (!row.meal_label) throw new Error(`Row ${line}: meal_label is required.`);
+    if (!row.food) throw new Error(`Row ${line}: food is required.`);
+
+    const dow = DAY_TO_DOW[dayKey];
+    const dietDayKey = `${week}|${dow}`;
+    let day = days.get(dietDayKey);
+    if (!day) {
+      day = { week, dow, comment: row.coach_comment || null, meals: new Map() };
+      days.set(dietDayKey, day);
+    } else if (row.coach_comment && !day.comment) {
+      day.comment = row.coach_comment;
+    }
+
+    const mealKey = `${mealType}|${row.meal_label.toLowerCase()}`;
+    let meal = day.meals.get(mealKey);
+    if (!meal) {
+      meal = { type: mealType, label: row.meal_label, content: '', items: [] };
+      day.meals.set(mealKey, meal);
+    }
+    meal.items!.push({ food: row.food, grams: row.grams });
+  }
+
+  const dietRows = [...days.values()].map((day) => ({
+    player_id: playerId,
+    coach_id: coachId,
+    week_number: day.week,
+    day_of_week: day.dow,
+    meals: [...day.meals.values()],
+    comment: day.comment,
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error: deleteError } = await supabase.from('diet_days').delete().eq('player_id', playerId);
+  if (deleteError) throw deleteError;
+  const { error: insertError } = await supabase.from('diet_days').insert(dietRows);
+  if (insertError) throw insertError;
+
+  const foodNames = new Map<string, string>();
+  for (const row of rows) foodNames.set(row.food.toLowerCase(), row.food);
+  for (const name of foodNames.values()) await addCoachFood(coachId, name);
+
+  return {
+    daysCreated: dietRows.length,
+    mealsCreated: dietRows.reduce((total, day) => total + day.meals.length, 0),
+    foodsCreated: rows.length,
+  };
 }
