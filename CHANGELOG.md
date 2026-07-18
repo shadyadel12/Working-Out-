@@ -22,6 +22,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coach owners can generate invitation keys for Read Only, Chat Support, Head Coach, and Sales team roles, then assign clients and revoke access from Team Management.
+- Team members can register from the coach signup page using their team invitation key.
+
 - Players must complete their personal and sports profile before using their plan, and coaches can review those details from the client summary.
 
 - The player program page now has a collapsible information bar for limitations and injuries, notes, goals, and available equipment.

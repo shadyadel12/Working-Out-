@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { signUp, signIn, claimCoachKey, checkCoachKey, signOut } from '../../api/auth';
+import { checkTeamInvite, claimTeamInvite } from '../../api/team';
 
 /** Coach self-serve signup: name + email + password + single-use coach key. */
 export default function CoachSignup() {
@@ -10,6 +11,7 @@ export default function CoachSignup() {
   const [coachKey, setCoachKey] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [signupType, setSignupType] = useState<'owner' | 'team'>('owner');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,14 +19,14 @@ export default function CoachSignup() {
     setBusy(true);
     try {
       // 1) Validate the key BEFORE creating any account (no orphan accounts).
-      const valid = await checkCoachKey(coachKey);
+      const valid = signupType === 'team' ? await checkTeamInvite(coachKey) : await checkCoachKey(coachKey);
       if (!valid) {
         throw new Error('Invalid or already-used coach key.');
       }
       // 2) Create the account, then consume the key to become a coach.
       await signUp(email, password, name);
       await signIn(email, password).catch(() => {});
-      await claimCoachKey(coachKey);
+      if (signupType === 'team') await claimTeamInvite(coachKey); else await claimCoachKey(coachKey);
       // Full reload so AuthContext re-fetches the profile with the new role.
       window.location.assign('/coach/dashboard');
     } catch (err) {
@@ -39,8 +41,9 @@ export default function CoachSignup() {
       <form className="card stack" style={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit}>
         <h2>Coach sign up</h2>
         <p className="muted" style={{ marginTop: '-0.5rem', fontSize: '0.85rem' }}>
-          Requires a coach key issued by the admin.
+          {signupType === 'owner' ? 'Create an owner coach account.' : 'Join a coach team using your invitation key.'}
         </p>
+        <div className="auth-choice"><button type="button" className={signupType === 'owner' ? '' : 'secondary'} onClick={() => setSignupType('owner')}>Coach Owner</button><button type="button" className={signupType === 'team' ? '' : 'secondary'} onClick={() => setSignupType('team')}>Team Member</button></div>
         <div className="field">
           <label>Name</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -54,8 +57,8 @@ export default function CoachSignup() {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
         </div>
         <div className="field">
-          <label>Coach key</label>
-          <input value={coachKey} onChange={(e) => setCoachKey(e.target.value)} required placeholder="KEY-COACH-XXXX" />
+          <label>{signupType === 'team' ? 'Team invitation key' : 'Coach key'}</label>
+          <input value={coachKey} onChange={(e) => setCoachKey(e.target.value)} required placeholder={signupType === 'team' ? 'TEAM-XXXXXXXXXXXX' : 'KEY-COACH-XXXX'} />
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>

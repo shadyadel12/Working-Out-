@@ -351,6 +351,21 @@ label {
 .player-details-form > .error,.player-details-actions { grid-column: 1 / -1; }
 .player-details-actions { display: flex; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border); }
 .player-personal-details { grid-template-columns: 1fr 1fr !important; }
+.auth-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.team-page { display: flex; flex-direction: column; gap: 18px; }
+.team-page h1,.team-page h2 { text-transform: none; }
+.team-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.team-stats > div { display: grid; gap: 5px; padding: 20px; background: white; border: 1px solid #e1e4ea; border-radius: 10px; }
+.team-stats span { color: #727987; font-size: .75rem; text-transform: uppercase; }
+.team-stats strong { font-size: 1.3rem; }
+.team-invite-card { display: grid; grid-template-columns: 1fr 220px auto; align-items: end; gap: 12px; padding: 18px; background: white; border: 1px solid #e1e4ea; border-radius: 10px; }
+.team-invite-card h2,.team-invite-card p { margin: 0; }
+.team-invite-card p { color: #727987; font-size: .8rem; }
+.generated-team-key { display: flex; align-items: center; gap: 10px; padding: 13px; background: #f0efff; border: 1px solid #cecdf1; border-radius: 9px; }
+.generated-team-key span { color: #666c79; font-size: .8rem; }
+.pending-invites { padding: 18px; background: white; border: 1px solid #e1e4ea; border-radius: 10px; }
+.pending-invites > div { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid #eceef2; }
+.pending-invites code { min-width: 190px; }
 .exercise-library-page { display: flex; flex-direction: column; gap: 16px; }
 .library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .library-heading h1 { margin: 0; color: #111827; text-transform: none; }
@@ -596,6 +611,8 @@ label {
   .client-profile-tabs a { min-height: 38px; white-space: nowrap; }
   .client-summary-grid { grid-template-columns: 1fr; }
   .player-details-form { grid-template-columns: 1fr; padding: 15px; }
+  .team-stats,.team-invite-card { grid-template-columns: 1fr; }
+  .generated-team-key { align-items: flex-start; flex-direction: column; }
   .player-details-form > .error,.player-details-actions { grid-column: auto; }
   .library-heading { align-items: stretch; flex-direction: column; }
   .exercise-library-form { grid-template-columns: 1fr; }
