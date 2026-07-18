@@ -23,6 +23,7 @@ import {
 import type { Exercise, ProgramDay, Workout } from '../../types/database.types';
 import VideoInput, { type VideoValue } from '../../components/VideoInput';
 import WeekPicker from '../../components/WeekPicker';
+import { assignWorkoutTemplate, listWorkoutTemplates, saveWorkoutAsTemplate } from '../../api/workoutTemplates';
 
 export default function ProgramBuilder() {
   const { playerId } = useParams<{ playerId: string }>();
@@ -431,6 +432,7 @@ function WorkoutList({
   programDayId: string; playerId: string; coachId: string; currentWeek: number; totalWeeks: number;
 }) {
   const qc = useQueryClient();
+  const [templateId, setTemplateId] = useState('');
   const { data: workouts } = useQuery({
     queryKey: ['workouts', programDayId],
     queryFn: () => listWorkouts(programDayId),
@@ -439,6 +441,17 @@ function WorkoutList({
   const addWorkout = useMutation({
     mutationFn: () => createWorkout(programDayId, 'New workout', (workouts?.length ?? 0)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }),
+  });
+  const { data: templates = [] } = useQuery({
+    queryKey: ['workout-templates', coachId],
+    queryFn: () => listWorkoutTemplates(coachId),
+  });
+  const useTemplate = useMutation({
+    mutationFn: () => assignWorkoutTemplate(programDayId, templateId, workouts?.length ?? 0),
+    onSuccess: () => {
+      setTemplateId('');
+      qc.invalidateQueries({ queryKey: ['workouts', programDayId] });
+    },
   });
 
   return (
@@ -455,6 +468,14 @@ function WorkoutList({
           totalWeeks={totalWeeks}
         />
       ))}
+      {templates.length > 0 && <div className="card row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}>
+          <label>Use saved workout</label>
+          <select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from library…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select>
+        </div>
+        <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Adding…' : 'Add to this player'}</button>
+        {useTemplate.error && <span className="error">{(useTemplate.error as Error).message}</span>}
+      </div>}
       <button className="secondary" onClick={() => addWorkout.mutate()} disabled={addWorkout.isPending}>
         + Add workout
       </button>
@@ -483,6 +504,10 @@ function WorkoutCard({
     mutationFn: () => deleteWorkout(workout.id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }),
   });
+  const saveTemplate = useMutation({
+    mutationFn: () => saveWorkoutAsTemplate(workout.id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['workout-templates', coachId] }),
+  });
 
   return (
     <div className="card stack" style={{ background: 'var(--surface-2)' }}>
@@ -494,6 +519,11 @@ function WorkoutCard({
         <button className="danger" style={{ alignSelf: 'flex-end' }} onClick={() => del.mutate()} disabled={del.isPending}>
           Delete workout
         </button>
+      </div>
+      <div className="row">
+        <button type="button" className="secondary" onClick={() => saveTemplate.mutate()} disabled={saveTemplate.isPending}>{saveTemplate.isPending ? 'Saving…' : 'Save to workout library'}</button>
+        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse ✓</span>}
+        {saveTemplate.error && <span className="error">{(saveTemplate.error as Error).message}</span>}
       </div>
       <ExerciseEditor
         workoutId={workout.id}

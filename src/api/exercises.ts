@@ -3,13 +3,25 @@ import type { Exercise } from '../types/database.types';
 
 /** Exercises for a workout, ordered by position. */
 export async function listExercises(workoutId: string): Promise<Exercise[]> {
-  const { data, error } = await supabase
-    .from('exercises')
-    .select('*')
+  const { data, error } = await (supabase
+    .from('exercises') as any)
+    .select('*, workout_template_exercises(*)')
     .eq('workout_id', workoutId)
     .order('position', { ascending: true });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((row: any) => {
+    const template = row.workout_template_exercises;
+    return {
+      ...row,
+      name: row.is_template_override ? row.name : (row.name ?? template?.name ?? 'Exercise'),
+      target_sets: row.is_template_override ? row.target_sets : (row.target_sets ?? template?.target_sets ?? null),
+      target_reps: row.is_template_override ? row.target_reps : (row.target_reps ?? template?.target_reps ?? null),
+      target_weight: row.is_template_override ? row.target_weight : (row.target_weight ?? template?.target_weight ?? null),
+      coach_video_url: row.is_template_override ? row.coach_video_url : (row.coach_video_url ?? template?.coach_video_url ?? null),
+      coach_video_is_external: row.is_template_override ? row.coach_video_is_external : (template?.coach_video_is_external ?? false),
+      coach_comment: row.is_template_override ? row.coach_comment : (row.coach_comment ?? template?.coach_comment ?? null),
+    };
+  }) as Exercise[];
 }
 
 export interface ExerciseInput {
@@ -44,7 +56,7 @@ export async function updateExercise(
 ): Promise<Exercise> {
   const { data, error } = await supabase
     .from('exercises')
-    .update(patch)
+    .update({ ...patch, is_template_override: true })
     .eq('id', id)
     .select()
     .single();

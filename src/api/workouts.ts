@@ -3,13 +3,13 @@ import type { Workout } from '../types/database.types';
 
 /** Workouts for a program day, ordered by position. */
 export async function listWorkouts(programDayId: string): Promise<Workout[]> {
-  const { data, error } = await supabase
-    .from('workouts')
-    .select('*')
+  const { data, error } = await (supabase
+    .from('workouts') as any)
+    .select('*, workout_templates(name)')
     .eq('program_day_id', programDayId)
     .order('position', { ascending: true });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((row: any) => ({ ...row, name: row.name ?? row.workout_templates?.name ?? 'Workout' })) as Workout[];
 }
 
 export async function createWorkout(

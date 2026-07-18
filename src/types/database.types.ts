@@ -45,6 +45,7 @@ export type Workout = {
   program_day_id: string;
   position: number;
   name: string;
+  template_id: string | null;
   created_at: string;
 }
 
@@ -54,6 +55,8 @@ export type Exercise = {
   program_day_id: string | null; // legacy; new rows use workout_id
   position: number;
   name: string;
+  template_exercise_id: string | null;
+  is_template_override: boolean;
   target_sets: number | null;
   target_reps: string | null;
   target_weight: string | null;
@@ -261,7 +264,8 @@ export type Database = {
           id?: string;
           program_day_id: string;
           position?: number;
-          name: string;
+          name?: string | null;
+          template_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -269,8 +273,21 @@ export type Database = {
           program_day_id?: string;
           position?: number;
           name?: string;
+          template_id?: string | null;
           created_at?: string;
         };
+        Relationships: [];
+      };
+      workout_templates: {
+        Row: { id: string; coach_id: string; name: string; created_at: string };
+        Insert: { id?: string; coach_id: string; name: string; created_at?: string };
+        Update: { id?: string; coach_id?: string; name?: string; created_at?: string };
+        Relationships: [];
+      };
+      workout_template_exercises: {
+        Row: { id: string; template_id: string; position: number; name: string; target_sets: number | null; target_reps: string | null; target_weight: string | null; coach_video_url: string | null; coach_video_is_external: boolean; coach_comment: string | null; created_at: string };
+        Insert: { id?: string; template_id: string; position?: number; name: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
+        Update: { id?: string; template_id?: string; position?: number; name?: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
         Relationships: [];
       };
       exercises: {
@@ -280,7 +297,9 @@ export type Database = {
           workout_id: string;
           program_day_id?: string | null;
           position?: number;
-          name: string;
+          name?: string | null;
+          template_exercise_id?: string | null;
+          is_template_override?: boolean;
           target_sets?: number | null;
           target_reps?: string | null;
           target_weight?: string | null;
@@ -295,6 +314,8 @@ export type Database = {
           program_day_id?: string | null;
           position?: number;
           name?: string;
+          template_exercise_id?: string | null;
+          is_template_override?: boolean;
           target_sets?: number | null;
           target_reps?: string | null;
           target_weight?: string | null;
@@ -592,6 +613,8 @@ export type Database = {
         Args: { p_player_id: string; p_workout?: string | null; p_exercise?: string | null; p_start?: string | null; p_end?: string | null; p_limit?: number; p_offset?: number };
         Returns: unknown;
       };
+      save_workout_as_template: { Args: { p_workout_id: string }; Returns: string };
+      assign_workout_template: { Args: { p_program_day_id: string; p_template_id: string; p_position?: number }; Returns: string };
       replace_program_import: {
         Args: { p_player_id: string; p_days: unknown };
         Returns: { daysCreated: number; workoutsCreated: number; exercisesCreated: number };
