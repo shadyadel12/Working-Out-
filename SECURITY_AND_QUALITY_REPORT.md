@@ -1,6 +1,6 @@
 # Safety and Quality Report
 
-**Date:** July 19, 2026  
+**Date:** July 19, 2026
 **Version reviewed:** `d293519` plus the July 19 safety update
 
 We ran 400 safety and quality checks across the website, mobile app, and database, followed by 40 full-feature journey checks. The review covered normal use, incorrect information, interrupted actions, expired access, repeated actions, and differences between Admin, Coach, Player, and team-member accounts. Four problems in the newer features were found and fixed. A few protections controlled by the hosting companies still need to be confirmed in their dashboards.
