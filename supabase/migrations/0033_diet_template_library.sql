@@ -1,5 +1,5 @@
 -- Reusable diet-day library with player-specific overrides.
-create table public.diet_templates (
+create table if not exists public.diet_templates (
   id uuid primary key default gen_random_uuid(),
   coach_id uuid not null references public.profiles(id) on delete cascade,
   name text not null check (char_length(name) between 1 and 200),
@@ -7,11 +7,13 @@ create table public.diet_templates (
   comment text,
   created_at timestamptz not null default now()
 );
-create unique index diet_templates_coach_name_idx on public.diet_templates(coach_id,lower(name));
-alter table public.diet_days add column template_id uuid references public.diet_templates(id) on delete restrict;
-alter table public.diet_days add column is_template_override boolean not null default true;
+create unique index if not exists diet_templates_coach_name_idx on public.diet_templates(coach_id,lower(name));
+alter table public.diet_days add column if not exists template_id uuid references public.diet_templates(id) on delete restrict;
+alter table public.diet_days add column if not exists is_template_override boolean not null default true;
 
 alter table public.diet_templates enable row level security;
+drop policy if exists diet_templates_coach_all on public.diet_templates;
+drop policy if exists diet_templates_player_read on public.diet_templates;
 create policy diet_templates_coach_all on public.diet_templates for all to authenticated
 using(coach_id=(select auth.uid())) with check(coach_id=(select auth.uid()) and public.auth_role()='coach');
 create policy diet_templates_player_read on public.diet_templates for select to authenticated using(exists(

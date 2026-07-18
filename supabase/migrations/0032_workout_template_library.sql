@@ -1,14 +1,14 @@
 -- Reusable coach workout library. Assignments keep only references; edits are
 -- stored as overrides on the existing workout/exercise assignment rows.
-create table public.workout_templates (
+create table if not exists public.workout_templates (
   id uuid primary key default gen_random_uuid(),
   coach_id uuid not null references public.profiles(id) on delete cascade,
   name text not null check (char_length(name) between 1 and 200),
   created_at timestamptz not null default now()
 );
-create unique index workout_templates_coach_name_idx on public.workout_templates (coach_id, lower(name));
+create unique index if not exists workout_templates_coach_name_idx on public.workout_templates (coach_id, lower(name));
 
-create table public.workout_template_exercises (
+create table if not exists public.workout_template_exercises (
   id uuid primary key default gen_random_uuid(),
   template_id uuid not null references public.workout_templates(id) on delete cascade,
   position int not null default 0,
@@ -21,18 +21,24 @@ create table public.workout_template_exercises (
   coach_comment text,
   created_at timestamptz not null default now()
 );
-create index workout_template_exercises_template_idx on public.workout_template_exercises(template_id, position);
+create index if not exists workout_template_exercises_template_idx on public.workout_template_exercises(template_id, position);
 
-alter table public.workouts add column template_id uuid references public.workout_templates(id) on delete restrict;
+alter table public.workouts add column if not exists template_id uuid references public.workout_templates(id) on delete restrict;
 alter table public.workouts alter column name drop not null;
+alter table public.workouts drop constraint if exists workouts_name_or_template;
 alter table public.workouts add constraint workouts_name_or_template check (name is not null or template_id is not null);
-alter table public.exercises add column template_exercise_id uuid references public.workout_template_exercises(id) on delete restrict;
-alter table public.exercises add column is_template_override boolean not null default false;
+alter table public.exercises add column if not exists template_exercise_id uuid references public.workout_template_exercises(id) on delete restrict;
+alter table public.exercises add column if not exists is_template_override boolean not null default false;
 alter table public.exercises alter column name drop not null;
+alter table public.exercises drop constraint if exists exercises_name_or_template;
 alter table public.exercises add constraint exercises_name_or_template check (name is not null or template_exercise_id is not null);
 
 alter table public.workout_templates enable row level security;
 alter table public.workout_template_exercises enable row level security;
+drop policy if exists workout_templates_coach_all on public.workout_templates;
+drop policy if exists workout_templates_player_read on public.workout_templates;
+drop policy if exists template_exercises_coach_all on public.workout_template_exercises;
+drop policy if exists template_exercises_player_read on public.workout_template_exercises;
 create policy workout_templates_coach_all on public.workout_templates for all to authenticated
 using (coach_id=(select auth.uid())) with check (coach_id=(select auth.uid()) and public.auth_role()='coach');
 create policy workout_templates_player_read on public.workout_templates for select to authenticated using (exists (
