@@ -375,6 +375,24 @@ label {
 .program-add-menu button { text-transform: none; letter-spacing: normal; }
 .program-workout-chip { display: flex; justify-content: space-between; gap: 5px; margin-top: 8px; padding: 8px; background: white; border: 1px solid var(--border); border-radius: 7px; font-size: .76rem; }
 .program-workout-chip button { padding: 0 3px; background: transparent; color: var(--danger); box-shadow: none; }
+.program-day-column.editing { min-width: 225px; border-color: var(--accent); }
+.program-add-choice { position: absolute; z-index: 6; top: 38px; right: 6px; width: 145px; display: grid; background: white; border: 1px solid #dfe2e9; border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,.14); overflow: hidden; }
+.program-add-choice button,.program-add-choice select { width: 100%; padding: 8px 10px; background: white; color: #303644; border: 0; border-radius: 0; text-align: left; text-transform: none; letter-spacing: normal; font-size: .78rem; }
+.program-add-choice button:hover { background: #f1f2f5; box-shadow: none; }
+.inline-workout-editor { margin-top: 8px; padding: 7px; background: white; border: 1px solid #df6b4d; border-radius: 9px; }
+.inline-workout-editor input,.inline-workout-editor textarea { margin-bottom: 6px; padding: 7px; font-size: .76rem; }
+.inline-workout-name { font-weight: 700; background: #eeebff; }
+.exercise-picker-wrap { position: relative; }
+.exercise-picker-trigger { width: 100%; padding: 8px; background: #e7e9ef; color: #373681; text-transform: none; letter-spacing: normal; }
+.exercise-picker-menu { position: absolute; z-index: 12; top: calc(100% + 3px); left: 0; right: 0; max-height: 270px; overflow-y: auto; padding: 7px; background: white; border: 1px solid #dfe2e9; border-radius: 7px; box-shadow: 0 10px 24px rgba(0,0,0,.16); }
+.exercise-picker-menu .add-library-exercise { width: 100%; margin-bottom: 5px; padding: 8px; background: #e3e5eb; color: #373681; text-transform: none; letter-spacing: normal; }
+.exercise-picker-menu label { display: flex; align-items: center; gap: 7px; margin: 0; padding: 7px 3px; color: #202635; cursor: pointer; }
+.exercise-picker-menu label input { width: 15px; margin: 0; }
+.inline-workout-editor > small { display: block; margin-top: 5px; color: var(--text-dim); }
+.inline-workout-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border); }
+.inline-workout-actions button { padding: 7px 11px; text-transform: none; letter-spacing: normal; }
+.program-workout-chip > span { display: grid; gap: 2px; }
+.program-workout-chip small { color: var(--text-dim); }
 .multi-select { position: relative; }
 .multi-select-trigger { width: 100%; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; text-transform: none; letter-spacing: normal; font-weight: 400; }
 .multi-select-trigger:hover:not(:disabled) { box-shadow: none; filter: none; border-color: var(--accent); }
