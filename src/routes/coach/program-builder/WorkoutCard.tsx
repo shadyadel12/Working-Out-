@@ -1,6 +1,6 @@
 /** Collapsible editor for one player-specific workout assignment. */
 import { useEffect, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createExercise } from '../../../api/exercises';
 import { updateWorkout, deleteWorkout } from '../../../api/workouts';
 import { saveWorkoutAsTemplate } from '../../../api/workoutTemplates';
@@ -9,6 +9,7 @@ import type { Workout } from '../../../types/database.types';
 import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import ExerciseEditor from './ExerciseEditor';
 import WeekPicker from '../../../components/WeekPicker';
+import { listLibraryExercises } from '../../../api/exerciseLibrary';
 
 const emptyVideo: VideoValue = { url: null, isExternal: false };
 
@@ -29,6 +30,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
   const del = useMutation({ mutationFn: () => deleteWorkout(workout.id), onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }) });
   const duplicate = useMutation({ mutationFn: (weeks: number[]) => duplicateWorkoutToWeeks(playerId, coachId, workout.id, weeks), onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['program', playerId] }); setDuplicateOpen(false); } });
   const saveTemplate = useMutation({ mutationFn: () => saveWorkoutAsTemplate(workout.id), onSuccess: () => qc.invalidateQueries({ queryKey: ['workout-templates', coachId] }) });
+  const { data: library = [] } = useQuery({ queryKey: ['exercise-library', coachId], queryFn: () => listLibraryExercises(coachId) });
   const addExercise = useMutation({
     mutationFn: () => {
       if (!exerciseName.trim()) throw new Error('Enter an exercise name.');
@@ -65,6 +67,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
       <section className="workout-modal exercise-modal" role="dialog" aria-modal="true" aria-labelledby={`add-exercise-${workout.id}`}>
         <header><div><h2 id={`add-exercise-${workout.id}`}>Add Exercise</h2><small>to {workout.name}</small></div><button type="button" className="modal-close" aria-label="Close" onClick={closeExercise}>×</button></header>
         <div className="workout-modal-body">
+          {library.length > 0 && <div className="field"><label>Use Exercise Library</label><select defaultValue="" onChange={(event) => { const item = library.find((entry) => entry.id === event.target.value); if (item) setExerciseName(item.name); }}><option value="">Choose a saved exercise…</option>{library.map((item) => <option key={item.id} value={item.id}>{item.name} — {item.category}</option>)}</select></div>}
           <div className="field"><label>Exercise name</label><input autoFocus value={exerciseName} onChange={(event) => setExerciseName(event.target.value)} placeholder="Chest Press" maxLength={160} /></div>
           <div className="modal-target-grid"><div className="field"><label>Target sets</label><input type="number" min="1" max="100" value={sets} onChange={(event) => setSets(event.target.value)} /></div><div className="field"><label>Target reps</label><input value={reps} onChange={(event) => setReps(event.target.value)} placeholder="8-12" /></div><div className="field"><label>Target weight</label><input value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="60 kg" /></div></div>
           <div className="field"><label>Coach notes (optional)</label><textarea rows={3} value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Technique, tempo, or rest instructions" maxLength={5000} /></div>

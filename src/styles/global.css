@@ -336,6 +336,18 @@ label {
 .client-text-card p { margin: 24px 0 0; color: #7f8593; font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
 .coaching-text-modal { width: min(600px, 100%); }
 .coaching-text-modal textarea { margin-top: 7px; resize: vertical; }
+.exercise-library-page { display: flex; flex-direction: column; gap: 16px; }
+.library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.library-heading h1 { margin: 0; color: #111827; text-transform: none; }
+.library-heading p { margin: 3px 0 0; color: #7b8190; font-size: .86rem; }
+.library-table-card { background: white; border: 1px solid #e2e5eb; border-radius: 12px; overflow: hidden; }
+.library-table { min-width: 900px; }
+.library-actions { display: flex; gap: 5px; white-space: nowrap; }
+.library-actions button { padding: 5px 8px; font-size: .68rem; }
+.library-empty { min-height: 200px; display: grid; place-content: center; gap: 7px; text-align: center; color: #727987; }
+.library-empty strong { color: #202635; }
+.exercise-library-modal { width: min(620px, 100%); }
+.exercise-library-modal .field small { display: block; margin-top: 4px; color: var(--text-dim); }
 .workout-modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(15,18,25,.56); backdrop-filter: blur(1px); }
 .workout-modal { width: min(720px, 100%); max-height: calc(100vh - 48px); display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
 .workout-modal > header, .workout-modal > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--border); }
@@ -472,6 +484,7 @@ label {
   .client-profile-tabs { order: 3; width: 100%; margin: 5px 0 0; overflow-x: auto; }
   .client-profile-tabs a { min-height: 38px; white-space: nowrap; }
   .client-summary-grid { grid-template-columns: 1fr; }
+  .library-heading { align-items: stretch; flex-direction: column; }
   .client-identity-card, .client-communication-card { grid-row: auto; grid-column: auto; }
   .workout-modal-backdrop { padding: 0; align-items: end; }
   .workout-modal { max-height: 94vh; border-radius: 14px 14px 0 0; }

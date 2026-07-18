@@ -20,6 +20,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches can build a reusable exercise library with categories, target muscle groups, and movement patterns, then select saved exercises while creating player workouts.
+
 - The first Android and iOS app foundation is now available, with shared sign-in, role-based navigation, player program and diet views, and a coach player list connected to the same accounts as the website.
 - The Android and iOS app now supports player workout logging, diet check-ins, progress history, private media chat, and recorded voice messages.
 - Coaches can manage check-ups, send guidance, create workout and diet plans, reuse saved plans, and generate player keys from mobile.
