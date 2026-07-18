@@ -22,6 +22,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches can assign a complete saved program to a player from any starting week, using the program’s configured duration and full schedule.
+
 - Coaches can create reusable workout templates with descriptions, difficulty, notes, exercise selections, and sections.
 - Coaches can create, search, copy, and delete reusable program templates with difficulty and duration.
 - Program templates now include an editable week-by-week, seven-day schedule where coaches can add workouts or import them from the workout library.
