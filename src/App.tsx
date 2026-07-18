@@ -7,6 +7,7 @@ import AppLayout from './layouts/AppLayout';
 
 import Landing from './routes/Landing';
 import Terms from './routes/Terms';
+import Changelog from './routes/Changelog';
 import CoachLogin from './routes/auth/CoachLogin';
 import PlayerLogin from './routes/auth/PlayerLogin';
 import AdminLogin from './routes/auth/AdminLogin';
@@ -57,6 +58,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/changelog" element={<Changelog />} />
           <Route path="/login/coach" element={<CoachLogin />} />
           <Route path="/login/player" element={<PlayerLogin />} />
           <Route path="/login/admin" element={<AdminLogin />} />

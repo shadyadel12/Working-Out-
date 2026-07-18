@@ -46,6 +46,9 @@ export default function Landing() {
           </strong>
         </div>
         <div className="row">
+          <Link to="/changelog" className="muted" style={{ fontSize: '0.85rem' }}>
+            Changelog
+          </Link>
           <Link to="/login/admin" className="muted" style={{ fontSize: '0.85rem' }}>
             Admin
           </Link>

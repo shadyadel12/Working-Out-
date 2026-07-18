@@ -1,38 +1,65 @@
 # App Updates
 
-This page explains noticeable app changes in everyday language. The newest updates appear first.
+This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
 ## July 18, 2026
 
 ### New Features
 
-- Coaches can save workout plans and diet days for reuse with other players. Changes made for one player do not alter the saved version or another player's plan.
-- Players and coaches can exchange pictures, videos, audio files, and recorded voice messages in private chat.
-- Players can record how closely they followed their diet. Players and coaches can review diet progress, completed meals, notes, and adherence over time.
-- Coaches can prepare weekly workout and diet plans, add exercises and meals, copy days or weeks, and import complete plans from Excel in Settings.
+- A public Changelog page is now available before sign-in, so visitors can review the app's features and latest improvements.
+- Coaches can create accounts with an approved invitation key and players can join with an active subscription key.
+- Coaches can see all linked players, their subscription status, expiry date, and recent activity from the dashboard.
+- Coaches can create weekly training programs with training days, rest days, multiple workouts, and multiple exercises.
+- Each exercise can include target sets, repetitions, weight, coaching notes, and a demonstration video or video link.
+- Coaches can copy complete weeks, individual days, or exercises into other weeks.
+- Coaches can save workouts in a personal library and reuse them for other players. Changes for one player do not alter the saved version or another player's plan.
+- Coaches can create weekly diet plans containing meals, snacks, food choices, serving amounts, and daily notes.
+- Coaches can copy diet days or complete diet weeks, save diet days in a personal library, and reuse them with other players.
+- Coaches can download Excel templates and import complete workout or diet plans for a selected player from Settings.
+- Coaches can maintain a reusable list of foods while preparing diet plans.
+- Players can view their weekly workout schedule and diet plan one day at a time.
+- Players can record every exercise set, including repetitions and weight, add a comment, mark completion, and attach a video or video link.
+- Players and coaches can review workout history with filters for workout, exercise, and date range.
+- Players can record which planned meals they followed and leave a daily note for their coach.
+- Players and coaches can review diet adherence, meals followed, days recorded, and diet notes over time.
+- Coaches can complete daily player check-ups and choose the date they want to review.
+- Coaches can send general messages or attach guidance to a specific exercise.
+- Players and coaches can exchange live private text messages, pictures, videos, audio files, and recorded voice messages.
+- Coaches can contact the administrator through private support chat and include approved attachments.
+- Administrators can manage coaches, players, coach invitation keys, player subscription keys, renewals, expiry dates, and revoked access.
+- Administrators can review and reply to coach support conversations from one inbox.
+- Coaches can generate new player keys, renew existing player access, and copy keys for sharing.
+- Players whose access has expired can enter a renewed key and continue using their account.
+- Unread badges show new coach-player chat and support messages.
+- The app includes public Terms of Use and Changelog pages that do not require an account.
 
 ### Improvements
 
-- Progress results now load in smaller pages. Users can choose their filters first and press Apply, reducing unnecessary loading.
+- Progress results load in smaller pages. Users choose their filters first and press Apply, reducing unnecessary loading.
+- Coach diet plans load only the selected week after Apply is pressed, helping larger accounts remain responsive.
 - Important pages show clear loading placeholders while information is being prepared.
-- Coach diet plans load only the selected week, helping larger accounts remain responsive.
-- Workout and diet screens now use clearer, correctly displayed labels, symbols, and status messages.
-- Coaches can manage players, subscription keys, daily check-ups, messages, support conversations, workout progress, and diet progress from one place.
-- Players can view their assigned program and diet, record sets, repetitions, weights, comments, and videos, and follow their progress over time.
-- Administrators can manage coaches, players, access keys, and support conversations.
+- Private videos and attachments use temporary viewing links rather than remaining openly available.
+- Player videos are removed automatically 30 days after the coach first views them, helping control storage use.
+- Workout and diet screens use clear labels, symbols, confirmation messages, and mobile-friendly controls.
+- Workout and diet libraries reduce repeated information while keeping each player's changes independent.
+- Program and diet imports replace the selected player's plan in one complete action, avoiding partially updated plans.
+- The same account, plan, progress, and file rules are designed to support future mobile apps.
 
 ### Fixes
 
 - Administrator verification now recovers correctly if a previous setup was interrupted.
 - Coach and player chat updates appear promptly for both participants.
-- Player videos are removed automatically 30 days after the coach first views them, helping control storage use.
+- Program, diet, duplication, exercise, and template labels now display correctly.
+- Database updates for workout and diet libraries can safely continue if an earlier setup was interrupted.
 
 ### Security
 
 - Login and account access are protected according to each person's role, with additional verification for administrator accounts.
-- Personal plans, progress, conversations, and files are kept private and are available only to the appropriate player, coach, or administrator.
-- Uploaded files are checked for allowed type, size, and content, and workout videos receive additional safety screening before they become available.
+- Active subscriptions are checked before players can use private coaching features.
+- Personal plans, progress, conversations, and files are available only to the appropriate player, coach, or administrator.
+- Uploaded files are checked for approved type, size, name, and content. Workout videos receive additional safety screening before becoming available.
 - Links, form entries, spreadsheets, and access keys are checked carefully before they are accepted.
-- Important actions are confirmed securely, and the app includes safeguards against repeated or incomplete submissions.
+- Spreadsheet imports have practical limits and safety checks, and exported information is prepared safely.
+- Important changes are completed as a single action and guarded against accidental repeated submissions.
+- Private files remain private, temporary viewing access expires, and retained player videos are cleaned up automatically.
 - The app uses secure connections and modern browser protections, and its software packages are regularly reviewed and updated.
-
