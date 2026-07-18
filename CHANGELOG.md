@@ -8,6 +8,7 @@ This page explains what the app can do and what has changed in everyday language
 
 - The coach workspace now has a cleaner sidebar and client table with search, renewal filters, status filters, and compact client actions.
 - Coaches can now click a client’s name to open their profile and choose the coaching tool they need.
+- Coaches can add a complete workout from one popup, including exercises, targets, notes, videos, or a saved workout from their library.
 
 ### New Features
 

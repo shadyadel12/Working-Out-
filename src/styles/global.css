@@ -288,6 +288,29 @@ label {
 .player-option-card p { margin: 0; color: #7b8190; font-size: .8rem; line-height: 1.45; }
 .player-option-icon { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px; border-radius: 8px; background: #edecff; color: #373681; font-size: .72rem; font-weight: 800; }
 .player-option-arrow { margin-left: auto; color: #8b90a0; font-size: 1.3rem; }
+.workout-modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(15,18,25,.56); backdrop-filter: blur(1px); }
+.workout-modal { width: min(720px, 100%); max-height: calc(100vh - 48px); display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 24px 70px rgba(0,0,0,.28); }
+.workout-modal > header, .workout-modal > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.workout-modal > header h2 { margin: 0; }
+.workout-modal > footer { border-top: 1px solid var(--border); border-bottom: 0; }
+.workout-modal > footer button:last-child { margin-left: auto; }
+.modal-close { padding: 3px 9px; background: transparent; color: var(--text-dim); border: 0; font-size: 1.55rem; text-transform: none; }
+.modal-close:hover:not(:disabled) { box-shadow: none; }
+.workout-modal-body { padding: 18px 22px; overflow-y: auto; }
+.workout-library-choice { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 16px; padding: 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; }
+.workout-library-choice .field { flex: 1; margin: 0; }
+.modal-exercise-heading, .modal-exercise-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.modal-exercise-heading { margin: 18px 0 10px; }
+.modal-exercise-card { margin-bottom: 14px; padding: 15px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; }
+.modal-exercise-title { margin-bottom: 12px; }
+.modal-remove { padding: 3px 6px; background: transparent; color: var(--danger); font-size: .75rem; text-transform: none; }
+.modal-remove:hover:not(:disabled) { box-shadow: none; }
+.modal-target-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.workout-modal .field { margin-bottom: 11px; }
+.modal-library-check { display: flex; align-items: flex-start; gap: 10px; padding: 13px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; cursor: pointer; }
+.modal-library-check input { width: auto; margin-top: 3px; }
+.modal-library-check span { display: grid; gap: 2px; }
+.modal-library-check small { color: var(--text-dim); }
 
 /* Scrollable table wrapper — apply around wide tables */
 .table-scroll {
@@ -378,6 +401,11 @@ label {
   .player-subscription-summary { grid-template-columns: 1fr; }
   .player-profile-header { align-items: flex-start; flex-wrap: wrap; }
   .player-profile-header > .badge { margin-left: 0; }
+  .workout-modal-backdrop { padding: 0; align-items: end; }
+  .workout-modal { max-height: 94vh; border-radius: 14px 14px 0 0; }
+  .workout-modal-body { padding: 14px; }
+  .modal-target-grid { grid-template-columns: 1fr; gap: 0; }
+  .workout-library-choice { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 400px) {
