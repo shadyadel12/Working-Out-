@@ -23,6 +23,8 @@ This page explains what the app can do and what has changed in everyday language
 ### New Features
 
 - The complete website can now switch between English and Arabic from the language button on every page.
+- Mobile players can now move through an exercise one set at a time with Back and Next buttons. Reps are required before continuing, weight is optional, and comments or video are added on the final step.
+- Mobile diet plans now guide players through one meal at a time. They can move freely with Back and Next, mark meals completed, and save the day with Done.
 
 ### Improvements
 
