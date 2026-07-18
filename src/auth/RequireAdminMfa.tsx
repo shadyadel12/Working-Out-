@@ -29,6 +29,14 @@ export default function RequireAdminMfa({ children }: { children: ReactNode }) {
     const verified = factors.totp.find((factor) => factor.status === 'verified');
     if (verified) return setState({ kind: 'verify', factorId: verified.id });
 
+    // A previous enrollment can be abandoned before verification (closed tab,
+    // lost connection, etc.). Supabase will reject another factor with the
+    // same friendly name, so remove only stale unverified factors first.
+    for (const factor of factors.all.filter((item) => item.factor_type === 'totp' && item.status === 'unverified')) {
+      const { error: removeError } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      if (removeError) return setState({ kind: 'error', message: removeError.message });
+    }
+
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
       friendlyName: 'Coach Platform admin',
