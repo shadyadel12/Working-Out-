@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getPlayerAnalysis, groupByExerciseName } from '../api/analysis';
 import { todayISO } from '../lib/dates';
+import VideoPlayer from './VideoPlayer';
+import { markPlayerVideoViewed } from '../api/logs';
 
 /** Shared analysis view: totals + per-exercise session-over-session comparison. */
-export default function AnalysisView({ playerId }: { playerId: string }) {
+export default function AnalysisView({ playerId, coachView = false }: { playerId: string; coachView?: boolean }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['analysis', playerId],
     queryFn: () => getPlayerAnalysis(playerId),
@@ -14,6 +16,8 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
   const [workoutFilter, setWorkoutFilter] = useState<string>('');
   const [exerciseFilter, setExerciseFilter] = useState<string>('');
   const [range, setRange] = useState<Range>('all');
+  const [openVideos, setOpenVideos] = useState<Set<string>>(new Set());
+  const [markedViewed, setMarkedViewed] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
     if (!data) return { groups: [], totalCompleted: 0, totalLogged: 0 };
@@ -163,7 +167,8 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
                     const wPrev = prev ? parseWeight(prev.actual_weight) : null;
                     const weightUp = wNow != null && wPrev != null ? wNow - wPrev : null;
                     return (
-                      <tr key={l.id} style={{ borderTop: '1px solid var(--border)' }}>
+                      <Fragment key={l.id}>
+                      <tr style={{ borderTop: '1px solid var(--border)' }}>
                         <td style={cell}>{l.log_date}</td>
                         <td style={cell}>
                           {l.actual_sets ?? '—'}
@@ -187,9 +192,50 @@ export default function AnalysisView({ playerId }: { playerId: string }) {
                         <td style={cell}>{l.is_completed ? '✓' : '—'}</td>
                         <td style={cell}>{l.player_comment ?? ''}</td>
                         <td style={cell}>
+                          {coachView && l.player_video_url && (
+                            <button
+                              type="button"
+                              className="secondary"
+                              onClick={() => setOpenVideos((current) => {
+                                const next = new Set(current);
+                                if (next.has(l.id)) next.delete(l.id); else next.add(l.id);
+                                return next;
+                              })}
+                            >
+                              {openVideos.has(l.id) ? 'Hide' : 'View'}
+                            </button>
+                          )}
                           {l.player_video_url ? (l.player_video_is_external ? '🔗' : '🎬') : ''}
                         </td>
                       </tr>
+                      {coachView && l.player_video_url && openVideos.has(l.id) && (
+                        <tr style={{ borderTop: '1px solid var(--border)' }}>
+                          <td colSpan={7} style={cell}>
+                            <VideoPlayer
+                              url={l.player_video_url}
+                              isExternal={l.player_video_is_external}
+                              onPlay={l.player_video_is_external ? undefined : () => {
+                                if (markedViewed.has(l.id)) return;
+                                setMarkedViewed((current) => new Set(current).add(l.id));
+                                void markPlayerVideoViewed(l.id).catch((error) => {
+                                  setMarkedViewed((current) => {
+                                    const next = new Set(current);
+                                    next.delete(l.id);
+                                    return next;
+                                  });
+                                  console.error('Could not record coach video view:', error);
+                                });
+                              }}
+                            />
+                            {l.player_video_delete_after && (
+                              <p className="muted" style={{ marginBottom: 0 }}>
+                                Scheduled for deletion {new Date(l.player_video_delete_after).toLocaleString()}.
+                              </p>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     );
                   })}
                 </tbody>

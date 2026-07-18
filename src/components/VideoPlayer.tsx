@@ -6,9 +6,11 @@ import { validateExternalVideoUrl } from '../lib/security';
 export default function VideoPlayer({
   url,
   isExternal,
+  onPlay,
 }: {
   url: string | null;
   isExternal: boolean;
+  onPlay?: () => void;
 }) {
   const [signed, setSigned] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export default function VideoPlayer({
   if (err) return <span className="error">{err}</span>;
   if (!signed) return <span className="muted">Loading video…</span>;
   return (
-    <video src={signed} controls style={{ width: '100%', borderRadius: 8 }} />
+    <video src={signed} controls onPlay={onPlay} style={{ width: '100%', borderRadius: 8 }} />
   );
 }
 

@@ -55,3 +55,9 @@ export async function upsertLog(input: UpsertLogInput): Promise<ExerciseLog> {
   if (error) throw error;
   return data;
 }
+
+export async function markPlayerVideoViewed(logId: string): Promise<string> {
+  const { data, error } = await supabase.rpc('mark_player_video_viewed', { p_log_id: logId });
+  if (error) throw error;
+  return data as string;
+}

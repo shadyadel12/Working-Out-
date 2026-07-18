@@ -26,7 +26,7 @@ export default function PlayerAnalysis() {
           Analysis — {player?.profile?.name ?? player?.profile?.email ?? '…'}
         </h1>
       </div>
-      {playerId && <AnalysisView playerId={playerId} />}
+      {playerId && <AnalysisView playerId={playerId} coachView />}
     </div>
   );
 }

@@ -73,6 +73,8 @@ export type ExerciseLog = {
   actual_weight: string | null;
   player_video_url: string | null;
   player_video_is_external: boolean;
+  player_video_viewed_at: string | null;
+  player_video_delete_after: string | null;
   player_comment: string | null;
   is_completed: boolean;
   created_at: string;
@@ -300,6 +302,8 @@ export type Database = {
           actual_weight?: string | null;
           player_video_url?: string | null;
           player_video_is_external?: boolean;
+          player_video_viewed_at?: string | null;
+          player_video_delete_after?: string | null;
           player_comment?: string | null;
           is_completed?: boolean;
           created_at?: string;
@@ -315,6 +319,8 @@ export type Database = {
           actual_weight?: string | null;
           player_video_url?: string | null;
           player_video_is_external?: boolean;
+          player_video_viewed_at?: string | null;
+          player_video_delete_after?: string | null;
           player_comment?: string | null;
           is_completed?: boolean;
           created_at?: string;
@@ -526,6 +532,10 @@ export type Database = {
       admin_revoke_coach_key: {
         Args: { p_key_id: string };
         Returns: CoachKey;
+      };
+      mark_player_video_viewed: {
+        Args: { p_log_id: string };
+        Returns: string;
       };
       replace_program_import: {
         Args: { p_player_id: string; p_days: unknown };
