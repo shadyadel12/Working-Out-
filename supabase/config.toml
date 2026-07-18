@@ -28,6 +28,17 @@ enable_signup = true
 enable_signup = true
 enable_confirmations = false
 
+[auth.password]
+min_length = 10
+requirements = "lower_upper_letters_digits_symbols"
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
 # Local/staging Auth abuse controls. Mirror these values in the hosted
 # Supabase dashboard; hosted projects do not read this repository file.
 [auth.rate_limit]

@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { supabase } from '../lib/supabase';
 import { sanitizeSpreadsheetCell, validateSpreadsheetArchive } from '../lib/security';
 import type { ProgramDay, DayType } from '../types/database.types';
@@ -427,11 +427,11 @@ export function generateCsvTemplate(): string {
 }
 
 // ---------------------------------------------------------------------------
-// Excel import / export (SheetJS)
+// Excel import / export
 // ---------------------------------------------------------------------------
 
 /** Download a pre-formatted .xlsx template the coach fills in and re-uploads. */
-export function generateXlsxTemplate(): void {
+export async function generateXlsxTemplate(): Promise<void> {
   const headers = [
     'week', 'day', 'day_type', 'workout', 'exercise',
     'target_sets', 'target_reps', 'target_weight',
@@ -443,18 +443,12 @@ export function generateXlsxTemplate(): void {
     [1, 'Sun', 'rest',     '',         '',               '', '',     '',     '',                  '', 'Rest day - hydrate'],
     [1, 'Mon', 'training', 'Pull Day', 'Barbell Row',    4, '8',    '50kg', 'Squeeze at top',    '', ''],
   ];
-  const safeExamples = examples.map((row) => row.map(sanitizeSpreadsheetCell));
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...safeExamples]);
-
-  // Column widths for readability.
-  ws['!cols'] = [
-    { wch: 6 }, { wch: 6 }, { wch: 10 }, { wch: 16 }, { wch: 20 },
-    { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 22 }, { wch: 30 }, { wch: 22 },
-  ];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Program');
-  XLSX.writeFile(wb, 'program-template.xlsx');
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Program');
+  worksheet.addRows([headers, ...examples.map((row) => row.map(sanitizeSpreadsheetCell))]);
+  worksheet.columns = [6, 6, 10, 16, 20, 12, 12, 14, 22, 30, 22].map((width) => ({ width }));
+  const bytes = await workbook.xlsx.writeBuffer();
+  downloadWorkbook(bytes, 'program-template.xlsx');
 }
 
 /**
@@ -470,9 +464,11 @@ export async function importFromXlsx(
   if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
   validateSpreadsheetArchive(buffer);
-  const wb = XLSX.read(buffer, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const raw = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws, { defval: '' });
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+  const worksheet = workbook.worksheets[0];
+  if (!worksheet) throw new Error('The Excel file has no worksheet.');
+  const raw = worksheetRows(worksheet);
 
   // Normalise every cell to trimmed string so the rest of the logic is identical
   // to the CSV import path.
@@ -631,4 +627,28 @@ export async function importProgramFromCsv(
 
   void coachId;
   return replaceProgramImport(playerId, days);
+}
+
+function worksheetRows(worksheet: ExcelJS.Worksheet): Record<string, string>[] {
+  const headerRow = worksheet.getRow(1);
+  const headers = Array.from({ length: headerRow.cellCount }, (_, index) =>
+    String(headerRow.getCell(index + 1).text).trim().toLowerCase()
+  );
+  const rows: Record<string, string>[] = [];
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    const record = Object.fromEntries(headers.map((header, index) => [header, row.getCell(index + 1).text.trim()]));
+    if (Object.values(record).some(Boolean)) rows.push(record);
+  });
+  return rows;
+}
+
+function downloadWorkbook(bytes: ExcelJS.Buffer, filename: string): void {
+  const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }

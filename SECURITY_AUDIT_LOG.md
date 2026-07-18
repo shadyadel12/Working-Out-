@@ -30,7 +30,7 @@ Date: 2026-07-18
 | 23 | Mass assignment | Fixed | Profile columns are restricted and privileged mutations use self-authorizing RPCs. |
 | 24 | Unrestricted upload types | Fixed | Explicit allowlists exist in the client and Storage bucket metadata. |
 | 25 | Upload path traversal | Fixed | Null bytes/separators are rejected and generated UUID filenames are used. |
-| 26 | Dependency CVEs | Open | `xlsx@0.18.5` has known prototype-pollution/ReDoS advisories; size/archive controls reduce exposure but replacement remains recommended. |
+| 26 | Dependency CVEs | Fixed | Vulnerable `xlsx@0.18.5` was replaced with ExcelJS; its transitive `uuid` was overridden to a patched release. `npm audit` reports zero known vulnerabilities. |
 | 27 | CORS configuration | Managed externally | Supabase and the Edge Function control CORS; the scanner accepts authenticated cross-origin calls. |
 | 28 | Content Security Policy | Partially hardened | CSP, frame denial, HSTS, nosniff and referrer policy exist; inline style allowances remain for the current UI. |
 | 29 | HTTP security headers | Safe | Vercel config includes HSTS, CSP, frame denial, nosniff, referrer and permissions policies. |
@@ -96,3 +96,32 @@ Date: 2026-07-18
 | 89 | Bypassing malware scan via final bucket | Fixed | Player/coach insert policies on `videos` are removed; only the service-role Edge Function can promote a clean file. |
 | 90 | Server-side global 429 rate limiting | Infrastructure required | The direct-to-Supabase architecture requires hosted gateway/Edge Function routing for reliable per-IP limits and HTTP 429 responses. |
 
+## Semgrep and dependency retest — 2026-07-18
+
+Semgrep Pro 1.169.0 scanned 104 Git-tracked files with 2,944 code rules and
+85,615 supply-chain rules. It originally reported 10 non-blocking findings.
+Repeated findings against multiple source files are grouped below by root cause.
+
+| Test/finding | Original result | Action taken | Current result |
+|---|---|---|---|
+| `xlsx` CVE-2024-22363 (ReDoS), reported in program and diet imports | 2 reachable HIGH findings | Removed `xlsx@0.18.5`; replaced import/export with ExcelJS while retaining the 2 MB and ZIP/archive validation limits | Fixed; vulnerable package is absent |
+| `xlsx` CVE-2023-30533 (prototype pollution), reported in program and diet imports | 2 reachable HIGH findings | Removed `xlsx@0.18.5` and migrated both workbook parsers | Fixed; vulnerable package is absent |
+| Mutable GitHub Action references | 5 non-blocking code findings | Pinned checkout, setup-node, configure-pages, upload-pages-artifact, and deploy-pages to full 40-character commit SHAs | Fixed |
+| Browser `console.log` unsafe-format-string warning | 1 non-blocking code finding | Reviewed data flow; the only interpolated value is the trusted local year from `Date`, with no user-controlled input | False positive; no vulnerability |
+| ExcelJS transitive `uuid` advisory discovered during remediation | 1 MODERATE dependency finding | Overrode `uuid` to patched version `^11.1.1` | Fixed |
+| npm dependency audit after remediation | Not previously clean because of `xlsx` | Ran `npm audit` against the updated lockfile | Pass: 0 known vulnerabilities |
+| TypeScript validation after remediation | Required regression check | Ran `tsc --noEmit` | Pass |
+| Production build after remediation | Required regression check | Ran `tsc -b && vite build` | Pass |
+
+### Current summary
+
+| Classification | Count/status |
+|---|---:|
+| Earlier application/security scenarios reviewed | 90 |
+| Semgrep raw findings reviewed | 10 |
+| Semgrep root causes after deduplication | 3 |
+| High-severity dependency root causes remaining | 0 |
+| Known npm vulnerabilities remaining | 0 |
+| Confirmed Semgrep false positives | 1 |
+| Repository fixes requiring deployment/migration | Migrations `0022`–`0025` and the current dependency/workflow changes |
+| Production/infrastructure items still requiring configuration | MFA, password policy, hosted rate limits/CAPTCHA, backups/restore testing, encryption/region verification |

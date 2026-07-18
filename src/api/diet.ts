@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { supabase } from '../lib/supabase';
 import { sanitizeSpreadsheetCell, validateSpreadsheetArchive } from '../lib/security';
 import type { CoachFood, DietDay, DietMeal } from '../types/database.types';
@@ -141,7 +141,7 @@ export async function duplicateDietWeek(
 }
 
 /** Download an Excel template for importing a complete diet plan. */
-export function generateDietXlsxTemplate(): void {
+export async function generateDietXlsxTemplate(): Promise<void> {
   const headers = ['week', 'day', 'meal_type', 'meal_label', 'food', 'grams', 'coach_comment'];
   const examples = [
     [1, 'Sat', 'meal', 'Meal 1', 'Eggs', 150, 'Drink plenty of water'],
@@ -149,15 +149,12 @@ export function generateDietXlsxTemplate(): void {
     [1, 'Sat', 'snack', 'Snack 1', 'Banana', 120, ''],
     [1, 'Sun', 'meal', 'Meal 1', 'Chicken breast', 200, ''],
   ];
-  const safeExamples = examples.map((row) => row.map(sanitizeSpreadsheetCell));
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...safeExamples]);
-  ws['!cols'] = [
-    { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 18 },
-    { wch: 26 }, { wch: 12 }, { wch: 32 },
-  ];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Diet');
-  XLSX.writeFile(wb, 'diet-template.xlsx');
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Diet');
+  worksheet.addRows([headers, ...examples.map((row) => row.map(sanitizeSpreadsheetCell))]);
+  worksheet.columns = [8, 12, 12, 18, 26, 12, 32].map((width) => ({ width }));
+  const bytes = await workbook.xlsx.writeBuffer();
+  downloadWorkbook(bytes, 'diet-template.xlsx');
 }
 
 /**
@@ -172,16 +169,20 @@ export async function importDietFromXlsx(
   if (file.size > 2 * 1024 * 1024) throw new Error('Excel file must be smaller than 2 MB.');
   const buffer = await file.arrayBuffer();
   validateSpreadsheetArchive(buffer);
-  const workbook = XLSX.read(buffer, { type: 'array' });
-  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+  const firstSheet = workbook.worksheets[0];
   if (!firstSheet) throw new Error('The Excel file has no worksheet.');
-
-  const raw = XLSX.utils.sheet_to_json<Record<string, string | number>>(firstSheet, { defval: '' });
-  const rows = raw.map((row) =>
-    Object.fromEntries(
-      Object.entries(row).map(([key, value]) => [key.trim().toLowerCase(), String(value ?? '').trim()])
-    )
-  ) as Record<string, string>[];
+  const headerRow = firstSheet.getRow(1);
+  const headers = Array.from({ length: headerRow.cellCount }, (_, index) =>
+    headerRow.getCell(index + 1).text.trim().toLowerCase()
+  );
+  const rows: Record<string, string>[] = [];
+  firstSheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    const record = Object.fromEntries(headers.map((header, index) => [header, row.getCell(index + 1).text.trim()]));
+    if (Object.values(record).some(Boolean)) rows.push(record);
+  });
   if (rows.length === 0) throw new Error('The Excel file has no data rows.');
   if (rows.length > 5000) throw new Error('The Excel file cannot contain more than 5,000 rows.');
 
@@ -246,4 +247,14 @@ export async function importDietFromXlsx(
   if (error) throw error;
   void coachId;
   return data;
+}
+
+function downloadWorkbook(bytes: ExcelJS.Buffer, filename: string): void {
+  const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
