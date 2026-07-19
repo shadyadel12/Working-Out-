@@ -36,6 +36,7 @@ This page explains what the app can do and what has changed in everyday language
 - Mobile plan building now includes existing weekly schedules, training/rest days, workout and diet creation, saved-template assignment, day deletion/duplication, and whole-program assignment.
 - Mobile team management now shows member identity, role and status, supports client assignment, and allows owner revocation.
 - Mobile picture, video, and audio uploads now verify file size, reported format, and actual file content before storage; workout videos still require the server safety scan.
+- Terms of Use and the app feature/update overview are now available as native mobile screens.
 
 ### Improvements
 
