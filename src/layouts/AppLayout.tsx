@@ -14,9 +14,15 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const isCoach = profile?.role === 'coach';
   const libraryActive = links.some((link) => link.group === 'library' && location.pathname.startsWith(link.to));
   const [libraryOpen, setLibraryOpen] = useState(libraryActive);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('app_theme');
+    return saved === 'light' || saved === 'dark' ? saved : 'dark';
+  });
   useEffect(() => { if (libraryActive) setLibraryOpen(true); }, [libraryActive]);
+  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('app_theme', theme); }, [theme]);
   const countFor = (key?: 'chat' | 'support') => key === 'chat' ? chatCount : key === 'support' ? supportCount : 0;
   async function handleSignOut() { await signOut(); navigate('/', { replace: true }); }
+  const themeToggle = <button type="button" className="secondary theme-toggle" aria-label={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} title={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}><span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span><span>{theme === 'dark' ? 'Light' : 'Dark'}</span></button>;
   const libraryLinks = links.filter((link) => link.group === 'library');
   const regularLinks = links.filter((link) => !link.group);
   const pageTheme = location.pathname.split('/').filter(Boolean).pop()?.replace(/[^a-z-]/g, '') || 'home';
@@ -42,8 +48,8 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   </nav>;
 
   return <div className={`${isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'} route-background route-${pageTheme}`}>
-    {isCoach && <header className="coach-topnav"><div className="coach-brand"><span className="coach-brand-mark"><AppIcon name="pulse" size={19} /></span><span>PULSE<strong>FIT</strong></span></div><div className="coach-nav">{navigation}</div><div className="coach-top-account"><span>{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header>}
-    <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
+    {isCoach && <header className="coach-topnav"><div className="coach-brand"><span className="coach-brand-mark"><AppIcon name="pulse" size={19} /></span><span>PULSE<strong>FIT</strong></span></div><div className="coach-nav">{navigation}</div><div className="coach-top-account"><span>{profile?.name ?? profile?.email}</span>{themeToggle}<button className="secondary" onClick={handleSignOut}>Sign out</button></div></header>}
+    <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
   </div>;
 }
 

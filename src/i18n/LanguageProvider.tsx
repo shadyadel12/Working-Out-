@@ -240,6 +240,7 @@ const ar: Record<string, string> = {
   "Your Body": "جسمك",
   "Your Life": "حياتك",
   "Personal coaching platform": "منصة تدريب شخصي",
+  "Light": "فاتح", "Dark": "داكن", "Use light mode": "استخدام الوضع الفاتح", "Use dark mode": "استخدام الوضع الداكن",
   "Start Training": "ابدأ التدريب",
   "Log in": "تسجيل الدخول",
   "I'm a Player →": "أنا لاعب ←",
