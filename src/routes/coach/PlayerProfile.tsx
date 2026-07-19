@@ -10,6 +10,7 @@ import { listProgramDays } from '../../api/programs';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import { getPlayerCoachingProfile, savePlayerCoachingProfile } from '../../api/playerCoachingProfile';
 import { getPlayerDetails } from '../../api/playerDetails';
+import AppIcon from '../../components/AppIcon';
 
 export default function PlayerProfile() {
   const { playerId } = useParams<{ playerId: string }>();
@@ -55,6 +56,7 @@ export default function PlayerProfile() {
       <nav className="client-profile-tabs" aria-label="Player sections">
         <Link className="active" to={`/coach/players/${playerId}`}>Summary</Link>
         <Link to={`/coach/players/${playerId}/program`}>Training</Link>
+        <Link className="client-diet-tab" to={`/coach/players/${playerId}/diet`}><AppIcon name="nutrition" size={16} /> <span>Diet</span></Link>
         <Link to={`/coach/players/${playerId}/analysis`}>Analysis</Link>
         <Link to={`/coach/players/${playerId}/diet-progress`}>Diet Analysis</Link>
       </nav>

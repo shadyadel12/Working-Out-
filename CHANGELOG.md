@@ -35,6 +35,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- The coach player header once again includes a clearly labeled Diet tab with its own nutrition icon.
 - The coach mobile navigation now calls the player-review area Analysis, keeps renewals in More, and opens Plans only after choosing a player.
 - Analysis now shows only registered players with active, unexpired access.
 - Diet Schedule is now its own Plans option beside the training Schedule, with collapsible meal details.
