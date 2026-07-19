@@ -6,6 +6,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches can now build workouts in a focused three-pane editor using searchable exercises and reusable sections, a clear arrangement canvas, and a detailed prescription inspector.
+- Workout prescriptions now support sets, reps or time, rest, load or percentage load, tempo, each-side targets, coaching notes, and linked exercise groups.
+- Workouts now support keyboard-accessible ordering, continuous validation, revision publishing, duplication, and safe archiving.
 - The coach Library now includes reusable workout sections, tasks, forms, meal plans, ingredients, recipes, recipe books, and metric groups alongside exercises, workouts, and programs.
 - Coaches can draft, publish, duplicate, share, and safely archive reusable Library content while preserving assigned player history.
 - Program delivery now records an immutable revision snapshot, start date, starting day, and controlled template-update preference.
@@ -16,6 +19,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Reusable sections expand into their prescribed exercises when a workout is delivered, while remaining one manageable block in the workout editor.
 - Library pages now use responsive cards, lifecycle filters, clear empty states, labeled fields, keyboard focus indicators, and accessible editors.
 - Coach teams can see only Library content explicitly shared with their workspace, while private content remains owner-only.
 - The website coach navigation and dashboard now use a consistent set of original interface icons instead of temporary letters and symbols.

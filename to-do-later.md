@@ -55,5 +55,6 @@ Never put Cloudflare passwords, payment details, API tokens, or secret keys in c
 # Coach Library hosted deployment
 
 - Apply `supabase/migrations/0048_coach_library_platform.sql` to the hosted Supabase project before deploying the new Library routes.
+- Apply `supabase/migrations/0049_training_blueprint_builder.sql` immediately after `0048` before enabling the workout builder.
 - Regenerate hosted database TypeScript types with `npm run db:types` after the migration is live.
 - Controlled follow-template update diffs are intentionally not automatic; add an approval UI before propagating published revisions to active deliveries.

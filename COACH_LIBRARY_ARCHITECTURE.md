@@ -34,7 +34,9 @@ The coach Library is split into four product domains while keeping the existing 
 
 ## Deployment
 
-Apply `supabase/migrations/0048_coach_library_platform.sql` before deploying the updated web client. The new Library routes query tables introduced by that migration.
+Apply `supabase/migrations/0048_coach_library_platform.sql` and then `0049_training_blueprint_builder.sql` before deploying the updated web client. The new Library routes and workout builder query tables and functions introduced by those migrations.
+
+Migration `0049` adds atomic workout-blueprint saves, safe duplication, advanced exercise prescriptions, and delivery-compatible expansion of reusable sections.
 
 After applying the migration, regenerate the Supabase TypeScript definitions with:
 
