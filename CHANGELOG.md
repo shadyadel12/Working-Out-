@@ -6,12 +6,15 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Coaches now start from a focused attention center on website and mobile, with priority players, unread conversations, check-ups due, programming gaps, and low-activity alerts in one place.
 - The website now opens with a fully redesigned animated PULSEFIT experience that introduces training, nutrition, progress, and coach support.
 - Website and mobile loading screens now use distinct branded visuals for different areas of the platform.
 - Mobile actions and navigation now use clear, consistent icons with accessible descriptions.
 
 ### Improvements
 
+- Coach dashboard actions now lead directly to analysis, messages, check-ups, programming, and roster tools, with clearer priority labels and accessible tap targets.
+- Mobile coaches can now filter a player's workout analysis by workout, exercise, and date range, with the same results and pagination as the website.
 - Every signed-in website area and mobile screen now has its own subtle background atmosphere while keeping content easy to read.
 - Landing-page motion adapts for people who prefer reduced animation and remains responsive on phones, tablets, and desktop screens.
 

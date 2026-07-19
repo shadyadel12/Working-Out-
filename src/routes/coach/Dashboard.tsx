@@ -1,67 +1,111 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
-import { listPlayersForCoach, type PlayerWithLink } from '../../api/players';
 import { isSubscriptionActive } from '../../api/auth';
+import { listCheckupsForDate } from '../../api/checkups';
+import { listCoachChatThreads } from '../../api/chat';
+import { listPlayerActivitySummaries, listPlayersForCoach } from '../../api/players';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
+import { todayISO } from '../../lib/dates';
+
+const DAY = 86_400_000;
 
 export default function CoachDashboard() {
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const coachId = session!.user.id;
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
-  const [renew, setRenew] = useState('all');
-  const [programming, setProgramming] = useState('all');
-  const { data, isLoading, error } = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
+  const today = todayISO();
+  const playersQuery = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
+  const claimedIds = useMemo(() => (playersQuery.data ?? []).flatMap((player) => player.profile ? [player.profile.id] : []), [playersQuery.data]);
+  const activityQuery = useQuery({
+    queryKey: ['coach-dashboard-activity', coachId, claimedIds],
+    queryFn: () => listPlayerActivitySummaries(claimedIds),
+    enabled: claimedIds.length > 0,
+  });
+  const checkupsQuery = useQuery({ queryKey: ['checkups', coachId, today], queryFn: () => listCheckupsForDate(coachId, today) });
+  const chatsQuery = useQuery({ queryKey: ['coach-chat-threads', coachId], queryFn: () => listCoachChatThreads(coachId) });
 
-  const players = useMemo(() => (data ?? []).filter((player) => {
-    const term = search.trim().toLowerCase();
-    const searchable = `${player.profile?.name ?? ''} ${player.profile?.email ?? ''} ${player.link.subscription_key}`.toLowerCase();
-    const active = isSubscriptionActive(player.link);
-    if (term && !searchable.includes(term)) return false;
-    if (status === 'active' && !active) return false;
-    if (status === 'expired' && active) return false;
-    if (status === 'pending' && player.profile) return false;
-    if (programming === 'needed' && (!player.profile || !player.needsProgramming)) return false;
-    if (programming === 'ready' && (!player.profile || player.needsProgramming)) return false;
-    if (renew !== 'all') {
-      const days = Math.ceil((new Date(`${player.link.subscription_end_date}T23:59:59`).getTime() - Date.now()) / 86400000);
-      if (renew === '7' && (days < 0 || days > 7)) return false;
-      if (renew === '30' && (days < 0 || days > 30)) return false;
-      if (renew === 'overdue' && days >= 0) return false;
-    }
-    return true;
-  }), [data, programming, renew, search, status]);
+  const dashboard = useMemo(() => {
+    const players = playersQuery.data ?? [];
+    const activities = new Map((activityQuery.data ?? []).map((item) => [item.playerId, item.lastActivity]));
+    const checkups = new Map((checkupsQuery.data ?? []).map((item) => [item.player_id, item.is_checked]));
+    const threads = new Map((chatsQuery.data ?? []).map((item) => [item.player_id, item]));
+    const weekday = new Date(`${today}T12:00:00`).getDay();
+    const roster = players.flatMap((player) => {
+      if (!player.profile) return [];
+      const playerProfile = player.profile;
+      const lastActivity = activities.get(playerProfile.id) ?? null;
+      const inactiveDays = lastActivity ? Math.max(0, Math.floor((Date.now() - new Date(`${lastActivity}T12:00:00`).getTime()) / DAY)) : null;
+      const dueCheckup = player.link.is_vip || player.link.checkup_weekdays.includes(weekday);
+      return [{ ...player, profile: playerProfile, lastActivity, inactiveDays, dueCheckup, checked: checkups.get(playerProfile.id) ?? false, unread: threads.get(playerProfile.id)?.unread ?? false }];
+    });
+    const attention = roster.filter((player) => player.unread || (player.dueCheckup && !player.checked) || player.needsProgramming || player.inactiveDays === null || player.inactiveDays >= 7 || !isSubscriptionActive(player.link));
+    attention.sort((a, b) => score(b) - score(a));
+    return {
+      roster,
+      attention,
+      active: roster.filter((player) => isSubscriptionActive(player.link)).length,
+      unread: roster.filter((player) => player.unread).length,
+      overdueCheckups: roster.filter((player) => player.dueCheckup && !player.checked).length,
+      inactive: roster.filter((player) => player.inactiveDays === null || player.inactiveDays >= 7).length,
+    };
+  }, [activityQuery.data, chatsQuery.data, checkupsQuery.data, playersQuery.data, today]);
 
-  return <div className="coach-clients-page">
-    <div className="coach-page-heading"><div><h1>Clients</h1><p>Manage your players and open their coaching tools.</p></div></div>
-    <div className="client-filters" aria-label="Client filters">
-      <select aria-label="Renew date" value={renew} onChange={(event) => setRenew(event.target.value)}><option value="all">Renew Date</option><option value="7">Next 7 days</option><option value="30">Next 30 days</option><option value="overdue">Overdue</option></select>
-      <select aria-label="Needs programming" value={programming} onChange={(event) => setProgramming(event.target.value)}><option value="all">Needs Programming</option><option value="needed">Yes</option><option value="ready">No</option></select>
-      <select aria-label="Status" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Status</option><option value="active">Active</option><option value="expired">Expired</option><option value="pending">Pending</option></select>
-    </div>
-    {isLoading && <LoadingSkeleton rows={5} />}
-    {error && <p className="error">{(error as Error).message}</p>}
-    {data?.length === 0 && <div className="card"><p className="muted">No players yet. Create a subscription key in Settings — once a player signs up with it, they will appear here.</p></div>}
-    {data && data.length > 0 && <div className="clients-table-card">
-      <div className="clients-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search clients" aria-label="Search clients" /></div>
-      <div className="clients-table-scroll"><table className="clients-table"><thead><tr><th>Name</th><th>Needs Programming</th><th>Renew date</th><th>Status</th><th><span className="sr-only">Open profile</span></th></tr></thead><tbody>{players.map((player) => <PlayerRow key={player.link.id} player={player} />)}</tbody></table></div>
-      {players.length === 0 && <div className="clients-empty">No clients match these filters.</div>}
-      <div className="clients-table-footer">Showing {players.length} of {data.length} clients</div>
-    </div>}
+  const loading = playersQuery.isLoading || (claimedIds.length > 0 && activityQuery.isLoading);
+  const error = playersQuery.error || activityQuery.error || checkupsQuery.error || chatsQuery.error;
+  const firstName = profile?.name?.split(' ')[0] || 'Coach';
+
+  return <div className="coach-overview-page">
+    <section className="coach-overview-hero">
+      <div><span className="overview-kicker">Coach command center</span><h1>Good day, {firstName}</h1><p>Start with the players who need you most, then keep the rest of the roster moving.</p></div>
+      <div className="overview-hero-actions"><Link className="overview-primary-action" to="/coach/checkups">Start check-ups</Link><Link className="overview-secondary-action" to="/coach/messages">Open inbox</Link></div>
+    </section>
+
+    {loading && <LoadingSkeleton rows={5} />}
+    {error && <p className="error" role="alert">{(error as Error).message}</p>}
+    {!loading && !error && <>
+      <section className="overview-metrics" aria-label="Coaching overview">
+        <Metric label="Need attention" value={dashboard.attention.length} detail="Prioritized across your roster" tone="accent" />
+        <Metric label="Unread messages" value={dashboard.unread} detail={dashboard.unread ? 'Waiting for a reply' : 'Inbox is clear'} tone="violet" />
+        <Metric label="Check-ups due" value={dashboard.overdueCheckups} detail="Scheduled for today" tone="warning" />
+        <Metric label="Inactive 7+ days" value={dashboard.inactive} detail={`${dashboard.active} active players`} tone="mint" />
+      </section>
+
+      <div className="overview-layout">
+        <section className="attention-panel">
+          <header><div><span className="overview-kicker">Priority queue</span><h2>Players needing attention</h2></div><Link to="/coach/checkups">View today’s check-ups</Link></header>
+          {dashboard.attention.length === 0 ? <div className="attention-empty"><strong>You’re caught up.</strong><p>No players currently have urgent coaching signals.</p></div> : <div className="attention-list">{dashboard.attention.slice(0, 6).map((player) => {
+            const name = player.profile.name ?? player.profile.email;
+            return <article className="attention-row" key={player.profile.id}>
+              <div className="attention-avatar" aria-hidden="true">{initials(name)}</div>
+              <div className="attention-person"><strong>{name} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>{activityLabel(player.lastActivity, player.inactiveDays)}</small></div>
+              <div className="attention-signals">{player.unread && <span className="signal unread">Unread message</span>}{player.dueCheckup && !player.checked && <span className="signal checkup">Check-up due</span>}{player.needsProgramming && <span className="signal program">Needs program</span>}{(player.inactiveDays === null || player.inactiveDays >= 7) && <span className="signal inactive">Low activity</span>}{!isSubscriptionActive(player.link) && <span className="signal expired">Subscription</span>}</div>
+              <Link className="attention-action" aria-label={`Open ${name}`} to={`/coach/players/${player.profile.id}`}>Open <span aria-hidden="true">→</span></Link>
+            </article>;
+          })}</div>}
+        </section>
+
+        <aside className="overview-sidebar">
+          <section className="overview-side-card"><span className="overview-kicker">Today</span><h2>{dashboard.overdueCheckups === 0 ? 'All clear' : `${dashboard.overdueCheckups} check-ups left`}</h2><p>{dashboard.overdueCheckups === 0 ? 'Every scheduled player has been checked.' : 'Work through the scheduled list while context is fresh.'}</p><Link to="/coach/checkups">Open daily check-ups →</Link></section>
+          <section className="overview-side-card"><span className="overview-kicker">Quick actions</span><nav aria-label="Quick coach actions"><Link to="/coach/program-library"><span>▤</span><span><strong>Build a program</strong><small>Start from a reusable plan</small></span></Link><Link to="/coach/workout-library"><span>＋</span><span><strong>Create a workout</strong><small>Add to your library</small></span></Link><Link to="/coach/settings"><span>⌁</span><span><strong>Invite a player</strong><small>Generate a subscription key</small></span></Link></nav></section>
+        </aside>
+      </div>
+    </>}
   </div>;
 }
 
-function PlayerRow({ player }: { player: PlayerWithLink }) {
-  const active = isSubscriptionActive(player.link);
-  const claimed = player.profile !== null;
-  const displayName = player.profile?.name ?? player.profile?.email ?? 'Unclaimed key';
-  return <tr>
-    <td>{player.profile ? <Link className="client-name-link" to={`/coach/players/${player.profile.id}`}><strong>{displayName} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>{player.profile.email}</small></Link> : <><strong>{displayName} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>Waiting for player signup</small></>}</td>
-    <td>{claimed ? <span className={`programming-status ${player.needsProgramming ? 'needed' : 'ready'}`}>{player.needsProgramming ? 'Yes' : 'No'}</span> : <span className="muted">—</span>}</td>
-    <td>{player.link.subscription_end_date}</td>
-    <td><span className={`badge ${claimed ? (active ? 'active' : 'expired') : 'pending'}`}>{claimed ? (active ? 'Active' : 'Expired') : 'Pending'}</span></td>
-    <td className="client-actions">{claimed && player.profile ? <Link className="open-client-profile" aria-label={`Open ${displayName}'s profile`} to={`/coach/players/${player.profile.id}`}>›</Link> : <span className="muted">—</span>}</td>
-  </tr>;
+function score(player: { unread: boolean; dueCheckup: boolean; checked: boolean; needsProgramming: boolean; inactiveDays: number | null; link: Parameters<typeof isSubscriptionActive>[0] }) {
+  return Number(player.unread) * 5 + Number(player.dueCheckup && !player.checked) * 4 + Number(player.needsProgramming) * 3 + Number(player.inactiveDays === null || player.inactiveDays >= 7) * 2 + Number(!isSubscriptionActive(player.link)) * 4;
+}
+
+function Metric({ label, value, detail, tone }: { label: string; value: number; detail: string; tone: string }) {
+  return <article className={`overview-metric ${tone}`}><span>{label}</span><strong>{value}</strong><small>{detail}</small></article>;
+}
+
+function initials(name: string) { return name.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase(); }
+function activityLabel(date: string | null, days: number | null) {
+  if (!date || days === null) return 'No training activity yet';
+  if (days === 0) return 'Trained today';
+  if (days === 1) return 'Last trained yesterday';
+  return `Last trained ${days} days ago`;
 }

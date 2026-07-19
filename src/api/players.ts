@@ -7,6 +7,27 @@ export interface PlayerWithLink {
   needsProgramming: boolean;
 }
 
+export interface PlayerActivitySummary {
+  playerId: string;
+  lastActivity: string | null;
+}
+
+/** Latest training activity for every claimed player in a coach roster. */
+export async function listPlayerActivitySummaries(playerIds: string[]): Promise<PlayerActivitySummary[]> {
+  if (playerIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from('exercise_logs')
+    .select('player_id,log_date')
+    .in('player_id', playerIds)
+    .order('log_date', { ascending: false });
+  if (error) throw error;
+  const latest = new Map<string, string>();
+  for (const row of data ?? []) {
+    if (!latest.has(row.player_id)) latest.set(row.player_id, row.log_date);
+  }
+  return playerIds.map((playerId) => ({ playerId, lastActivity: latest.get(playerId) ?? null }));
+}
+
 /**
  * All players linked to the given coach, with their subscription link.
  * Includes unclaimed keys (profile === null). RLS scopes this to the coach.
