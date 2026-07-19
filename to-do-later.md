@@ -52,3 +52,8 @@ A custom domain is not required to begin the R2 storage work.
 ## Important safety note
 
 Never put Cloudflare passwords, payment details, API tokens, or secret keys in chat or commit them to Git. Store secrets only in Cloudflare, Vercel, or local environment settings when instructed.
+# Coach Library hosted deployment
+
+- Apply `supabase/migrations/0048_coach_library_platform.sql` to the hosted Supabase project before deploying the new Library routes.
+- Regenerate hosted database TypeScript types with `npm run db:types` after the migration is live.
+- Controlled follow-template update diffs are intentionally not automatic; add an approval UI before propagating published revisions to active deliveries.

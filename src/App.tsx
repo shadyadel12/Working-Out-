@@ -30,6 +30,7 @@ import CoachPlayerProfile from './routes/coach/PlayerProfile';
 import CoachExerciseLibrary from './routes/coach/ExerciseLibrary';
 import CoachWorkoutLibrary from './routes/coach/WorkoutLibrary';
 import CoachProgramLibrary from './routes/coach/ProgramLibrary';
+import LibraryCatalog from './routes/coach/LibraryCatalog';
 import CoachTeam from './routes/coach/Team';
 import CoachSubs from './routes/coach/Subs';
 import PlayerProgram from './routes/player/Program';
@@ -46,7 +47,15 @@ const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard', badgeKey: 'chat' as const },
   { to: '/coach/exercise-library', label: 'Exercises', group: 'library' as const },
   { to: '/coach/workout-library', label: 'Workouts', group: 'library' as const },
+  { to: '/coach/section-library', label: 'Sections', group: 'library' as const },
   { to: '/coach/program-library', label: 'Programs', group: 'library' as const },
+  { to: '/coach/task-library', label: 'Tasks', group: 'library' as const },
+  { to: '/coach/form-library', label: 'Forms', group: 'library' as const },
+  { to: '/coach/meal-plan-library', label: 'Meal Plans', group: 'library' as const },
+  { to: '/coach/recipe-library', label: 'Recipes', group: 'library' as const },
+  { to: '/coach/ingredient-library', label: 'Ingredients', group: 'library' as const },
+  { to: '/coach/recipe-book-library', label: 'Recipe Books', group: 'library' as const },
+  { to: '/coach/metric-group-library', label: 'Metric Groups', group: 'library' as const },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/messages', label: 'Messages', badgeKey: 'chat' as const },
   { to: '/coach/team', label: 'Team' },
@@ -94,7 +103,15 @@ export default function App() {
             <Route path="dashboard" element={<CoachDashboard />} />
             <Route path="exercise-library" element={<CoachExerciseLibrary />} />
             <Route path="workout-library" element={<CoachWorkoutLibrary />} />
+            <Route path="section-library" element={<LibraryCatalog kind="sections" />} />
             <Route path="program-library" element={<CoachProgramLibrary />} />
+            <Route path="task-library" element={<LibraryCatalog kind="tasks" />} />
+            <Route path="form-library" element={<LibraryCatalog kind="forms" />} />
+            <Route path="meal-plan-library" element={<LibraryCatalog kind="meal-plans" />} />
+            <Route path="recipe-library" element={<LibraryCatalog kind="recipes" />} />
+            <Route path="ingredient-library" element={<LibraryCatalog kind="ingredients" />} />
+            <Route path="recipe-book-library" element={<LibraryCatalog kind="recipe-books" />} />
+            <Route path="metric-group-library" element={<LibraryCatalog kind="metric-groups" />} />
             <Route path="players/:playerId" element={<CoachPlayerProfile />} />
             <Route path="players/:playerId/program" element={<ProgramBuilder />} />
             <Route path="players/:playerId/diet" element={<CoachDiet />} />

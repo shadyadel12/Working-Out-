@@ -6,6 +6,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- The coach Library now includes reusable workout sections, tasks, forms, meal plans, ingredients, recipes, recipe books, and metric groups alongside exercises, workouts, and programs.
+- Coaches can draft, publish, duplicate, share, and safely archive reusable Library content while preserving assigned player history.
+- Program delivery now records an immutable revision snapshot, start date, starting day, and controlled template-update preference.
 - Coaches now start from a focused attention center on website and mobile, with priority players, unread conversations, check-ups due, programming gaps, and low-activity alerts in one place.
 - The website now opens with a fully redesigned animated PULSEFIT experience that introduces training, nutrition, progress, and coach support.
 - Website and mobile loading screens now use distinct branded visuals for different areas of the platform.
@@ -13,6 +16,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Library pages now use responsive cards, lifecycle filters, clear empty states, labeled fields, keyboard focus indicators, and accessible editors.
+- Coach teams can see only Library content explicitly shared with their workspace, while private content remains owner-only.
 - The website coach navigation and dashboard now use a consistent set of original interface icons instead of temporary letters and symbols.
 - Coach dashboard actions now lead directly to analysis, messages, check-ups, programming, and roster tools, with clearer priority labels and accessible tap targets.
 - Mobile coaches can now filter a player's workout analysis by workout, exercise, and date range, with the same results and pagination as the website.
