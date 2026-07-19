@@ -21,6 +21,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- The admin interface can temporarily be opened without completing the sign-in or verification screens; protected admin data remains enforced by the server.
 - Reusable sections expand into their prescribed exercises when a workout is delivered, while remaining one manageable block in the workout editor.
 - Library pages now use responsive cards, lifecycle filters, clear empty states, labeled fields, keyboard focus indicators, and accessible editors.
 - Coach teams can see only Library content explicitly shared with their workspace, while private content remains owner-only.

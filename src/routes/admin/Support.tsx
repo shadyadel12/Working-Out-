@@ -30,7 +30,7 @@ function formatTime(iso: string) {
 
 export default function AdminSupport() {
   const { session } = useAuth();
-  const adminId = session!.user.id;
+  const adminId = session?.user.id ?? 'temporary-admin-preview';
   const qc = useQueryClient();
   const [selectedCoachId, setSelectedCoachId] = useState<string | null>(null);
 
