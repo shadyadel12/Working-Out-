@@ -30,6 +30,9 @@ This page explains what the app can do and what has changed in everyday language
 - Coach, player, and admin mobile roles now have polished role-specific home dashboards, with one shared visual system for cards, fields, actions, spacing, and status colors.
 - Mobile coaches can now open a complete player workspace with personal details, workout and diet analysis, private notes, goals, injuries, equipment, check-ups, renewals, and direct guidance.
 - Mobile players can complete and edit every required personal and sports profile field, and use apply-based workout/diet progress filters with paged results.
+- Mobile administrators now have organized coach, coach-key, and player-access management with search, key generation, renewal state, restoration, and revocation.
+- Coach signup on mobile now supports both owner invitation keys and role-based team-member invitation keys.
+- Mobile coach libraries now provide complete reusable exercise fields, workout templates with exercises, diet templates with meals, and program details for later assignment.
 
 ### Improvements
 
