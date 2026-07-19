@@ -28,6 +28,7 @@ This page explains what the app can do and what has changed in everyday language
 - Mobile diet plans now guide players through one meal at a time. They can move freely with Back and Next, mark meals completed, and save the day with Done.
 - The coach mobile app now includes daily scheduled check-ups, VIP and subscription tools, team invitations and roles, reusable exercise/workout/diet/program libraries, support, and account controls in a phone-friendly navigation.
 - Coach, player, and admin mobile roles now have polished role-specific home dashboards, with one shared visual system for cards, fields, actions, spacing, and status colors.
+- Mobile coaches can now open a complete player workspace with personal details, workout and diet analysis, private notes, goals, injuries, equipment, check-ups, renewals, and direct guidance.
 
 ### Improvements
 
