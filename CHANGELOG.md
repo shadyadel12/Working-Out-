@@ -21,6 +21,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Arabic mode now translates newly added Library, Training, Diet, admin, player, dialog, status, loading, and builder text, including content that updates after the page opens.
 - The admin interface can temporarily be opened without completing the sign-in or verification screens; protected admin data remains enforced by the server.
 - Reusable sections expand into their prescribed exercises when a workout is delivered, while remaining one manageable block in the workout editor.
 - Library pages now use responsive cards, lifecycle filters, clear empty states, labeled fields, keyboard focus indicators, and accessible editors.

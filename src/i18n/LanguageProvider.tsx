@@ -291,6 +291,99 @@ const ar: Record<string, string> = {
   "Experience Level": "مستوى الخبرة",
 };
 
+// Keep new product areas translatable without coupling every component to i18n.
+// Exact phrases are preferred so Arabic copy remains natural and contextual.
+Object.assign(ar, {
+  "Actions": "الإجراءات", "Admin — Keys": "الإدارة — المفاتيح", "Analysis": "التحليل",
+  "Archive": "أرشفة", "Archived": "مؤرشف", "Arrangement": "الترتيب", "Draft": "مسودة",
+  "Published": "منشور", "Publish": "نشر", "Private": "خاص", "Created": "تاريخ الإنشاء",
+  "Created On": "تاريخ الإنشاء", "Last updated": "آخر تحديث", "Difficulty": "الصعوبة",
+  "Adherence": "الالتزام", "Age": "العمر", "Coach": "المدرب", "Player": "اللاعب",
+  "Day": "اليوم", "Expiry": "انتهاء الصلاحية", "Features": "المميزات", "Food": "الطعام",
+  "Grams": "الجرامات", "Group": "المجموعة", "Key": "المفتاح", "Load": "الحمل",
+  "Meals": "الوجبات", "Number": "رقم", "Open": "فتح", "Prescription": "تفاصيل التمرين",
+  "Quantity": "الكمية", "Question": "السؤال", "Ready when you are": "جاهز عندما تكون مستعدًا",
+  "Sections": "الأقسام", "Section": "القسم", "Tasks": "المهام", "Forms & Questionnaires": "النماذج والاستبيانات",
+  "Meal Plan Templates": "قوالب خطط الوجبات", "Recipes": "الوصفات", "Ingredients": "المكونات",
+  "Recipe Books": "كتب الوصفات", "Metric Groups": "مجموعات القياسات", "Tracking": "التتبع",
+  "Add Exercise": "إضافة تمرين", "Add workout": "إضافة حصة", "Add New Exercise": "إضافة تمرين جديد",
+  "Add custom food": "إضافة طعام مخصص", "Add to your library": "إضافة إلى مكتبتك",
+  "Add foods from the library or enter a custom food.": "أضف أطعمة من المكتبة أو أدخل طعامًا مخصصًا.",
+  "Add an exercise or reusable section from the source panel.": "أضف تمرينًا أو قسمًا قابلًا لإعادة الاستخدام من لوحة المصادر.",
+  "Arrange exercises, then edit the selected prescription.": "رتّب التمارين، ثم عدّل تفاصيل التمرين المحدد.",
+  "Build player workout": "إنشاء حصة للاعب", "Build from scratch": "البدء من الصفر",
+  "Build a program": "إنشاء برنامج", "Build versioned sessions from reusable exercises and sections.": "أنشئ حصصًا قابلة للتحديث من تمارين وأقسام قابلة لإعادة الاستخدام.",
+  "Create a workout": "إنشاء حصة", "Create a session blueprint from exercises and reusable sections.": "أنشئ قالب حصة من التمارين والأقسام القابلة لإعادة الاستخدام.",
+  "Create exercises once and reuse them in any player program.": "أنشئ التمارين مرة واحدة وأعد استخدامها في أي برنامج للاعب.",
+  "Day arrangement": "ترتيب اليوم", "Food library": "مكتبة الطعام", "Workout sources": "مصادر الحصة",
+  "Workout name": "اسم الحصة", "Exercise name": "اسم التمرين", "Coach notes": "ملاحظات المدرب",
+  "Coach note for this day": "ملاحظة المدرب لهذا اليوم", "Coaching note": "ملاحظة تدريبية",
+  "Each side": "لكل جانب", "Rest": "الراحة", "Tempo": "الإيقاع", "Percentage load": "نسبة الحمل",
+  "Save to library": "حفظ في المكتبة", "Reuse with other players.": "أعد استخدامها مع لاعبين آخرين.",
+  "Saved workout": "حصة محفوظة", "Saved diet library": "مكتبة الأنظمة المحفوظة",
+  "Search saved workouts": "البحث في الحصص المحفوظة", "Search foods": "البحث عن طعام",
+  "Quick add exercise": "إضافة تمرين بسرعة", "Blank exercise": "تمرين فارغ",
+  "Untitled exercise": "تمرين بدون اسم", "No reps": "بدون تكرارات", "No load": "بدون حمل",
+  "Select an exercise to edit it.": "اختر تمرينًا لتعديله.", "Select a meal or snack to edit it.": "اختر وجبة أو وجبة خفيفة لتعديلها.",
+  "Meal name": "اسم الوجبة", "Snacks": "الوجبات الخفيفة", "Snack": "وجبة خفيفة",
+  "Optional instructions for the player…": "تعليمات اختيارية للاعب…",
+  "Generate slots": "إنشاء الوجبات", "Library name": "الاسم في المكتبة", "Diet template": "قالب النظام الغذائي",
+  "Manage Diet": "إدارة النظام الغذائي", "Manage Training": "إدارة التدريب", "Diet Analysis": "تحليل النظام الغذائي",
+  "Import diet from Excel": "استيراد النظام الغذائي من Excel", "Download diet template (.xlsx)": "تنزيل قالب النظام الغذائي (.xlsx)",
+  "Import program from Excel": "استيراد البرنامج من Excel", "Program template": "قالب البرنامج",
+  "Library item": "عنصر المكتبة", "Choose an item": "اختر عنصرًا", "General message": "رسالة عامة",
+  "Answer type": "نوع الإجابة", "Long text": "نص طويل", "Multiple choice": "اختيار متعدد",
+  "New measurement": "قياس جديد", "Create measurement": "إنشاء قياس", "Default unit": "الوحدة الافتراضية",
+  "Remove from group": "إزالة من المجموعة", "Attach to (optional)": "إرفاق بـ (اختياري)",
+  "Priority queue": "قائمة الأولويات", "Players needing attention": "لاعبون يحتاجون إلى المتابعة",
+  "Needs program": "يحتاج إلى برنامج", "Check-up due": "موعد المتابعة", "Low activity": "نشاط منخفض",
+  "Quick actions": "إجراءات سريعة", "Open inbox": "فتح صندوق الرسائل", "Open daily check-ups →": "فتح المتابعات اليومية ←",
+  "Open workout analysis →": "فتح تحليل التمارين ←", "Open diet analysis →": "فتح تحليل النظام الغذائي ←",
+  "No players currently have urgent coaching signals.": "لا يوجد لاعبون لديهم تنبيهات تدريب عاجلة حاليًا.",
+  "No workouts for this day.": "لا توجد حصص لهذا اليوم.", "No exercises.": "لا توجد تمارين.",
+  "No program set for this week yet. Check back soon.": "لم يتم تعيين برنامج لهذا الأسبوع بعد. تحقق مرة أخرى قريبًا.",
+  "No diet plan set for this week yet. Check back soon.": "لم يتم تعيين نظام غذائي لهذا الأسبوع بعد. تحقق مرة أخرى قريبًا.",
+  "No active coach assigned yet.": "لم يتم تعيين مدرب نشط بعد.", "Player not found.": "لم يتم العثور على اللاعب.",
+  "Loading items…": "جارٍ تحميل العناصر…", "Loading subscriptions…": "جارٍ تحميل الاشتراكات…",
+  "Loading media…": "جارٍ تحميل الوسائط…", "Loading video…": "جارٍ تحميل الفيديو…",
+  "Loading attachment…": "جارٍ تحميل المرفق…", "Invalid video link.": "رابط الفيديو غير صالح.",
+  "Not set": "غير محدد", "Now": "الآن", "All player keys": "جميع مفاتيح اللاعبين",
+  "Coach keys": "مفاتيح المدربين", "New coach key": "مفتاح مدرب جديد", "Issue a player subscription key": "إصدار مفتاح اشتراك للاعب",
+  "Users & Keys": "المستخدمون والمفاتيح", "Create coach key": "إنشاء مفتاح مدرب", "Create key": "إنشاء مفتاح",
+  "Single-use. Give one to a person so they can sign up as a coach.": "للاستخدام مرة واحدة. أعطه لشخص ليتمكن من التسجيل كمدرب.",
+  "Create a key for a coach, then give it to the player to sign up with.": "أنشئ مفتاحًا لدى مدرب ثم أعطه للاعب لإكمال التسجيل.",
+  "Select a coach…": "اختر مدربًا…", "No coach keys yet.": "لا توجد مفاتيح مدربين بعد.",
+  "No keys issued yet.": "لم يتم إصدار مفاتيح بعد.",
+  "No coaches yet. A coach must sign up (with the coach invite code) before you can issue keys for them.": "لا يوجد مدربون بعد. يجب أن يسجل المدرب برمز الدعوة قبل أن تتمكن من إصدار مفاتيح له.",
+  "All rights reserved.": "جميع الحقوق محفوظة.",
+  "Generate a subscription key": "إنشاء مفتاح اشتراك", "Create coach account": "إنشاء حساب مدرب",
+  "Create player account": "إنشاء حساب لاعب", "Enter as player": "الدخول كلاعب",
+  "Coach Support": "دعم المدرب", "Chat privately or send targeted coaching guidance.": "تحدث بشكل خاص أو أرسل إرشادات تدريب مخصصة.",
+  "Messages from your coach": "رسائل من مدربك", "Coach checked in": "تابعك المدرب",
+  "Meals followed": "الوجبات الملتزم بها", "Log each set": "سجّل كل مجموعة", "Copy to next": "نسخ إلى التالي",
+  "Diet progress saved.": "تم حفظ تقدم النظام الغذائي.", "PULSEFIT · Built for focused progress.": "PULSEFIT · صُمم لتقدم أكثر تركيزًا.",
+  "Experience": "التجربة", "Updates": "التحديثات", "Start training": "ابدأ التدريب",
+  "Personal coaching, connected": "تدريب شخصي مترابط", "Build strength.": "ابنِ قوتك.",
+  "Own the change.": "امتلك التغيير.",
+  "A private training space where your workouts, nutrition, progress, and coach move together.": "مساحة تدريب خاصة تجمع تمارينك وتغذيتك وتقدمك ومدربك في مكان واحد.",
+  "Enter as player →": "الدخول كلاعب ←", "Coach workspace ↗": "مساحة المدرب ↖",
+  "One clear plan": "خطة واحدة واضحة", "Coach connection": "تواصل مع المدرب", "Built for you": "مصمم لك",
+  "Today · Lower body": "اليوم · الجزء السفلي", "Lower body": "الجزء السفلي", "Strength": "القوة",
+  "Back squat": "القرفصاء الخلفية", "Romanian deadlift": "الرفعة الميتة الرومانية", "Walking lunge": "اندفاع المشي",
+  "Session progress": "تقدم الحصة", "Scroll to explore ↓": "مرر للاستكشاف ↓", "The connected experience": "التجربة المترابطة",
+  "Scroll to explore": "مرر للاستكشاف",
+  "TRAIN SMARTER RECOVER BETTER STAY CONSISTENT": "تدرّب بذكاء تعافَ أفضل استمر بثبات",
+  "TRAIN SMARTER RECOVER BETTER STAY CONSISTENT TRAIN SMARTER RECOVER BETTER STAY CONSISTENT": "تدرّب بذكاء تعافَ أفضل استمر بثبات · تدرّب بذكاء تعافَ أفضل استمر بثبات",
+  "Everything your next result needs. Nothing it doesn’t.": "كل ما تحتاجه نتيجتك القادمة، دون أي تشتيت.",
+  "Less app-switching. Less guessing. One focused place for the work between you and your coach.": "تنقّل أقل بين التطبيقات وتخمين أقل، في مساحة واحدة مركزة تجمعك بمدربك.",
+  "Training that adapts": "تدريب يتكيف معك", "Your coach builds every set, rep, and progression around your real performance.": "يبني مدربك كل مجموعة وتكرار وتدرج وفق أدائك الحقيقي.",
+  "Nutrition with direction": "تغذية موجهة", "Simple daily plans, meal check-ins, and feedback keep the work sustainable.": "خطط يومية بسيطة ومتابعة للوجبات وملاحظات تساعدك على الاستمرار.",
+  "Progress you can see": "تقدم يمكنك رؤيته", "Turn completed sessions and check-ups into a clear story of momentum.": "حوّل الحصص المكتملة والمتابعات إلى صورة واضحة لتقدمك.",
+  "Your strongest chapter": "أقوى فصولك", "starts with one session.": "يبدأ بحصة واحدة.", "Start training →": "ابدأ التدريب ←",
+  "Terms": "الشروط", "Next result": "النتيجة القادمة", "Coach command center": "مركز قيادة المدرب",
+  "Personal coaching platform": "منصة تدريب شخصي",
+});
+
 const textOriginals = new WeakMap<Text, string>();
 const attributeOriginals = new WeakMap<Element, Map<string, string>>();
 
@@ -311,6 +404,25 @@ function translateText(value: string): string {
     [/^(\d+) days\/week$/, (n) => `${n} أيام/أسبوع`],
     [/^(\d+) check-ups\/week$/, (n) => `${n} متابعات/أسبوع`],
     [/^Exercise (\d+)$/, (n) => `تمرين ${n}`],
+    [/^(\d+) exercises?$/, (n) => `${n} تمارين`],
+    [/^(\d+) workouts?$/, (n) => `${n} حصص`],
+    [/^(\d+) items?$/, (n) => `${n} عناصر`],
+    [/^(\d+) foods?$/, (n) => `${n} أطعمة`],
+    [/^(\d+) slots?$/, (n) => `${n} خانات`],
+    [/^(\d+) sets?$/, (n) => `${n} مجموعات`],
+    [/^(\d+) sets? · (.+) reps?$/, (sets, reps) => `${sets} مجموعات · ${reps} تكرارات`],
+    [/^(\d+) week streak$/, (n) => `سلسلة ${n} أسابيع`],
+    [/^(\d+) min$/, (n) => `${n} دقيقة`],
+    [/^Strength \/ (\d+)$/, (n) => `القوة / ${n}`],
+    [/^(\d+) questions?$/, (n) => `${n} أسئلة`],
+    [/^(\d+) responses?$/, (n) => `${n} ردود`],
+    [/^(\d+) clients?$/, (n) => `${n} عملاء`],
+    [/^(\d+) assignments?$/, (n) => `${n} تعيينات`],
+    [/^(\d+)\/(\d+) exercises ready$/, (a, b) => `${a}/${b} تمارين جاهزة`],
+    [/^Add to (.+)$/, (x) => `إضافة إلى ${x}`],
+    [/^Move (.+) up$/, (x) => `نقل ${x} لأعلى`],
+    [/^Move (.+) down$/, (x) => `نقل ${x} لأسفل`],
+    [/^Remove (.+)$/, (x) => `إزالة ${x}`],
     [/^Expires (.+)$/, (d) => `ينتهي ${d}`],
     [/^to (.+)$/, (x) => `إلى ${x}`],
   ];
@@ -337,9 +449,12 @@ function translateNode(root: Node, language: Language) {
       ["SCRIPT", "STYLE", "CODE"].includes(parent.tagName)
     )
       continue;
-    if (!textOriginals.has(text)) textOriginals.set(text, text.nodeValue ?? "");
+    const current = text.nodeValue ?? "";
+    const stored = textOriginals.get(text);
+    if (stored === undefined || (current !== stored && current !== translateText(stored))) textOriginals.set(text, current);
     const original = textOriginals.get(text)!;
-    text.nodeValue = language === "ar" ? translateText(original) : original;
+    const next = language === "ar" ? translateText(original) : original;
+    if (text.nodeValue !== next) text.nodeValue = next;
   }
   const elements =
     root.nodeType === Node.ELEMENT_NODE
@@ -354,12 +469,11 @@ function translateNode(root: Node, language: Language) {
         map = new Map();
         attributeOriginals.set(element, map);
       }
-      if (!map.has(attr)) map.set(attr, current);
+      const stored = map.get(attr);
+      if (stored === undefined || (current !== stored && current !== translateText(stored))) map.set(attr, current);
       const original = map.get(attr)!;
-      element.setAttribute(
-        attr,
-        language === "ar" ? translateText(original) : original,
-      );
+      const next = language === "ar" ? translateText(original) : original;
+      if (element.getAttribute(attr) !== next) element.setAttribute(attr, next);
     }
 }
 
@@ -382,11 +496,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const observer = new MutationObserver((mutations) => {
       if (busy.current) return;
       busy.current = true;
-      for (const mutation of mutations)
-        for (const node of mutation.addedNodes) translateNode(node, language);
+      for (const mutation of mutations) {
+        if (mutation.type === "characterData") translateNode(mutation.target, language);
+        else if (mutation.type === "attributes") translateNode(mutation.target, language);
+        else for (const node of mutation.addedNodes) translateNode(node, language);
+      }
       busy.current = false;
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"], subtree: true });
     return () => observer.disconnect();
   }, [language]);
   return (
