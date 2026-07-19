@@ -1,12 +1,12 @@
 import type { PropsWithChildren } from "react";
 import {
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, radius, spacing } from "../theme";
 import { localizeTree, tr, useLanguage } from "../i18n/MobileLanguage";
 
@@ -39,7 +39,14 @@ export function Screen({
         }
       >
         <View style={styles.header}>
-          <Text style={[styles.title, language === "ar" && styles.right]}>{tr(title, language)}</Text>
+          <Text
+            adjustsFontSizeToFit
+            minimumFontScale={0.62}
+            numberOfLines={2}
+            style={[styles.title, language === "ar" && styles.right]}
+          >
+            {tr(title, language)}
+          </Text>
           {subtitle ? <Text style={[styles.subtitle, language === "ar" && styles.right]}>{tr(subtitle, language)}</Text> : null}
         </View>
         {localizeTree(children, language)}

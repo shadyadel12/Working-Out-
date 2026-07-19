@@ -14,6 +14,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- Mobile screen headings now stay below the phone status bar and long player names or emails fit without overlapping controls.
 - The newest database safety update can now be applied cleanly over the existing VIP renewal functions.
 - Meal checkboxes in the player's daily diet check-in now align correctly with their meal names on desktop and mobile.
 - Player meal cards now stay closed by default and open only when the player selects a meal.
