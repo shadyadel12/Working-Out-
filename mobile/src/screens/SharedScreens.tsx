@@ -18,6 +18,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
 import { validateMedia } from "../lib/mediaSecurity";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function ProgressScreen() {
   const { session, profile } = useAuth();
@@ -161,18 +162,19 @@ export function ChatScreen() {
         const { data } = await supabase
           .from("coach_player_links")
           .select(
-            "player_id,profiles!coach_player_links_player_id_fkey(name,email)",
+            "player_id,is_vip,profiles!coach_player_links_player_id_fkey(name,email)",
           )
           .eq("coach_id", session!.user.id)
           .eq("status", "active")
           .not("player_id", "is", null);
-        setThreads(
-          (data ?? []).map((x: any) => ({
+        const { data: recent } = await supabase.from("chat_messages").select("player_id,sender_id,body,created_at").eq("coach_id",session!.user.id).order("created_at",{ascending:false}).limit(1000);
+        const latest=new Map<string,any>();for(const row of recent??[])if(!latest.has(row.player_id))latest.set(row.player_id,row);
+        const mapped=await Promise.all((data??[]).map(async(x:any)=>{const last=latest.get(x.player_id),read=await AsyncStorage.getItem(`lastRead_${session!.user.id}_${x.player_id}`);return{
             coachId: session!.user.id,
             playerId: x.player_id,
             name: x.profiles?.name || x.profiles?.email || "Player",
-          })),
-        );
+            vip:x.is_vip===true,latest:last?.body||"No messages yet",latestAt:last?.created_at||"",unread:!!last&&last.sender_id!==session!.user.id&&last.created_at>(read||new Date(0).toISOString())}}));
+        mapped.sort((a,b)=>Number(b.vip&&b.unread)-Number(a.vip&&a.unread)||Number(b.unread)-Number(a.unread)||b.latestAt.localeCompare(a.latestAt));setThreads(mapped);
       }
     }
     void load();
@@ -235,6 +237,7 @@ export function ChatScreen() {
       Alert.alert("Could not send", error.message);
     }
   }
+  async function openThread(thread:any){await AsyncStorage.setItem(`lastRead_${session!.user.id}_${thread.playerId}`,new Date().toISOString());setThreads(current=>current.map(x=>x.playerId===thread.playerId?{...x,unread:false}:x));setSelected(thread)}
   async function upload(
     uri: string,
     mime: string,
@@ -251,6 +254,7 @@ export function ChatScreen() {
       return;
     }
     setUploading(true);
+    let uploadedPath = "";
     try {
       const bytes = await fetch(uri).then((r) => r.arrayBuffer());
       validateMedia(bytes, mime, size, type);
@@ -269,6 +273,7 @@ export function ChatScreen() {
         .from("chat-attachments")
         .upload(path, bytes, { contentType: mime, upsert: false });
       if (error) throw error;
+      uploadedPath = path;
       const sent = await supabase
         .from("chat_messages")
         .insert({
@@ -281,6 +286,7 @@ export function ChatScreen() {
         });
       if (sent.error) throw sent.error;
     } catch (e) {
+      if (uploadedPath) await supabase.storage.from("chat-attachments").remove([uploadedPath]);
       Alert.alert("Upload failed", (e as Error).message);
     } finally {
       setUploading(false);
@@ -346,10 +352,10 @@ export function ChatScreen() {
     <Screen title="Chat">
       {!selected && profile?.role === "coach" ? (
         threads.map((thread) => (
-          <Pressable key={thread.playerId} onPress={() => setSelected(thread)}>
+          <Pressable key={thread.playerId} onPress={() => openThread(thread)}>
             <Card>
-              <Text style={textStyles.heading}>{thread.name}</Text>
-              <Text style={textStyles.muted}>Open conversation</Text>
+              <Text style={textStyles.heading}>{thread.name} {thread.vip?'· VIP':''} {thread.unread?'●':''}</Text>
+              <Text style={textStyles.muted}>{thread.latest}</Text>
             </Card>
           </Pressable>
         ))

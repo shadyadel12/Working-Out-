@@ -15,8 +15,8 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Terms and feature/update screens before sign-in.
 - Complete — Picture, video, audio, and voice chat with content and size checks.
 - Complete — Workout video quarantine and server safety scan.
-- Remaining — Arabic translations and full right-to-left mobile layout.
-- Remaining — Native unread badges and VIP-unread inbox ordering on every navigation entry.
+- In progress — Arabic is persistent with translated shared screens/navigation and RTL direction; login dialogs and remaining dynamic phrases still require explicit translation coverage.
+- Complete — VIP-unread conversations sort first, followed by other unread conversations, with persistent read state.
 
 ## Coach
 

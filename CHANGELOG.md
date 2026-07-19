@@ -37,6 +37,8 @@ This page explains what the app can do and what has changed in everyday language
 - Mobile team management now shows member identity, role and status, supports client assignment, and allows owner revocation.
 - Mobile picture, video, and audio uploads now verify file size, reported format, and actual file content before storage; workout videos still require the server safety scan.
 - Terms of Use and the app feature/update overview are now available as native mobile screens.
+- Mobile coach conversations now prioritize unread VIP players first, followed by other unread chats, and remember when each conversation was opened.
+- Mobile now remembers the selected English or Arabic language, translates shared screens and navigation, and switches shared layouts to right-to-left in Arabic.
 
 ### Improvements
 
