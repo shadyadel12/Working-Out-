@@ -11,6 +11,8 @@ type Language = "en" | "ar";
 const LanguageContext = createContext<{
   language: Language;
   setLanguage: (language: Language) => void;
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
 } | null>(null);
 
 const ar: Record<string, string> = {
@@ -483,10 +485,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.getItem("app_language") === "ar" ? "ar" : "en",
   );
   const busy = useRef(false);
+  const [theme, setThemeState] = useState<"light" | "dark">(() => {
+    const saved = localStorage.getItem("app_theme");
+    return saved === "light" || saved === "dark" ? saved : "dark";
+  });
   const setLanguage = (next: Language) => {
     localStorage.setItem("app_language", next);
     setLanguageState(next);
   };
+  const setTheme = (next: "light" | "dark") => {
+    localStorage.setItem("app_theme", next);
+    setThemeState(next);
+  };
+  useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
@@ -508,8 +519,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return () => observer.disconnect();
   }, [language]);
   return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
+    <LanguageContext.Provider value={{ language, setLanguage, theme, setTheme }}>
       {children}
+      <button
+        type="button"
+        className="public-theme-toggle"
+        data-no-translate
+        aria-label={theme === "dark" ? "Use light mode" : "Use dark mode"}
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      >
+        <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+      </button>
       <button
         type="button"
         className="language-toggle"

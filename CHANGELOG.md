@@ -6,7 +6,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
-- Signed-in pages now include a persistent light and dark appearance switch. Light mode uses a clean teal workspace style, while dark mode keeps the existing PULSEFIT design.
+- Landing, login, signup, and signed-in pages now share a persistent light and dark appearance switch. Light mode uses a clean teal workspace style, while dark mode keeps the existing PULSEFIT design.
 - Player Training and Diet now use focused three-pane builders with reusable sources, an ordered day canvas, and a detailed prescription or meal inspector.
 - Coaches can reorder player exercises, meals, and snacks with accessible controls while keeping the existing assignment and schedule workflow.
 - Coaches can now build workouts in a focused three-pane editor using searchable exercises and reusable sections, a clear arrangement canvas, and a detailed prescription inspector.
@@ -22,6 +22,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Coach utility actions now live in a compact profile menu with the coach name, Team, subscriptions, Settings, Support notifications, and Sign out. The appearance switch is now icon-only.
 - Arabic mode now translates newly added Library, Training, Diet, admin, player, dialog, status, loading, and builder text, including content that updates after the page opens.
 - The admin interface can temporarily be opened without completing the sign-in or verification screens; protected admin data remains enforced by the server.
 - Reusable sections expand into their prescribed exercises when a workout is delivered, while remaining one manageable block in the workout editor.
