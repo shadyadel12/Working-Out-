@@ -8,6 +8,7 @@ import { listCoachChatThreads } from '../../api/chat';
 import { listPlayerActivitySummaries, listPlayersForCoach } from '../../api/players';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import { todayISO } from '../../lib/dates';
+import AppIcon from '../../components/AppIcon';
 
 const DAY = 86_400_000;
 
@@ -80,14 +81,14 @@ export default function CoachDashboard() {
               <div className="attention-avatar" aria-hidden="true">{initials(name)}</div>
               <div className="attention-person"><strong>{name} {player.link.is_vip && <span className="badge vip">VIP</span>}</strong><small>{activityLabel(player.lastActivity, player.inactiveDays)}</small></div>
               <div className="attention-signals">{player.unread && <span className="signal unread">Unread message</span>}{player.dueCheckup && !player.checked && <span className="signal checkup">Check-up due</span>}{player.needsProgramming && <span className="signal program">Needs program</span>}{(player.inactiveDays === null || player.inactiveDays >= 7) && <span className="signal inactive">Low activity</span>}{!isSubscriptionActive(player.link) && <span className="signal expired">Subscription</span>}</div>
-              <Link className="attention-action" aria-label={`Open ${name}`} to={`/coach/players/${player.profile.id}`}>Open <span aria-hidden="true">→</span></Link>
+              <Link className="attention-action" aria-label={`Open ${name}`} to={`/coach/players/${player.profile.id}`}>Open <AppIcon name="arrow" size={15} /></Link>
             </article>;
           })}</div>}
         </section>
 
         <aside className="overview-sidebar">
           <section className="overview-side-card"><span className="overview-kicker">Today</span><h2>{dashboard.overdueCheckups === 0 ? 'All clear' : `${dashboard.overdueCheckups} check-ups left`}</h2><p>{dashboard.overdueCheckups === 0 ? 'Every scheduled player has been checked.' : 'Work through the scheduled list while context is fresh.'}</p><Link to="/coach/checkups">Open daily check-ups →</Link></section>
-          <section className="overview-side-card"><span className="overview-kicker">Quick actions</span><nav aria-label="Quick coach actions"><Link to="/coach/program-library"><span>▤</span><span><strong>Build a program</strong><small>Start from a reusable plan</small></span></Link><Link to="/coach/workout-library"><span>＋</span><span><strong>Create a workout</strong><small>Add to your library</small></span></Link><Link to="/coach/settings"><span>⌁</span><span><strong>Invite a player</strong><small>Generate a subscription key</small></span></Link></nav></section>
+          <section className="overview-side-card"><span className="overview-kicker">Quick actions</span><nav aria-label="Quick coach actions"><Link to="/coach/program-library"><span><AppIcon name="program" /></span><span><strong>Build a program</strong><small>Start from a reusable plan</small></span></Link><Link to="/coach/workout-library"><span><AppIcon name="workout" /></span><span><strong>Create a workout</strong><small>Add to your library</small></span></Link><Link to="/coach/settings"><span><AppIcon name="add-player" /></span><span><strong>Invite a player</strong><small>Generate a subscription key</small></span></Link></nav></section>
         </aside>
       </div>
     </>}

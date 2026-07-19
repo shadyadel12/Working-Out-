@@ -13,6 +13,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- The website coach navigation and dashboard now use a consistent set of original interface icons instead of temporary letters and symbols.
 - Coach dashboard actions now lead directly to analysis, messages, check-ups, programming, and roster tools, with clearer priority labels and accessible tap targets.
 - Mobile coaches can now filter a player's workout analysis by workout, exercise, and date range, with the same results and pagination as the website.
 - Every signed-in website area and mobile screen now has its own subtle background atmosphere while keeping content easy to read.
