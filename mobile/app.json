@@ -3,6 +3,7 @@
     "name": "Coach Platform",
     "slug": "bloodyx",
     "version": "0.1.0",
+    "newArchEnabled": false,
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "ios": {
