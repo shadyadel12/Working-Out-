@@ -23,8 +23,14 @@ export function Screen({
   onRefresh?: () => void;
 } & PropsWithChildren) {
   const { language } = useLanguage();
+  const palette = backgrounds[Math.abs([...title].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % backgrounds.length];
   return (
     <SafeAreaView style={styles.safe}>
+      <View pointerEvents="none" style={styles.backdrop}>
+        <View style={[styles.orb, styles.orbTop, { backgroundColor: palette[0] }]} />
+        <View style={[styles.orb, styles.orbBottom, { backgroundColor: palette[1] }]} />
+        <View style={styles.gridLine} />
+      </View>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[styles.body, language === "ar" && styles.rtl]}
@@ -77,7 +83,12 @@ export const textStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   rtl: { direction: "rtl" },
   right: { textAlign: "right" },
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe: { flex: 1, backgroundColor: colors.background, overflow: "hidden" },
+  backdrop: { ...StyleSheet.absoluteFillObject },
+  orb: { position: "absolute", width: 260, height: 260, borderRadius: 130, opacity: 0.2 },
+  orbTop: { top: -110, right: -90 },
+  orbBottom: { bottom: 40, left: -150 },
+  gridLine: { position: "absolute", top: 150, left: 20, right: 20, height: 1, backgroundColor: "rgba(255,255,255,.05)" },
   body: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   header: { gap: spacing.xs, marginBottom: spacing.sm },
   title: {
@@ -102,3 +113,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
+
+const backgrounds = [
+  ["#ff4f8f", "#6d3cff"],
+  ["#ff6542", "#ffb52e"],
+  ["#23c4a8", "#246bfe"],
+  ["#8b5cf6", "#ec4899"],
+  ["#3b82f6", "#22d3ee"],
+  ["#ef4444", "#f97316"],
+];

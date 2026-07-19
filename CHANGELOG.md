@@ -4,6 +4,17 @@ This page explains what the app can do and what has changed in everyday language
 
 ## July 19, 2026
 
+### New Features
+
+- The website now opens with a fully redesigned animated PULSEFIT experience that introduces training, nutrition, progress, and coach support.
+- Website and mobile loading screens now use distinct branded visuals for different areas of the platform.
+- Mobile actions and navigation now use clear, consistent icons with accessible descriptions.
+
+### Improvements
+
+- Every signed-in website area and mobile screen now has its own subtle background atmosphere while keeping content easy to read.
+- Landing-page motion adapts for people who prefer reduced animation and remains responsive on phones, tablets, and desktop screens.
+
 ### Security
 
 - Team members now receive separate viewer, chat, head-coach, or sales access, with the same restrictions enforced by the app and database.
@@ -15,6 +26,14 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- The coach mobile navigation now calls the player-review area Analysis, keeps renewals in More, and opens Plans only after choosing a player.
+- Analysis now shows only registered players with active, unexpired access.
+- Diet Schedule is now its own Plans option beside the training Schedule, with collapsible meal details.
+- Schedule and Diet Schedule now have compact duplication ranges for a day, a full week, or the next four weeks.
+- The mobile More menu is now shorter, and library or Excel tools are excluded from the installed mobile app rather than merely hidden.
+- Subscription keys now have a one-tap copy icon, and coaches can renew each player for 1, 2, 3, 6, or 12 months.
+- The coach mobile Plans page now keeps saved workouts, saved diets, exercise details, and meal details collapsed by default, with compact side-by-side actions that use less screen space.
+- The coach mobile Diet tab now includes a daily schedule overview, while rest-day selection has moved from Schedule into Workout.
 - Mobile screen headings now stay below the phone status bar and long player names or emails fit without overlapping controls.
 - The newest database safety update can now be applied cleanly over the existing VIP renewal functions.
 - Meal checkboxes in the player's daily diet check-in now align correctly with their meal names on desktop and mobile.

@@ -36,7 +36,8 @@
       ],
       "expo-document-picker",
       "expo-asset",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ],
     "extra": {
       "eas": {

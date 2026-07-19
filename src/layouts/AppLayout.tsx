@@ -18,6 +18,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   async function handleSignOut() { await signOut(); navigate('/', { replace: true }); }
   const libraryLinks = links.filter((link) => link.group === 'library');
   const regularLinks = links.filter((link) => !link.group);
+  const pageTheme = location.pathname.split('/').filter(Boolean).pop()?.replace(/[^a-z-]/g, '') || 'home';
 
   function navLink(link: NavLink_, nested = false) {
     const count = countFor(link.badgeKey);
@@ -39,7 +40,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
     {regularLinks.slice(1).map((link) => navLink(link))}
   </nav>;
 
-  return <div className={isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'}>
+  return <div className={`${isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'} route-background route-${pageTheme}`}>
     {isCoach && <header className="coach-topnav"><div className="coach-brand"><span className="coach-brand-mark">ϟ</span><span>PULSE<strong>FIT</strong></span></div><div className="coach-nav">{navigation}</div><div className="coach-top-account"><span>{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header>}
     <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
   </div>;

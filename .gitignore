@@ -4,6 +4,7 @@ dist-ssr
 *.local
 .env.local
 .env
+.env.strix
 !.env.example
 mobile/.expo
 mobile/android

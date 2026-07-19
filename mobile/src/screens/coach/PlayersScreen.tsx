@@ -28,6 +28,9 @@ export default function PlayersScreen() {
       .from("coach_player_links")
       .select("*")
       .eq("coach_id", effectiveCoachId!)
+      .eq("status", "active")
+      .gte("subscription_end_date", new Date().toISOString().slice(0, 10))
+      .not("player_id", "is", null)
       .order("created_at", { ascending: false });
     if (error) {
       Alert.alert("Could not load players", error.message);
@@ -78,7 +81,7 @@ export default function PlayersScreen() {
     );
   return (
     <Screen
-      title="Players"
+      title="Analysis"
       subtitle="Profiles, plans, progress, and communication"
       refreshing={refreshing}
       onRefresh={load}
@@ -261,29 +264,15 @@ function PlayerWorkspace({
       Alert.alert("Sent", "Guidance sent to the player.");
     }
   }
-  async function renew() {
-    setBusy(true);
-    const end = new Date();
-    end.setMonth(end.getMonth() + 1);
-    const isVip = item.link.is_vip === true;
-    const days = Math.min(3, Math.max(1, item.link.checkup_days_per_week ?? 3));
-    const { error } = await supabase.rpc("coach_create_player_key", {
-      p_player_id: id,
-      p_end_date: end.toISOString().slice(0, 10),
-      p_is_vip: isVip,
-      p_checkup_days: days,
-    });
-    setBusy(false);
-    if (error) Alert.alert("Could not renew", error.message);
-    else Alert.alert("Renewed", "Player access renewed for one month.");
-  }
+  // Subscription renewal is managed from More > Subscriptions.
+  const canRenew = false;
+  async function renew() {}
   const done = progress?.total_completed ?? progress?.totalCompleted ?? 0,
     total = progress?.total_logged ?? progress?.totalLogged ?? 0;
   const meals = diet.reduce((n, x) => n + x.completed_meals, 0),
     planned = diet.reduce((n, x) => n + x.total_meals, 0);
   const canManage = !teamRole || teamRole === "head_coach";
   const canChat = !teamRole || teamRole === "head_coach" || teamRole === "chat";
-  const canRenew = !teamRole || teamRole === "sales";
   const sections: Section[] = canManage
     ? ["summary", "details", "workout", "diet", "context"]
     : ["summary", "details", "workout", "diet"];

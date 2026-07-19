@@ -40,15 +40,9 @@ type Page =
 const pages: [Page, string, string][] = [
   ["subs", "Subscriptions", "VIP, renewals and player keys"],
   ["team", "Team", "Invite staff and manage roles"],
-  ["exercise", "Exercise Library", "Reusable exercises"],
-  ["workout", "Workout Library", "Reusable workouts"],
-  ["diet", "Diet Library", "Reusable diet days"],
-  ["program", "Program Library", "Reusable programs"],
-  [
-    "imports",
-    "Excel Import & Export",
-    "Share templates and replace player plans",
-  ],
+  // Mobile library and Excel entries are intentionally hidden for now to keep
+  // the More menu compact. Their screens and functions remain available here
+  // for a later release: exercise, workout, diet, program, and imports.
   ["support", "Admin Support", "Message the admin team"],
   ["updates", "Features & Updates", "See what the app can do"],
   ["terms", "Terms of Use", "Accounts, data, ownership, and safety"],
@@ -214,6 +208,7 @@ function Subscriptions() {
   const [vip, setVip] = useState(false);
   const [days, setDays] = useState(3);
   const [key, setKey] = useState("");
+  const [renewing, setRenewing] = useState("");
   async function load() {
     const { data } = await supabase
       .from("coach_player_links")
@@ -234,6 +229,23 @@ function Subscriptions() {
     if (error) Alert.alert("Could not create", error.message);
     else {
       setKey((data as any).subscription_key);
+      void load();
+    }
+  }
+  async function renew(row: any) {
+    if (!row.player_id) return;
+    setRenewing(row.id);
+    const days = Math.min(3, Math.max(1, row.checkup_days_per_week ?? 3));
+    const { error } = await supabase.rpc("coach_create_player_key", {
+      p_player_id: row.player_id,
+      p_end_date: end,
+      p_is_vip: row.is_vip === true,
+      p_checkup_days: days,
+    });
+    setRenewing("");
+    if (error) Alert.alert("Could not renew", error.message);
+    else {
+      Alert.alert("Renewed", "Player access was renewed.");
       void load();
     }
   }
@@ -288,7 +300,15 @@ function Subscriptions() {
               <Text selectable style={styles.key}>
                 {row.subscription_key}
               </Text>
-            ) : null}
+            ) : (
+              <Button
+                secondary
+                disabled={renewing === row.id}
+                onPress={() => renew(row)}
+              >
+                RENEW PLAYER
+              </Button>
+            )}
           </Card>
         ))
       )}

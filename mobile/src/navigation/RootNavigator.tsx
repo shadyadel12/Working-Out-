@@ -1,5 +1,5 @@
-import { ActivityIndicator, View } from "react-native";
 import { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../auth/AuthProvider";
@@ -22,13 +22,14 @@ import RenewSubscriptionScreen from "../screens/RenewSubscriptionScreen";
 import { supabase } from "../lib/supabase";
 import CoachSupportScreen from "../screens/coach/CoachSupportScreen";
 import CoachCheckupsScreen from "../screens/coach/CoachCheckupsScreen";
-import CoachMoreScreen from "../screens/coach/CoachMoreScreen";
+import CoachMoreScreen from "../screens/coach/CoachMoreActiveScreen";
 import CoachDashboardScreen from "../screens/coach/CoachDashboardScreen";
 import PlayerHomeScreen from "../screens/player/PlayerHomeScreen";
 import AdminOverviewScreen from "../screens/admin/AdminOverviewScreen";
 import PlayerProgressScreen from "../screens/player/PlayerProgressScreen";
 import AdminManagementScreen from "../screens/admin/AdminManagementScreen";
 import { tr, useLanguage } from "../i18n/MobileLanguage";
+import MobileLoading from "../components/MobileLoading";
 
 const Tabs = createBottomTabNavigator();
 const tabOptions = {
@@ -53,6 +54,7 @@ const tabOptions = {
   tabBarInactiveTintColor: colors.muted,
   tabBarLabelStyle: { fontSize: 11, fontWeight: "700" as const },
 };
+const tabIcon = (name: keyof typeof Ionicons.glyphMap) => ({ color, size }: { color: string; size: number }) => <Ionicons name={name} color={color} size={size} />;
 function PlayerTabs() {
   const { language } = useLanguage();
   const { session } = useAuth();
@@ -75,44 +77,34 @@ function PlayerTabs() {
     void check();
   }, [session]);
   if (active === null)
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          justifyContent: "center",
-        }}
-      >
-        <ActivityIndicator color={colors.accent} />
-      </View>
-    );
+    return <MobileLoading variant="player" />;
   if (!active) return <RenewSubscriptionScreen onRenewed={check} />;
   return (
     <Tabs.Navigator screenOptions={tabOptions}>
       <Tabs.Screen
         name="Home"
         component={PlayerHomeScreen}
-        options={{ tabBarLabel: tr("Home", language) }}
+        options={{ tabBarLabel: tr("Home", language), tabBarIcon: tabIcon("home-outline") }}
       />
       <Tabs.Screen
         name="Program"
         component={ProgramScreen}
-        options={{ tabBarLabel: tr("Program", language) }}
+        options={{ tabBarLabel: tr("Program", language), tabBarIcon: tabIcon("barbell-outline") }}
       />
       <Tabs.Screen
         name="Diet"
         component={DietScreen}
-        options={{ tabBarLabel: tr("Diet", language) }}
+        options={{ tabBarLabel: tr("Diet", language), tabBarIcon: tabIcon("nutrition-outline") }}
       />
       <Tabs.Screen
         name="Progress"
         component={PlayerProgressScreen}
-        options={{ tabBarLabel: tr("Progress", language) }}
+        options={{ tabBarLabel: tr("Progress", language), tabBarIcon: tabIcon("stats-chart-outline") }}
       />
       <Tabs.Screen
         name="Coach"
         component={ChatScreen}
-        options={{ tabBarLabel: tr("Coach", language) }}
+        options={{ tabBarLabel: tr("Coach", language), tabBarIcon: tabIcon("chatbubble-outline") }}
       />
     </Tabs.Navigator>
   );
@@ -127,40 +119,40 @@ function CoachTabs() {
         <Tabs.Screen
           name="Home"
           component={CoachDashboardScreen}
-          options={{ tabBarLabel: tr("Home", language) }}
+          options={{ tabBarLabel: tr("Home", language), tabBarIcon: tabIcon("home-outline") }}
         />
       ) : null}
       <Tabs.Screen
-        name="Players"
+        name="Analysis"
         component={PlayersScreen}
-        options={{ tabBarLabel: tr("Players", language) }}
+        options={{ tabBarLabel: tr("Analysis", language), tabBarIcon: tabIcon("analytics-outline") }}
       />
       {!role || role === "head_coach" ? (
         <Tabs.Screen
           name="Plans"
           component={CoachPlanScreen}
-          options={{ tabBarLabel: tr("Plans", language) }}
+          options={{ tabBarLabel: tr("Plans", language), tabBarIcon: tabIcon("clipboard-outline") }}
         />
       ) : null}
       {!role || role === "head_coach" || role === "chat" ? (
         <Tabs.Screen
           name="Messages"
           component={ChatScreen}
-          options={{ tabBarLabel: tr("Messages", language) }}
+          options={{ tabBarLabel: tr("Messages", language), tabBarIcon: tabIcon("chatbubbles-outline") }}
         />
       ) : null}
       {!role || role === "sales" ? (
         <Tabs.Screen
           name="More"
           component={CoachMoreScreen}
-          options={{ tabBarLabel: tr("More", language) }}
+          options={{ tabBarLabel: tr("More", language), tabBarIcon: tabIcon("grid-outline") }}
         />
       ) : null}
       {role ? (
         <Tabs.Screen
           name="Account"
           component={AccountScreen}
-          options={{ tabBarLabel: tr("Account", language) }}
+          options={{ tabBarLabel: tr("Account", language), tabBarIcon: tabIcon("person-outline") }}
         />
       ) : null}
     </Tabs.Navigator>
@@ -173,22 +165,22 @@ function AdminTabs() {
       <Tabs.Screen
         name="Overview"
         component={AdminOverviewScreen}
-        options={{ tabBarLabel: tr("Overview", language) }}
+        options={{ tabBarLabel: tr("Overview", language), tabBarIcon: tabIcon("speedometer-outline") }}
       />
       <Tabs.Screen
         name="Users & Keys"
         component={AdminManagementScreen}
-        options={{ tabBarLabel: tr("Users & Keys", language) }}
+        options={{ tabBarLabel: tr("Users & Keys", language), tabBarIcon: tabIcon("key-outline") }}
       />
       <Tabs.Screen
         name="Support"
         component={AdminSupportScreen}
-        options={{ tabBarLabel: tr("Support", language) }}
+        options={{ tabBarLabel: tr("Support", language), tabBarIcon: tabIcon("help-buoy-outline") }}
       />
       <Tabs.Screen
         name="Account"
         component={AccountScreen}
-        options={{ tabBarLabel: tr("Account", language) }}
+        options={{ tabBarLabel: tr("Account", language), tabBarIcon: tabIcon("person-outline") }}
       />
     </Tabs.Navigator>
   );
@@ -196,17 +188,7 @@ function AdminTabs() {
 export default function RootNavigator() {
   const { session, profile, loading, aal2 } = useAuth();
   if (loading)
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          justifyContent: "center",
-        }}
-      >
-        <ActivityIndicator color={colors.accent} />
-      </View>
-    );
+    return <MobileLoading variant="launch" />;
   return (
     <NavigationContainer
       theme={{

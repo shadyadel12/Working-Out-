@@ -1,11 +1,26 @@
 import { Link } from 'react-router-dom';
 
+const features = [
+  { number: '01', title: 'Training that adapts', copy: 'Your coach builds every set, rep, and progression around your real performance.' },
+  { number: '02', title: 'Nutrition with direction', copy: 'Simple daily plans, meal check-ins, and feedback keep the work sustainable.' },
+  { number: '03', title: 'Progress you can see', copy: 'Turn completed sessions and check-ups into a clear story of momentum.' },
+];
+
 export default function Landing() {
   return <div className="pulse-landing">
-    <header className="pulse-header"><Link to="/" className="pulse-logo"><span>ϟ</span>PULSE<strong>FIT</strong></Link><nav><a href="#features">Workouts</a><a href="#features">Trainers</a><Link to="/changelog">Community</Link></nav><div><Link to="/login/player">Log in</Link><Link to="/signup/player"><button>Start Training</button></Link></div></header>
-    <main className="pulse-hero"><div className="pulse-copy"><span className="pulse-pill"><i/> Personal coaching platform</span><h1>Transform<br/>Your Body<br/><em>Your Life</em></h1><p>Train with your personal coach using personalized workouts, nutrition plans, progress tracking, and private support.</p><div className="pulse-actions"><Link to="/login/player"><button>I'm a Player →</button></Link><Link to="/login/coach">I'm a Coach</Link></div><div className="pulse-stats" id="features"><div><strong>Custom</strong><span>Programs</span></div><div><strong>Weekly</strong><span>Diet Plans</span></div><div><strong>Live</strong><span>Coach Chat</span></div></div></div>
-      <div className="pulse-workout-card"><header><span>ϟ</span><div><strong>Today's Workout</strong><small>Personal Training</small></div></header><p><i className="done"/> Warm Up <span>5 min</span></p><p><i className="done"/> Main Workout <span>30 min</span></p><p><i/> Cool Down <span>5 min</span></p><div className="pulse-progress"><b/></div><small>Program ready for you</small></div>
+    <header className="pulse-header"><Link to="/" className="pulse-logo"><span aria-hidden="true">P</span>PULSE<strong>FIT</strong></Link><nav aria-label="Main navigation"><a href="#experience">Experience</a><a href="#features">Features</a><Link to="/changelog">Updates</Link></nav><div><Link to="/login/player">Log in</Link><Link className="pulse-header-cta" to="/signup/player">Start training</Link></div></header>
+    <main>
+      <section className="pulse-hero">
+        <div className="pulse-noise" aria-hidden="true" />
+        <div className="pulse-copy"><span className="pulse-pill"><i/> Personal coaching, connected</span><h1>Build strength.<br/><em>Own the change.</em></h1><p>A private training space where your workouts, nutrition, progress, and coach move together.</p><div className="pulse-actions"><Link className="pulse-primary-cta" to="/login/player">Enter as player <span aria-hidden="true">→</span></Link><Link to="/login/coach">Coach workspace <span aria-hidden="true">↗</span></Link></div><div className="pulse-stats"><div><strong>01</strong><span>One clear plan</span></div><div><strong>24/7</strong><span>Coach connection</span></div><div><strong>100%</strong><span>Built for you</span></div></div></div>
+        <div className="pulse-visual" aria-label="A preview of today's personalized workout"><div className="pulse-orbit orbit-one"/><div className="pulse-orbit orbit-two"/><div className="pulse-workout-card"><header><span className="pulse-card-icon" aria-hidden="true">P</span><div><small>Today · Lower body</small><strong>Strength / 04</strong></div><b>72%</b></header><div className="pulse-exercise active"><i>01</i><span><strong>Back squat</strong><small>4 sets · 8 reps</small></span><em>Done</em></div><div className="pulse-exercise"><i>02</i><span><strong>Romanian deadlift</strong><small>3 sets · 10 reps</small></span><em>Next</em></div><div className="pulse-exercise"><i>03</i><span><strong>Walking lunge</strong><small>3 sets · 12 reps</small></span><em>12:00</em></div><div className="pulse-progress"><b/></div><footer><span>Session progress</span><strong>32 min</strong></footer></div><span className="pulse-float pulse-float-top">Coach checked in <b>Now</b></span><span className="pulse-float pulse-float-bottom">4 week streak <b>↗ 18%</b></span></div>
+        <a href="#experience" className="pulse-scroll">Scroll to explore <span>↓</span></a>
+      </section>
+      <section className="pulse-marquee" aria-hidden="true"><div>TRAIN SMARTER <i/> RECOVER BETTER <i/> STAY CONSISTENT <i/> TRAIN SMARTER <i/> RECOVER BETTER <i/> STAY CONSISTENT</div></section>
+      <section className="pulse-experience" id="experience"><div><span className="pulse-kicker">The connected experience</span><h2>Everything your next result needs. Nothing it doesn’t.</h2></div><p>Less app-switching. Less guessing. One focused place for the work between you and your coach.</p></section>
+      <section className="pulse-feature-grid" id="features">{features.map((feature) => <article key={feature.number}><span>{feature.number}</span><h3>{feature.title}</h3><p>{feature.copy}</p><i aria-hidden="true">↗</i></article>)}</section>
+      <section className="pulse-final"><span>Ready when you are</span><h2>Your strongest chapter<br/>starts with one session.</h2><Link className="pulse-primary-cta" to="/signup/player">Start training <span aria-hidden="true">→</span></Link></section>
     </main>
-    <footer className="pulse-footer">© {new Date().getFullYear()} Coach Platform · <Link to="/terms">Terms of Use</Link></footer>
+    <footer className="pulse-footer"><span>PULSEFIT · Built for focused progress.</span><span>© {new Date().getFullYear()} · <Link to="/terms">Terms</Link></span></footer>
   </div>;
 }
