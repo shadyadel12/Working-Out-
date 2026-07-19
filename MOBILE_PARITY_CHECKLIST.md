@@ -15,7 +15,7 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Terms and feature/update screens before sign-in.
 - Complete — Picture, video, audio, and voice chat with content and size checks.
 - Complete — Workout video quarantine and server safety scan.
-- In progress — Arabic is persistent with RTL direction across shared navigation, sign-in/account creation, invitation fields, validation messages, and library tools; remaining dynamic phrases are being audited screen by screen.
+- Complete — Arabic is persistent with RTL direction across navigation, authentication, role dashboards, plans, progress, chat, libraries, account tools, validation messages, legal pages, and dynamic greetings/counts.
 - Complete — VIP-unread conversations sort first, followed by other unread conversations, with persistent read state.
 
 ## Coach

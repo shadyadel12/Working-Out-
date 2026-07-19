@@ -112,14 +112,143 @@ const ar: Record<string, string> = {
   "Search players or keys": "ابحث عن لاعب أو مفتاح",
   "This section is available to head coaches only.":
     "هذا القسم متاح للمدرب الرئيسي فقط.",
+  Chat: "المحادثة",
+  "Type a message": "اكتب رسالة",
+  "Subscription Required": "الاشتراك مطلوب",
+  ACTIVATE: "تفعيل",
+  "CHECKING…": "جارٍ التحقق…",
+  "Enter a new subscription key from your coach to continue.":
+    "أدخل مفتاح اشتراك جديدًا من مدربك للمتابعة.",
+  "Admin Verification": "تحقق الإدارة",
+  "Six-digit code": "رمز مكون من ستة أرقام",
+  VERIFY: "تحقق",
+  "Reps completed (required)": "التكرارات المنجزة (مطلوب)",
+  "Weight used (optional)": "الوزن المستخدم (اختياري)",
+  "Comment for your coach (optional)": "تعليق للمدرب (اختياري)",
+  "Video link (optional)": "رابط الفيديو (اختياري)",
+  Filters: "عوامل التصفية",
+  "Workout name (optional)": "اسم الحصة (اختياري)",
+  "Exercise name (optional)": "اسم التمرين (اختياري)",
+  WORKOUT: "التمرين",
+  DIET: "الغذاء",
+  Adherence: "الالتزام",
+  Meals: "الوجبات",
+  Days: "الأيام",
+  "Your plan, progress, and coach in one place":
+    "خطتك وتقدمك ومدربك في مكان واحد",
+  "Your training system": "نظام تدريبك",
+  "Earn your progress": "اصنع تقدمك",
+  "Follow the plan, log the work, and stay connected to your coach.":
+    "اتبع الخطة وسجل عملك وابقَ على تواصل مع مدربك.",
+  "Personal coaching": "تدريب شخصي",
+  "VIP coaching": "تدريب مميز",
+  "Date of birth (YYYY-MM-DD)": "تاريخ الميلاد (سنة-شهر-يوم)",
+  "Height (example: 175 cm)": "الطول (مثال: 175 سم)",
+  Country: "الدولة",
+  "Mobile number": "رقم الهاتف",
+  Sport: "الرياضة",
+  "Position or role": "المركز أو الدور",
+  "Finish day": "إنهاء اليوم",
+  "MARK MEAL COMPLETED": "تحديد الوجبة كمكتملة",
+  "✓ COMPLETED": "✓ مكتملة",
+  "Add an optional note for your coach, then tap Done.":
+    "أضف ملاحظة اختيارية لمدربك ثم اضغط تم.",
+  "Optional note": "ملاحظة اختيارية",
+  "SAVING…": "جارٍ الحفظ…",
+  Name: "الاسم",
+  "Message the admin team": "راسل فريق الإدارة",
+  "Exercise name": "اسم التمرين",
+  Sets: "المجموعات",
+  Reps: "التكرارات",
+  Weight: "الوزن",
+  "Coach note": "ملاحظة المدرب",
+  "Meal label": "اسم الوجبة",
+  Food: "الطعام",
+  Grams: "الجرامات",
+  "Coach comment": "تعليق المدرب",
+  "Starting week": "أسبوع البداية",
+  "Template name": "اسم القالب",
+  "Program name": "اسم البرنامج",
+  "Duration in weeks": "المدة بالأسابيع",
+  "Your coaching workspace at a glance": "مساحة التدريب الخاصة بك في لمحة",
+  "Build stronger athletes": "ابنِ رياضيين أقوى",
+  "Programming, accountability, and communication in one focused workspace.":
+    "البرمجة والمتابعة والتواصل في مساحة واحدة مركزة.",
+  "Profiles, plans, progress, and communication":
+    "الملفات والخطط والتقدم والتواصل",
+  "Message for this player": "رسالة لهذا اللاعب",
+  "Coach notes": "ملاحظات المدرب",
+  "Client goals": "أهداف العميل",
+  "Limitations and injuries": "القيود والإصابات",
+  "Available equipment": "المعدات المتاحة",
+  "Coach Settings": "إعدادات المدرب",
+  "Generate player key": "إنشاء مفتاح لاعب",
+  "Saved workout library": "مكتبة الحصص المحفوظة",
+  "No saved workouts yet.": "لا توجد حصص محفوظة بعد.",
+  "Open support conversation": "فتح محادثة الدعم",
+  "Reply to coach": "الرد على المدرب",
+  BACK: "رجوع",
+  "Admin Overview": "نظرة عامة للإدارة",
+  "Users, access, and support activity": "المستخدمون والدخول ونشاط الدعم",
+  "Users & Access": "المستخدمون والدخول",
+  "Search coaches": "البحث عن المدربين",
+  RESTORE: "استعادة",
+  Monday: "الاثنين",
+  Tuesday: "الثلاثاء",
+  Wednesday: "الأربعاء",
+  Thursday: "الخميس",
+  Friday: "الجمعة",
+  Saturday: "السبت",
+  Sunday: "الأحد",
+  "For Coaches": "للمدربين",
+  "For Players": "للاعبين",
+  "For Administrators": "للإدارة",
+  Protection: "الحماية",
+  "Manage players, subscriptions, VIP priority and scheduled check-ups.":
+    "إدارة اللاعبين والاشتراكات وأولوية المميزين والمتابعات المجدولة.",
+  "Build and reuse workout, diet and program libraries.":
+    "إنشاء وإعادة استخدام مكتبات التدريب والغذاء والبرامج.",
+  "Review workout and diet progress, notes, goals and submitted videos.":
+    "مراجعة تقدم التدريب والغذاء والملاحظات والأهداف والفيديوهات.",
+  "Use private player chat and administrator support.":
+    "استخدام محادثة اللاعب الخاصة ودعم الإدارة.",
+  "Follow guided set-by-set workouts and meal-by-meal diet plans.":
+    "اتباع التدريب مجموعة بمجموعة وخطة الغذاء وجبة بوجبة.",
+  "Record reps, optional weight, comments and safely scanned videos.":
+    "تسجيل التكرارات والوزن الاختياري والتعليقات والفيديوهات المفحوصة.",
+  "Filter workout and diet progress and update the full sports profile.":
+    "تصفية تقدم التدريب والغذاء وتحديث الملف الرياضي الكامل.",
+  "Send text, pictures, videos, audio and voice messages.":
+    "إرسال النصوص والصور والفيديو والصوت والرسائل الصوتية.",
+  "Manage coaches, invitations, player access, renewals and revocation.":
+    "إدارة المدربين والدعوات ودخول اللاعبين والتجديد والإلغاء.",
+  "Use extra account verification and answer coach support.":
+    "استخدام تحقق إضافي للحساب والرد على دعم المدربين.",
+  "Role-based database rules remain the final access boundary.":
+    "تظل قواعد قاعدة البيانات حسب الدور هي حد الوصول النهائي.",
+  "Uploads are checked for size, type and actual content.":
+    "يتم فحص الملفات المرفوعة من حيث الحجم والنوع والمحتوى.",
+  "Sessions use protected device storage and expired access is blocked.":
+    "تستخدم الجلسات تخزين الجهاز المحمي ويتم منع الدخول المنتهي.",
+  "1. Ownership & Copyright": "1. الملكية وحقوق النشر",
+  "2. Prohibited Actions": "2. الإجراءات المحظورة",
+  "3. User Data": "3. بيانات المستخدم",
+  "4. Accounts & Access": "4. الحسابات والدخول",
+  "5. Disclaimer": "5. إخلاء المسؤولية",
+  "6. Changes": "6. التغييرات",
+  "7. Contact": "7. التواصل",
 };
 export function tr(value: string, language: Lang) {
   if (language === "en") return value;
   if (ar[value]) return ar[value];
   return value
+    .replace(/^Welcome, (.+)$/, "مرحبًا، $1")
+    .replace(/^Hi, (.+)$/, "مرحبًا، $1")
     .replace(/^WEEK (\d+)$/, "الأسبوع $1")
     .replace(/^Set (\d+) of (\d+)$/, "المجموعة $1 من $2")
-    .replace(/^Meal (\d+) of (\d+)$/, "الوجبة $1 من $2");
+    .replace(/^Meal (\d+) of (\d+)$/, "الوجبة $1 من $2")
+    .replace(/^(\d+) days\/week$/, "$1 أيام في الأسبوع")
+    .replace(/^(\d+) meals followed$/, "تم اتباع $1 وجبات");
 }
 export function LanguageProvider({ children }: PropsWithChildren) {
   const [language, setLanguage] = useState<Lang>("en");
@@ -155,13 +284,29 @@ export function localizeTree(node: ReactNode, language: Lang): ReactNode {
     return node;
   if (Array.isArray(node)) return node.map((x) => localizeTree(x, language));
   if (isValidElement(node)) {
-    const props = node.props as { children?: ReactNode; placeholder?: string };
+    const props = node.props as {
+      children?: ReactNode;
+      placeholder?: string;
+      title?: string;
+      subtitle?: string;
+      eyebrow?: string;
+      text?: string;
+      label?: string;
+    };
     const next: Record<string, unknown> = {};
     if (props.children !== undefined)
       next.children = Children.map(props.children, (x) =>
         localizeTree(x, language),
       );
     if (props.placeholder) next.placeholder = tr(props.placeholder, language);
+    for (const key of [
+      "title",
+      "subtitle",
+      "eyebrow",
+      "text",
+      "label",
+    ] as const)
+      if (props[key]) next[key] = tr(props[key]!, language);
     return cloneElement(node, next);
   }
   return node;
