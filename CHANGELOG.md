@@ -34,6 +34,8 @@ This page explains what the app can do and what has changed in everyday language
 - Coach signup on mobile now supports both owner invitation keys and role-based team-member invitation keys.
 - Mobile coach libraries now provide complete reusable exercise fields, workout templates with exercises, diet templates with meals, and program details for later assignment.
 - Mobile plan building now includes existing weekly schedules, training/rest days, workout and diet creation, saved-template assignment, day deletion/duplication, and whole-program assignment.
+- Mobile team management now shows member identity, role and status, supports client assignment, and allows owner revocation.
+- Mobile picture, video, and audio uploads now verify file size, reported format, and actual file content before storage; workout videos still require the server safety scan.
 
 ### Improvements
 

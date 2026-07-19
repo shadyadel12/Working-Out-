@@ -1,27 +1,367 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Card, Screen, textStyles } from '../../components/Screen';
-import { Button, Input } from '../../components/Controls';
-import { useAuth } from '../../auth/AuthProvider';
-import { getProgram, getTodayLog, saveTodayLog } from '../../api/player';
-import { dayNames, todayISO } from '../../lib/dates';
-import { colors } from '../../theme';
-import * as ImagePicker from 'expo-image-picker';
-import * as Crypto from 'expo-crypto';
-import { supabase } from '../../lib/supabase';
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Card, Screen, textStyles } from "../../components/Screen";
+import { Button, Input } from "../../components/Controls";
+import { useAuth } from "../../auth/AuthProvider";
+import { getProgram, getTodayLog, saveTodayLog } from "../../api/player";
+import { dayNames, todayISO } from "../../lib/dates";
+import { colors } from "../../theme";
+import * as ImagePicker from "expo-image-picker";
+import * as Crypto from "expo-crypto";
+import { supabase } from "../../lib/supabase";
+import { validateMedia } from "../../lib/mediaSecurity";
 
-export default function ProgramScreen(){const{session}=useAuth();const[days,setDays]=useState<any[]|null>(null);const[messages,setMessages]=useState<any[]>([]);const[week,setWeek]=useState(1);const[error,setError]=useState('');async function load(){try{const[program,guidance]=await Promise.all([getProgram(session!.user.id),supabase.from('messages').select('*').eq('player_id',session!.user.id).order('created_at',{ascending:false}).limit(20)]);setDays(program);setMessages(guidance.data??[]);}catch(e){setError((e as Error).message);}}useEffect(()=>{void load();},[session]);const weeks=[...new Set((days??[]).map(d=>d.week_number))];const shown=(days??[]).filter(d=>d.week_number===week);return <Screen title="My Program">{!days&&!error?<ActivityIndicator/>:null}{error?<Text style={styles.error}>{error}</Text>:null}{messages.filter(m=>!m.exercise_id).map(m=><Card key={m.id}><Text style={textStyles.heading}>Coach message</Text><Text style={textStyles.body}>{m.body}</Text></Card>)}{weeks.length>1?<View style={styles.pills}>{weeks.map(w=><Pressable key={w} onPress={()=>setWeek(Number(w))} style={[styles.pill,w===week&&styles.active]}><Text style={textStyles.body}>W{w}</Text></Pressable>)}</View>:null}{shown.length===0&&days?<Text style={textStyles.muted}>No program assigned for this week.</Text>:shown.map(day=><Card key={day.id}><Text style={textStyles.heading}>{dayNames[day.day_of_week]} · {day.day_type==='rest'?'Rest':'Training'}</Text>{day.workouts.map((workout:any)=><Workout key={workout.id} workout={workout} playerId={session!.user.id}/>)}</Card>)}</Screen>}
-function Workout({workout,playerId}:{workout:any;playerId:string}){const[open,setOpen]=useState(false);return <View style={styles.section}><Pressable onPress={()=>setOpen(v=>!v)}><Text style={textStyles.heading}>{open?'▾':'▸'} {workout.name}</Text></Pressable>{open?workout.exercises.map((exercise:any)=><Exercise key={exercise.id} exercise={exercise} playerId={playerId}/>):null}</View>}
-function Exercise({exercise,playerId}:{exercise:any;playerId:string}){const[open,setOpen]=useState(false);return <View style={styles.exercise}><Pressable onPress={()=>setOpen(v=>!v)}><Text style={textStyles.body}>{open?'▾':'▸'} {exercise.name} · {exercise.target_sets??'—'}×{exercise.target_reps??'—'}</Text></Pressable>{open?<LogForm exercise={exercise} playerId={playerId}/>:null}</View>}
-function LogForm({exercise,playerId}:{exercise:any;playerId:string}){
-  const[sets,setSets]=useState<{reps:string;weight:string}[]>(()=>Array.from({length:Math.max(1,exercise.target_sets??1)},()=>({reps:'',weight:''})));
-  const[step,setStep]=useState(0);const[comment,setComment]=useState('');const[video,setVideo]=useState<string|null>(null);const[external,setExternal]=useState(false);const[done,setDone]=useState(false);const[busy,setBusy]=useState(true);
-  useEffect(()=>{getTodayLog(exercise.id,playerId,todayISO()).then(({log,sets:existing})=>{if(existing.length)setSets(existing.map(s=>({reps:s.reps??'',weight:s.weight??''})));setComment(log?.player_comment??'');setVideo(log?.player_video_url??null);setExternal(log?.player_video_is_external??false);setDone(log?.is_completed??false);}).catch(e=>Alert.alert('Could not load log',e.message)).finally(()=>setBusy(false));},[exercise.id,playerId]);
-  async function pickVideo(){const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['videos'],quality:1});if(result.canceled)return;const a=result.assets[0];if(!a.fileSize||a.fileSize>50*1024*1024)return Alert.alert('Video too large','Choose a video smaller than 50 MB.');setBusy(true);try{const mime=a.mimeType||'video/mp4';if(!['video/mp4','video/webm','video/quicktime'].includes(mime))throw new Error('Only MP4, WebM, and MOV videos are allowed.');const ext=mime==='video/quicktime'?'mov':mime.split('/')[1];const name=`mobile-${Crypto.randomUUID()}.${ext}`;const quarantinePath=`${playerId}/${Date.now()}-${name}`;const bytes=await fetch(a.uri).then(r=>r.arrayBuffer());const uploaded=await supabase.storage.from('video-quarantine').upload(quarantinePath,bytes,{contentType:mime,upsert:false});if(uploaded.error)throw uploaded.error;const scan=await supabase.functions.invoke('scan-video',{body:{quarantinePath,ownerId:playerId,fileName:name,contentType:mime}});if(scan.error||!scan.data?.path)throw new Error(scan.data?.error||scan.error?.message||'Video scan failed.');setVideo(scan.data.path);setExternal(false);Alert.alert('Video ready','The video passed its safety check.');}catch(e){Alert.alert('Upload failed',(e as Error).message);}finally{setBusy(false);}}
-  function next(){const reps=sets[step]?.reps.trim();if(!reps||!/^\d+(?:\.\d+)?$/.test(reps)||Number(reps)<=0){Alert.alert('Enter your reps','Enter the reps you completed before going to the next set.');return;}setStep(value=>Math.min(value+1,sets.length));}
-  async function save(){setBusy(true);try{let normalized=video;if(external&&video){const parsed=new URL(video);if(!['http:','https:'].includes(parsed.protocol))throw new Error('Enter a valid http or https video link.');normalized=parsed.toString();}await saveTodayLog(exercise.id,playerId,todayISO(),sets,comment,true,normalized,external);setDone(true);Alert.alert('Workout completed','Your sets and final notes were saved.');}catch(e){Alert.alert('Could not save',(e as Error).message);}finally{setBusy(false);}}
-  if(busy)return <ActivityIndicator/>;
-  const finalStep=step===sets.length;const current=sets[step];
-  return <View style={styles.form}>{exercise.coach_comment?<Text style={textStyles.muted}>Coach: {exercise.coach_comment}</Text>:null}<View style={styles.stepHeader}><Text style={textStyles.heading}>{finalStep?'Finish exercise':`Set ${step+1} of ${sets.length}`}</Text><Text style={textStyles.muted}>{finalStep?'Comment & video':`${exercise.target_reps??'—'} target reps`}</Text></View>{!finalStep&&current?<><Input value={current.reps} placeholder="Reps completed (required)" keyboardType="numeric" onChangeText={v=>setSets(a=>a.map((x,j)=>j===step?{...x,reps:v}:x))}/><Input value={current.weight} placeholder="Weight used (optional)" keyboardType="decimal-pad" onChangeText={v=>setSets(a=>a.map((x,j)=>j===step?{...x,weight:v}:x))}/></>:<><Input value={comment} onChangeText={setComment} placeholder="Comment for your coach (optional)" multiline/><Input value={external?(video??''):''} onChangeText={v=>{setVideo(v);setExternal(true)}} placeholder="Video link (optional)" autoCapitalize="none"/><Button secondary onPress={pickVideo}>UPLOAD VIDEO</Button>{video?<Text style={textStyles.muted}>{external?'Video link added':'Private video uploaded'}</Text>:null}</>}<View style={styles.navigation}><View style={styles.navButton}><Button secondary onPress={()=>setStep(value=>Math.max(0,value-1))} disabled={step===0}>← BACK</Button></View><View style={styles.navButton}>{finalStep?<Button onPress={save} disabled={busy}>{done?'SAVE CHANGES':'FINISH ✓'}</Button>:<Button onPress={next}>NEXT →</Button>}</View></View></View>
+export default function ProgramScreen() {
+  const { session } = useAuth();
+  const [days, setDays] = useState<any[] | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [week, setWeek] = useState(1);
+  const [error, setError] = useState("");
+  async function load() {
+    try {
+      const [program, guidance] = await Promise.all([
+        getProgram(session!.user.id),
+        supabase
+          .from("messages")
+          .select("*")
+          .eq("player_id", session!.user.id)
+          .order("created_at", { ascending: false })
+          .limit(20),
+      ]);
+      setDays(program);
+      setMessages(guidance.data ?? []);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  useEffect(() => {
+    void load();
+  }, [session]);
+  const weeks = [...new Set((days ?? []).map((d) => d.week_number))];
+  const shown = (days ?? []).filter((d) => d.week_number === week);
+  return (
+    <Screen title="My Program">
+      {!days && !error ? <ActivityIndicator /> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {messages
+        .filter((m) => !m.exercise_id)
+        .map((m) => (
+          <Card key={m.id}>
+            <Text style={textStyles.heading}>Coach message</Text>
+            <Text style={textStyles.body}>{m.body}</Text>
+          </Card>
+        ))}
+      {weeks.length > 1 ? (
+        <View style={styles.pills}>
+          {weeks.map((w) => (
+            <Pressable
+              key={w}
+              onPress={() => setWeek(Number(w))}
+              style={[styles.pill, w === week && styles.active]}
+            >
+              <Text style={textStyles.body}>W{w}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      {shown.length === 0 && days ? (
+        <Text style={textStyles.muted}>No program assigned for this week.</Text>
+      ) : (
+        shown.map((day) => (
+          <Card key={day.id}>
+            <Text style={textStyles.heading}>
+              {dayNames[day.day_of_week]} ·{" "}
+              {day.day_type === "rest" ? "Rest" : "Training"}
+            </Text>
+            {day.workouts.map((workout: any) => (
+              <Workout
+                key={workout.id}
+                workout={workout}
+                playerId={session!.user.id}
+              />
+            ))}
+          </Card>
+        ))
+      )}
+    </Screen>
+  );
 }
-const styles=StyleSheet.create({error:{color:colors.danger},pills:{flexDirection:'row',flexWrap:'wrap',gap:8},pill:{padding:10,borderRadius:10,borderWidth:1,borderColor:colors.border},active:{backgroundColor:colors.accent},section:{paddingVertical:8,gap:8},exercise:{borderTopWidth:1,borderTopColor:colors.border,paddingVertical:10,gap:10},form:{gap:10},row:{flexDirection:'row',gap:8,alignItems:'center'},small:{flex:1},stepHeader:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',gap:8},navigation:{flexDirection:'row',gap:10,marginTop:4},navButton:{flex:1}});
+function Workout({ workout, playerId }: { workout: any; playerId: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={styles.section}>
+      <Pressable onPress={() => setOpen((v) => !v)}>
+        <Text style={textStyles.heading}>
+          {open ? "▾" : "▸"} {workout.name}
+        </Text>
+      </Pressable>
+      {open
+        ? workout.exercises.map((exercise: any) => (
+            <Exercise
+              key={exercise.id}
+              exercise={exercise}
+              playerId={playerId}
+            />
+          ))
+        : null}
+    </View>
+  );
+}
+function Exercise({ exercise, playerId }: { exercise: any; playerId: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={styles.exercise}>
+      <Pressable onPress={() => setOpen((v) => !v)}>
+        <Text style={textStyles.body}>
+          {open ? "▾" : "▸"} {exercise.name} · {exercise.target_sets ?? "—"}×
+          {exercise.target_reps ?? "—"}
+        </Text>
+      </Pressable>
+      {open ? <LogForm exercise={exercise} playerId={playerId} /> : null}
+    </View>
+  );
+}
+function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
+  const [sets, setSets] = useState<{ reps: string; weight: string }[]>(() =>
+    Array.from({ length: Math.max(1, exercise.target_sets ?? 1) }, () => ({
+      reps: "",
+      weight: "",
+    })),
+  );
+  const [step, setStep] = useState(0);
+  const [comment, setComment] = useState("");
+  const [video, setVideo] = useState<string | null>(null);
+  const [external, setExternal] = useState(false);
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(true);
+  useEffect(() => {
+    getTodayLog(exercise.id, playerId, todayISO())
+      .then(({ log, sets: existing }) => {
+        if (existing.length)
+          setSets(
+            existing.map((s) => ({
+              reps: s.reps ?? "",
+              weight: s.weight ?? "",
+            })),
+          );
+        setComment(log?.player_comment ?? "");
+        setVideo(log?.player_video_url ?? null);
+        setExternal(log?.player_video_is_external ?? false);
+        setDone(log?.is_completed ?? false);
+      })
+      .catch((e) => Alert.alert("Could not load log", e.message))
+      .finally(() => setBusy(false));
+  }, [exercise.id, playerId]);
+  async function pickVideo() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["videos"],
+      quality: 1,
+    });
+    if (result.canceled) return;
+    const a = result.assets[0];
+    if (!a.fileSize || a.fileSize > 50 * 1024 * 1024)
+      return Alert.alert(
+        "Video too large",
+        "Choose a video smaller than 50 MB.",
+      );
+    setBusy(true);
+    try {
+      const mime = a.mimeType || "video/mp4";
+      if (!["video/mp4", "video/webm", "video/quicktime"].includes(mime))
+        throw new Error("Only MP4, WebM, and MOV videos are allowed.");
+      const ext = mime === "video/quicktime" ? "mov" : mime.split("/")[1];
+      const name = `mobile-${Crypto.randomUUID()}.${ext}`;
+      const quarantinePath = `${playerId}/${Date.now()}-${name}`;
+      const bytes = await fetch(a.uri).then((r) => r.arrayBuffer());
+      validateMedia(bytes, mime, a.fileSize, "video");
+      const uploaded = await supabase.storage
+        .from("video-quarantine")
+        .upload(quarantinePath, bytes, { contentType: mime, upsert: false });
+      if (uploaded.error) throw uploaded.error;
+      const scan = await supabase.functions.invoke("scan-video", {
+        body: {
+          quarantinePath,
+          ownerId: playerId,
+          fileName: name,
+          contentType: mime,
+        },
+      });
+      if (scan.error || !scan.data?.path)
+        throw new Error(
+          scan.data?.error || scan.error?.message || "Video scan failed.",
+        );
+      setVideo(scan.data.path);
+      setExternal(false);
+      Alert.alert("Video ready", "The video passed its safety check.");
+    } catch (e) {
+      Alert.alert("Upload failed", (e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function next() {
+    const reps = sets[step]?.reps.trim();
+    if (!reps || !/^\d+(?:\.\d+)?$/.test(reps) || Number(reps) <= 0) {
+      Alert.alert(
+        "Enter your reps",
+        "Enter the reps you completed before going to the next set.",
+      );
+      return;
+    }
+    setStep((value) => Math.min(value + 1, sets.length));
+  }
+  async function save() {
+    setBusy(true);
+    try {
+      let normalized = video;
+      if (external && video) {
+        const parsed = new URL(video);
+        if (!["http:", "https:"].includes(parsed.protocol))
+          throw new Error("Enter a valid http or https video link.");
+        normalized = parsed.toString();
+      }
+      await saveTodayLog(
+        exercise.id,
+        playerId,
+        todayISO(),
+        sets,
+        comment,
+        true,
+        normalized,
+        external,
+      );
+      setDone(true);
+      Alert.alert("Workout completed", "Your sets and final notes were saved.");
+    } catch (e) {
+      Alert.alert("Could not save", (e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (busy) return <ActivityIndicator />;
+  const finalStep = step === sets.length;
+  const current = sets[step];
+  return (
+    <View style={styles.form}>
+      {exercise.coach_comment ? (
+        <Text style={textStyles.muted}>Coach: {exercise.coach_comment}</Text>
+      ) : null}
+      <View style={styles.stepHeader}>
+        <Text style={textStyles.heading}>
+          {finalStep ? "Finish exercise" : `Set ${step + 1} of ${sets.length}`}
+        </Text>
+        <Text style={textStyles.muted}>
+          {finalStep
+            ? "Comment & video"
+            : `${exercise.target_reps ?? "—"} target reps`}
+        </Text>
+      </View>
+      {!finalStep && current ? (
+        <>
+          <Input
+            value={current.reps}
+            placeholder="Reps completed (required)"
+            keyboardType="numeric"
+            onChangeText={(v) =>
+              setSets((a) =>
+                a.map((x, j) => (j === step ? { ...x, reps: v } : x)),
+              )
+            }
+          />
+          <Input
+            value={current.weight}
+            placeholder="Weight used (optional)"
+            keyboardType="decimal-pad"
+            onChangeText={(v) =>
+              setSets((a) =>
+                a.map((x, j) => (j === step ? { ...x, weight: v } : x)),
+              )
+            }
+          />
+        </>
+      ) : (
+        <>
+          <Input
+            value={comment}
+            onChangeText={setComment}
+            placeholder="Comment for your coach (optional)"
+            multiline
+          />
+          <Input
+            value={external ? (video ?? "") : ""}
+            onChangeText={(v) => {
+              setVideo(v);
+              setExternal(true);
+            }}
+            placeholder="Video link (optional)"
+            autoCapitalize="none"
+          />
+          <Button secondary onPress={pickVideo}>
+            UPLOAD VIDEO
+          </Button>
+          {video ? (
+            <Text style={textStyles.muted}>
+              {external ? "Video link added" : "Private video uploaded"}
+            </Text>
+          ) : null}
+        </>
+      )}
+      <View style={styles.navigation}>
+        <View style={styles.navButton}>
+          <Button
+            secondary
+            onPress={() => setStep((value) => Math.max(0, value - 1))}
+            disabled={step === 0}
+          >
+            ← BACK
+          </Button>
+        </View>
+        <View style={styles.navButton}>
+          {finalStep ? (
+            <Button onPress={save} disabled={busy}>
+              {done ? "SAVE CHANGES" : "FINISH ✓"}
+            </Button>
+          ) : (
+            <Button onPress={next}>NEXT →</Button>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  error: { color: colors.danger },
+  pills: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  pill: {
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  active: { backgroundColor: colors.accent },
+  section: { paddingVertical: 8, gap: 8 },
+  exercise: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  form: { gap: 10 },
+  row: { flexDirection: "row", gap: 8, alignItems: "center" },
+  small: { flex: 1 },
+  stepHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
+  },
+  navigation: { flexDirection: "row", gap: 10, marginTop: 4 },
+  navButton: { flex: 1 },
+});
