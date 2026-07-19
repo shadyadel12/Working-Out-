@@ -33,6 +33,7 @@ This page explains what the app can do and what has changed in everyday language
 - Mobile administrators now have organized coach, coach-key, and player-access management with search, key generation, renewal state, restoration, and revocation.
 - Coach signup on mobile now supports both owner invitation keys and role-based team-member invitation keys.
 - Mobile coach libraries now provide complete reusable exercise fields, workout templates with exercises, diet templates with meals, and program details for later assignment.
+- Mobile plan building now includes existing weekly schedules, training/rest days, workout and diet creation, saved-template assignment, day deletion/duplication, and whole-program assignment.
 
 ### Improvements
 
