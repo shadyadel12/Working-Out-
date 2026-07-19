@@ -39,6 +39,8 @@ This page explains what the app can do and what has changed in everyday language
 - Terms of Use and the app feature/update overview are now available as native mobile screens.
 - Mobile coach conversations now prioritize unread VIP players first, followed by other unread chats, and remember when each conversation was opened.
 - Mobile now remembers the selected English or Arabic language, translates shared screens and navigation, and switches shared layouts to right-to-left in Arabic.
+- Coaches can now share blank Excel templates and import validated workout or diet workbooks using the phone document picker.
+- The mobile app now uses a cinematic editorial fitness design with athlete-image headers, oversized titles, pink/coral accents, outline pills, deeper cards, and floating role navigation.
 
 ### Improvements
 

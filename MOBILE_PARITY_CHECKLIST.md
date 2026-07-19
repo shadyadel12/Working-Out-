@@ -31,7 +31,7 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Subscription keys with VIP and spaced weekly frequency.
 - Complete — Team invitations, roles, client assignment, and revocation.
 - Complete — Administrator support chat and account controls.
-- Remaining — Native Excel workout/diet import and export equivalent.
+- Complete — Native Excel workout/diet import and template sharing with file, size, row, and atomic replacement validation.
 - Remaining — Field-by-field editing of existing workout/program library schedules; current mobile editor creates and assigns them but some detailed edits still use the web app.
 - Remaining — Team-role-specific mobile navigation and server permissions beyond assigned-client reading.
 
