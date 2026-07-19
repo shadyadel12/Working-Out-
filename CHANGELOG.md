@@ -17,6 +17,7 @@ This page explains what the app can do and what has changed in everyday language
 - The newest database safety update can now be applied cleanly over the existing VIP renewal functions.
 - Meal checkboxes in the player's daily diet check-in now align correctly with their meal names on desktop and mobile.
 - Player meal cards now stay closed by default and open only when the player selects a meal.
+- Mobile player-key creation and renewals now send the complete subscription choices, preventing an unclear database-function error.
 
 ## July 18, 2026
 
