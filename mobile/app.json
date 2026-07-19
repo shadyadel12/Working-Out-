@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "newArchEnabled": false,
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.coachplatform.app"

@@ -4,8 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme";
 
 const variants = {
-  launch: { icon: "flash-outline", title: "Powering your session", colors: ["#ff4f8f", "#6d3cff"] },
-  player: { icon: "barbell-outline", title: "Preparing your program", colors: ["#ff6542", "#ffb52e"] },
+  launch: { icon: "flash-outline", title: "Powering your session", colors: [colors.accent, colors.accentSoft] },
+  player: { icon: "barbell-outline", title: "Preparing your program", colors: [colors.accent, colors.warning] },
   coach: { icon: "people-outline", title: "Loading your athletes", colors: ["#23c4a8", "#246bfe"] },
 } as const;
 

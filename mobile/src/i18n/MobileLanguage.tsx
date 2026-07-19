@@ -11,7 +11,7 @@ import {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Pressable, StyleSheet, Text } from "react-native";
-import { colors } from "../theme";
+import { useMobileTheme } from "../theme/MobileTheme";
 type Lang = "en" | "ar";
 const C = createContext({ language: "en" as Lang, toggle: () => {} });
 const ar: Record<string, string> = {
@@ -282,8 +282,9 @@ export function useLanguage() {
 }
 export function LanguageButton() {
   const { language, toggle } = useLanguage();
+  const theme = useMobileTheme();
   return (
-    <Pressable onPress={toggle} style={styles.button}>
+    <Pressable onPress={toggle} style={[styles.button, { backgroundColor: theme.colors.brand500 }]}>
       <Text style={styles.text}>
         {language === "en" ? "العربية" : "English"}
       </Text>
@@ -294,7 +295,7 @@ export function localizeTree(node: ReactNode, language: Lang): ReactNode {
   if (typeof node === "string") return tr(node, language);
   if (typeof node === "number" || node == null || typeof node === "boolean")
     return node;
-  if (Array.isArray(node)) return node.map((x) => localizeTree(x, language));
+  if (Array.isArray(node)) return Children.toArray(node.map((x) => localizeTree(x, language)));
   if (isValidElement(node)) {
     const props = node.props as {
       children?: ReactNode;
@@ -329,7 +330,6 @@ const styles = StyleSheet.create({
     right: 14,
     top: 8,
     zIndex: 1000,
-    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 99,

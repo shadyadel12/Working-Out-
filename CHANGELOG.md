@@ -6,6 +6,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- The new five-tab mobile coach shell now connects to real client profiles, programming, exercise/workout/program/diet libraries, direct messages, coach teams, support, check-ups, subscriptions, account tools, and the coaching command center.
+- The mobile coach app now has the foundation of a calm five-tab experience for People, Community, Build, Messages, and Alerts, with an accessible azure light/dark design system and locally restored navigation state.
 - Landing, login, signup, and signed-in pages now share a persistent light and dark appearance switch. Light mode uses a clean teal workspace style, while dark mode keeps the existing PULSEFIT design.
 - Player Training and Diet now use focused three-pane builders with reusable sources, an ordered day canvas, and a detailed prescription or meal inspector.
 - Coaches can reorder player exercises, meals, and snacks with accessible controls while keeping the existing assignment and schedule workflow.
@@ -22,6 +24,9 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Mobile pages now use the website's light teal or dark charcoal/orange theme consistently, with a persistent Appearance option in coach Settings.
+- The mobile coach app replaces Community with Settings, keeps coach tools, team, and support there, and gives Alerts a simple live feed for VIP messages, completed workouts, and players needing attention today.
+- The dashboard's Invite a player shortcut now opens subscriptions directly so coaches can generate a player key.
 - Coach utility actions now live in a compact profile menu with the coach name, Team, subscriptions, Settings, Support notifications, and Sign out. The appearance switch is now icon-only.
 - Arabic mode now translates newly added Library, Training, Diet, admin, player, dialog, status, loading, and builder text, including content that updates after the page opens.
 - The admin interface can temporarily be opened without completing the sign-in or verification screens; protected admin data remains enforced by the server.

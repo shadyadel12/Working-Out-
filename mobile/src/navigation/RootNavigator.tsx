@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { NavigationContainer, DarkTheme } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme, DefaultTheme, type InitialState } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../auth/AuthProvider";
 import LoginScreen from "../screens/LoginScreen";
 import ProgramScreen from "../screens/player/ProgramScreen";
 import DietScreen from "../screens/player/DietScreen";
-import PlayersScreen from "../screens/coach/PlayersScreen";
 import {
   AccountScreen,
   AdminScreen,
@@ -15,21 +15,17 @@ import {
 } from "../screens/SharedScreens";
 import { colors } from "../theme";
 import MfaScreen from "../screens/MfaScreen";
-import CoachSettingsScreen from "../screens/coach/CoachSettingsScreen";
 import AdminSupportScreen from "../screens/admin/AdminSupportScreen";
-import CoachPlanScreen from "../screens/coach/CoachPlanScreen";
 import RenewSubscriptionScreen from "../screens/RenewSubscriptionScreen";
 import { supabase } from "../lib/supabase";
-import CoachSupportScreen from "../screens/coach/CoachSupportScreen";
-import CoachCheckupsScreen from "../screens/coach/CoachCheckupsScreen";
-import CoachMoreScreen from "../screens/coach/CoachMoreActiveScreen";
-import CoachDashboardScreen from "../screens/coach/CoachDashboardScreen";
 import PlayerHomeScreen from "../screens/player/PlayerHomeScreen";
 import AdminOverviewScreen from "../screens/admin/AdminOverviewScreen";
 import PlayerProgressScreen from "../screens/player/PlayerProgressScreen";
 import AdminManagementScreen from "../screens/admin/AdminManagementScreen";
 import { tr, useLanguage } from "../i18n/MobileLanguage";
 import MobileLoading from "../components/MobileLoading";
+import CoachTabShell from "./CoachTabShell";
+import { useMobileTheme } from "../theme/MobileTheme";
 
 const Tabs = createBottomTabNavigator();
 const tabOptions = {
@@ -110,53 +106,7 @@ function PlayerTabs() {
   );
 }
 function CoachTabs() {
-  const { language } = useLanguage();
-  const { teamMembership } = useAuth();
-  const role = teamMembership?.role;
-  return (
-    <Tabs.Navigator screenOptions={tabOptions}>
-      {!role || role === "head_coach" ? (
-        <Tabs.Screen
-          name="Home"
-          component={CoachDashboardScreen}
-          options={{ tabBarLabel: tr("Home", language), tabBarIcon: tabIcon("home-outline") }}
-        />
-      ) : null}
-      <Tabs.Screen
-        name="Analysis"
-        component={PlayersScreen}
-        options={{ tabBarLabel: tr("Analysis", language), tabBarIcon: tabIcon("analytics-outline") }}
-      />
-      {!role || role === "head_coach" ? (
-        <Tabs.Screen
-          name="Plans"
-          component={CoachPlanScreen}
-          options={{ tabBarLabel: tr("Plans", language), tabBarIcon: tabIcon("clipboard-outline") }}
-        />
-      ) : null}
-      {!role || role === "head_coach" || role === "chat" ? (
-        <Tabs.Screen
-          name="Messages"
-          component={ChatScreen}
-          options={{ tabBarLabel: tr("Messages", language), tabBarIcon: tabIcon("chatbubbles-outline") }}
-        />
-      ) : null}
-      {!role || role === "sales" ? (
-        <Tabs.Screen
-          name="More"
-          component={CoachMoreScreen}
-          options={{ tabBarLabel: tr("More", language), tabBarIcon: tabIcon("grid-outline") }}
-        />
-      ) : null}
-      {role ? (
-        <Tabs.Screen
-          name="Account"
-          component={AccountScreen}
-          options={{ tabBarLabel: tr("Account", language), tabBarIcon: tabIcon("person-outline") }}
-        />
-      ) : null}
-    </Tabs.Navigator>
-  );
+  return <CoachTabShell />;
 }
 function AdminTabs() {
   const { language } = useLanguage();
@@ -187,19 +137,38 @@ function AdminTabs() {
 }
 export default function RootNavigator() {
   const { session, profile, loading, aal2 } = useAuth();
+  const mobileTheme = useMobileTheme();
+  const [initialState, setInitialState] = useState<InitialState | undefined>();
+  const [navigationReady, setNavigationReady] = useState(false);
+  const persistenceKey = `navigation-state-v2-${profile?.role ?? "guest"}`;
+  useEffect(() => {
+    let active = true;
+    setNavigationReady(false);
+    AsyncStorage.getItem(persistenceKey).then((stored) => {
+      if (!active) return;
+      try { setInitialState(stored ? JSON.parse(stored) as InitialState : undefined); }
+      catch { setInitialState(undefined); }
+      setNavigationReady(true);
+    });
+    return () => { active = false; };
+  }, [persistenceKey]);
   if (loading)
     return <MobileLoading variant="launch" />;
+  if (!navigationReady) return <MobileLoading variant="launch" />;
   return (
     <NavigationContainer
+      key={persistenceKey}
+      initialState={initialState}
+      onStateChange={(state) => { void AsyncStorage.setItem(persistenceKey, JSON.stringify(state)); }}
       theme={{
-        ...DarkTheme,
+        ...(mobileTheme.dark ? DarkTheme : DefaultTheme),
         colors: {
-          ...DarkTheme.colors,
-          background: colors.background,
-          card: colors.surface,
-          border: colors.border,
-          primary: colors.accent,
-          text: colors.text,
+          ...(mobileTheme.dark ? DarkTheme.colors : DefaultTheme.colors),
+          background: mobileTheme.colors.surfaceSubtle,
+          card: mobileTheme.colors.surface,
+          border: mobileTheme.colors.line,
+          primary: mobileTheme.colors.brand500,
+          text: mobileTheme.colors.ink950,
         },
       }}
     >

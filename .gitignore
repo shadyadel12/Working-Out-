@@ -10,6 +10,7 @@ mobile/.expo
 mobile/android
 mobile/ios
 mobile/dist-mobile
+mobile/dist-mobile-phase1
 
 # Editor
 .vscode/*

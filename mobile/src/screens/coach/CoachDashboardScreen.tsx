@@ -104,8 +104,8 @@ export default function CoachDashboardScreen() {
       <Text style={styles.heroTitle}>Focus where it matters.</Text>
       <Text style={styles.heroCopy}>Messages, check-ups, programming gaps, and low activity in one clear view.</Text>
       <View style={styles.heroActions}>
-        <ActionButton label="Open analysis" icon="analytics-outline" onPress={() => navigation.navigate("Analysis")} primary />
-        <ActionButton label="Inbox" icon="chatbubbles-outline" onPress={() => navigation.navigate("Messages")} />
+        <ActionButton label="Open analysis" icon="analytics-outline" onPress={() => navigation.getParent()?.getParent()?.navigate("People")} primary />
+        <ActionButton label="Inbox" icon="chatbubbles-outline" onPress={() => navigation.getParent()?.getParent()?.navigate("Messages")} />
       </View>
     </View>
     {!data && !error ? <ActivityIndicator color={colors.accent} /> : null}
@@ -119,7 +119,7 @@ export default function CoachDashboardScreen() {
       </View>
       <Card>
         <View style={styles.sectionHeading}><View><Text style={textStyles.eyebrow}>Priority queue</Text><Text style={textStyles.heading}>Players needing attention</Text></View><Text style={styles.activeCount}>{data.active} active</Text></View>
-        {data.priority.length === 0 ? <View style={styles.empty}><Ionicons name="checkmark-circle" size={34} color={colors.success} /><Text style={textStyles.heading}>You’re caught up</Text><Text style={textStyles.muted}>No urgent coaching signals right now.</Text></View> : data.priority.slice(0, 5).map((player) => <Pressable accessibilityRole="button" accessibilityLabel={`Open ${player.name} in analysis`} onPress={() => navigation.navigate("Analysis")} key={player.id} style={({ pressed }) => [styles.playerRow, pressed && styles.pressed]}>
+        {data.priority.length === 0 ? <View style={styles.empty}><Ionicons name="checkmark-circle" size={34} color={colors.success} /><Text style={textStyles.heading}>You’re caught up</Text><Text style={textStyles.muted}>No urgent coaching signals right now.</Text></View> : data.priority.slice(0, 5).map((player) => <Pressable accessibilityRole="button" accessibilityLabel={`Open ${player.name} in analysis`} onPress={() => navigation.getParent()?.getParent()?.navigate("People")} key={player.id} style={({ pressed }) => [styles.playerRow, pressed && styles.pressed]}>
           <View style={styles.avatar}><Text style={styles.avatarText}>{initials(player.name)}</Text></View>
           <View style={styles.playerBody}><Text numberOfLines={1} style={styles.playerName}>{player.name}{player.vip ? "  ★" : ""}</Text><Text style={textStyles.muted}>{activityLabel(player.inactiveDays)}</Text><View style={styles.signals}>{player.unread && <Signal label="Unread" color="#9b7cff" />}{player.checkupDue && <Signal label="Check-up" color={colors.warning} />}{player.needsProgram && <Signal label="Program" color={colors.success} />}{(player.inactiveDays === null || player.inactiveDays >= 7) && <Signal label="Low activity" color={colors.danger} />}</View></View>
           <Ionicons name="chevron-forward" color={colors.muted} size={20} />
@@ -127,9 +127,9 @@ export default function CoachDashboardScreen() {
       </Card>
       <Card>
         <Text style={textStyles.eyebrow}>Quick actions</Text>
-        <QuickAction icon="clipboard-outline" title="Build a program" subtitle="Use your programming library" onPress={() => navigation.navigate("Plans")} />
-        <QuickAction icon="people-outline" title="Review the roster" subtitle="Open player profiles and progress" onPress={() => navigation.navigate("Analysis")} />
-        <QuickAction icon="grid-outline" title="Check-ups and settings" subtitle="Continue your daily workflow" onPress={() => navigation.navigate("More")} />
+        <QuickAction icon="clipboard-outline" title="Build a program" subtitle="Use your programming library" onPress={() => navigation.getParent()?.getParent()?.navigate("Build")} />
+        <QuickAction icon="people-outline" title="Review the roster" subtitle="Open player profiles and progress" onPress={() => navigation.getParent()?.getParent()?.navigate("People")} />
+        <QuickAction icon="grid-outline" title="Check-ups and settings" subtitle="Continue your daily workflow" onPress={() => navigation.navigate("CoachTools")} />
       </Card>
     </> : null}
   </Screen>;

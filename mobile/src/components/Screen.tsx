@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   orb: { position: "absolute", width: 260, height: 260, borderRadius: 130, opacity: 0.2 },
   orbTop: { top: -110, right: -90 },
   orbBottom: { bottom: 40, left: -150 },
-  gridLine: { position: "absolute", top: 150, left: 20, right: 20, height: 1, backgroundColor: "rgba(255,255,255,.05)" },
+  gridLine: { position: "absolute", top: 150, left: 20, right: 20, height: 1, backgroundColor: colors.border, opacity: 0.45 },
   body: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   header: { gap: spacing.xs, marginBottom: spacing.sm },
   title: {
@@ -115,10 +115,6 @@ const styles = StyleSheet.create({
 });
 
 const backgrounds = [
-  ["#ff4f8f", "#6d3cff"],
-  ["#ff6542", "#ffb52e"],
-  ["#23c4a8", "#246bfe"],
-  ["#8b5cf6", "#ec4899"],
-  ["#3b82f6", "#22d3ee"],
-  ["#ef4444", "#f97316"],
+  [colors.accent, colors.accentSoft],
+  [colors.accentSoft, colors.accent],
 ];

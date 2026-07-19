@@ -640,7 +640,7 @@ const styles = StyleSheet.create({
     maxWidth: "85%",
     gap: 4,
   },
-  mine: { alignSelf: "flex-end", backgroundColor: "#512715" },
+  mine: { alignSelf: "flex-end", backgroundColor: colors.accentSoft },
   time: { color: colors.muted, fontSize: 11, alignSelf: "flex-end" },
   actionRow: { flexDirection: "row", gap: 8 },
   action: { flex: 1 },
