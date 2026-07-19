@@ -1,10 +1,624 @@
-import { useEffect,useState } from 'react';import { ActivityIndicator,Alert,StyleSheet,Text,View } from 'react-native';import { Card,textStyles } from '../../components/Screen';import { Button,Input } from '../../components/Controls';import { useAuth } from '../../auth/AuthProvider';import { supabase } from '../../lib/supabase';import { colors } from '../../theme';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
+import { Card, textStyles } from "../../components/Screen";
+import { Button, Input } from "../../components/Controls";
+import { useAuth } from "../../auth/AuthProvider";
+import { supabase } from "../../lib/supabase";
+import { colors } from "../../theme";
 
-export function ExerciseLibrary(){const{session}=useAuth();const[rows,setRows]=useState<any[]|null>(null);const[editing,setEditing]=useState<any>(null);const empty={name:'',category:'',equipment:'',instructions:'',default_note:'',video_url:'',muscles:'',movements:'',tracking:''};const[form,setForm]=useState(empty);async function load(){const{data,error}=await supabase.from('exercise_library' as never).select('*').order('name');if(error)Alert.alert('Could not load',error.message);setRows((data as any[])??[])}useEffect(()=>{void load()},[]);function edit(x:any){setEditing(x);setForm({name:x.name,category:x.category,equipment:x.equipment??'',instructions:x.instructions??'',default_note:x.default_note??'',video_url:x.video_url??'',muscles:(x.target_muscle_groups??[]).join(', '),movements:(x.movement_patterns??[]).join(', '),tracking:(x.tracking_fields??[]).join(', ')})}async function save(){if(!form.name.trim()||!form.category.trim())return Alert.alert('Missing information','Exercise name and category are required.');const list=(x:string)=>x.split(',').map(v=>v.trim()).filter(Boolean);const payload:any={coach_id:session!.user.id,name:form.name.trim(),category:form.category.trim(),equipment:form.equipment.trim()||null,instructions:form.instructions.trim()||null,default_note:form.default_note.trim()||null,video_url:form.video_url.trim()||null,target_muscle_groups:list(form.muscles),movement_patterns:list(form.movements),tracking_fields:list(form.tracking).slice(0,3),updated_at:new Date().toISOString()};const result=editing?await(supabase.from('exercise_library' as never) as any).update(payload).eq('id',editing.id):await(supabase.from('exercise_library' as never) as any).insert(payload);if(result.error)Alert.alert('Could not save',result.error.message);else{setForm(empty);setEditing(null);void load()}}async function remove(id:string){const{error}=await(supabase.from('exercise_library' as never) as any).delete().eq('id',id);if(error)Alert.alert('Could not delete',error.message);else void load()}return <><Card><Text style={textStyles.heading}>{editing?'Edit exercise':'Add exercise'}</Text>{Object.entries({name:'Exercise name',category:'Category',equipment:'Equipment',muscles:'Muscle groups (comma separated)',movements:'Movement patterns (comma separated)',tracking:'Tracking fields, maximum 3',video_url:'Video URL',instructions:'Instructions',default_note:'Default note'}).map(([key,label])=><Input key={key} multiline={['instructions','default_note'].includes(key)} value={(form as any)[key]} onChangeText={v=>setForm({...form,[key]:v})} placeholder={label}/>) }<Button onPress={save}>{editing?'SAVE CHANGES':'ADD EXERCISE'}</Button>{editing?<Button secondary onPress={()=>{setEditing(null);setForm(empty)}}>CANCEL</Button>:null}</Card>{!rows?<ActivityIndicator color={colors.accent}/>:rows.map(x=><Card key={x.id}><Text style={textStyles.heading}>{x.name}</Text><Text style={textStyles.muted}>{x.category}{x.equipment?` · ${x.equipment}`:''}</Text><Text style={textStyles.muted}>{(x.target_muscle_groups??[]).join(', ')}</Text><View style={styles.row}><View style={styles.flex}><Button secondary onPress={()=>edit(x)}>EDIT</Button></View><View style={styles.flex}><Button danger onPress={()=>remove(x.id)}>DELETE</Button></View></View></Card>)}</>}
+export function ExerciseLibrary() {
+  const { session } = useAuth();
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [editing, setEditing] = useState<any>(null);
+  const empty = {
+    name: "",
+    category: "",
+    equipment: "",
+    instructions: "",
+    default_note: "",
+    video_url: "",
+    muscles: "",
+    movements: "",
+    tracking: "",
+  };
+  const [form, setForm] = useState(empty);
+  async function load() {
+    const { data, error } = await supabase
+      .from("exercise_library" as never)
+      .select("*")
+      .order("name");
+    if (error) Alert.alert("Could not load", error.message);
+    setRows((data as any[]) ?? []);
+  }
+  useEffect(() => {
+    void load();
+  }, []);
+  function edit(x: any) {
+    setEditing(x);
+    setForm({
+      name: x.name,
+      category: x.category,
+      equipment: x.equipment ?? "",
+      instructions: x.instructions ?? "",
+      default_note: x.default_note ?? "",
+      video_url: x.video_url ?? "",
+      muscles: (x.target_muscle_groups ?? []).join(", "),
+      movements: (x.movement_patterns ?? []).join(", "),
+      tracking: (x.tracking_fields ?? []).join(", "),
+    });
+  }
+  async function save() {
+    if (!form.name.trim() || !form.category.trim())
+      return Alert.alert(
+        "Missing information",
+        "Exercise name and category are required.",
+      );
+    const list = (x: string) =>
+      x
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+    const payload: any = {
+      coach_id: session!.user.id,
+      name: form.name.trim(),
+      category: form.category.trim(),
+      equipment: form.equipment.trim() || null,
+      instructions: form.instructions.trim() || null,
+      default_note: form.default_note.trim() || null,
+      video_url: form.video_url.trim() || null,
+      target_muscle_groups: list(form.muscles),
+      movement_patterns: list(form.movements),
+      tracking_fields: list(form.tracking).slice(0, 3),
+      updated_at: new Date().toISOString(),
+    };
+    const result = editing
+      ? await (supabase.from("exercise_library" as never) as any)
+          .update(payload)
+          .eq("id", editing.id)
+      : await (supabase.from("exercise_library" as never) as any).insert(
+          payload,
+        );
+    if (result.error) Alert.alert("Could not save", result.error.message);
+    else {
+      setForm(empty);
+      setEditing(null);
+      void load();
+    }
+  }
+  async function remove(id: string) {
+    const { error } = await (supabase.from("exercise_library" as never) as any)
+      .delete()
+      .eq("id", id);
+    if (error) Alert.alert("Could not delete", error.message);
+    else void load();
+  }
+  return (
+    <>
+      <Card>
+        <Text style={textStyles.heading}>
+          {editing ? "Edit exercise" : "Add exercise"}
+        </Text>
+        {Object.entries({
+          name: "Exercise name",
+          category: "Category",
+          equipment: "Equipment",
+          muscles: "Muscle groups (comma separated)",
+          movements: "Movement patterns (comma separated)",
+          tracking: "Tracking fields, maximum 3",
+          video_url: "Video URL",
+          instructions: "Instructions",
+          default_note: "Default note",
+        }).map(([key, label]) => (
+          <Input
+            key={key}
+            multiline={["instructions", "default_note"].includes(key)}
+            value={(form as any)[key]}
+            onChangeText={(v) => setForm({ ...form, [key]: v })}
+            placeholder={label}
+          />
+        ))}
+        <Button onPress={save}>
+          {editing ? "SAVE CHANGES" : "ADD EXERCISE"}
+        </Button>
+        {editing ? (
+          <Button
+            secondary
+            onPress={() => {
+              setEditing(null);
+              setForm(empty);
+            }}
+          >
+            CANCEL
+          </Button>
+        ) : null}
+      </Card>
+      {!rows ? (
+        <ActivityIndicator color={colors.accent} />
+      ) : (
+        rows.map((x) => (
+          <Card key={x.id}>
+            <Text style={textStyles.heading}>{x.name}</Text>
+            <Text style={textStyles.muted}>
+              {x.category}
+              {x.equipment ? ` · ${x.equipment}` : ""}
+            </Text>
+            <Text style={textStyles.muted}>
+              {(x.target_muscle_groups ?? []).join(", ")}
+            </Text>
+            <View style={styles.row}>
+              <View style={styles.flex}>
+                <Button secondary onPress={() => edit(x)}>
+                  EDIT
+                </Button>
+              </View>
+              <View style={styles.flex}>
+                <Button danger onPress={() => remove(x.id)}>
+                  DELETE
+                </Button>
+              </View>
+            </View>
+          </Card>
+        ))
+      )}
+    </>
+  );
+}
 
-export function WorkoutLibrary(){const{session}=useAuth();const[rows,setRows]=useState<any[]|null>(null);const[name,setName]=useState('');const[description,setDescription]=useState('');const[difficulty,setDifficulty]=useState('Beginner');const[notes,setNotes]=useState('');const[selected,setSelected]=useState<any>(null);const[exercise,setExercise]=useState({name:'',sets:'3',reps:'10',weight:'',section:'Main',comment:'',video:''});async function load(){const{data}=await supabase.from('workout_templates').select('*,workout_template_exercises(*)').order('name');setRows(data??[])}useEffect(()=>{void load()},[]);async function addWorkout(){if(!name.trim())return;const{error}=await supabase.from('workout_templates').insert({coach_id:session!.user.id,name:name.trim(),description:description.trim()||null,difficulty,notes:notes.trim()||null});if(error)Alert.alert('Could not save',error.message);else{setName('');setDescription('');setNotes('');void load()}}async function addExercise(){if(!selected||!exercise.name.trim())return;const count=selected.workout_template_exercises?.length??0;const{error}=await supabase.from('workout_template_exercises').insert({template_id:selected.id,position:count,name:exercise.name.trim(),target_sets:Number(exercise.sets)||null,target_reps:exercise.reps||null,target_weight:exercise.weight||null,section_name:exercise.section||null,coach_comment:exercise.comment||null,coach_video_url:exercise.video||null,coach_video_is_external:!!exercise.video});if(error)Alert.alert('Could not add',error.message);else{setExercise({name:'',sets:'3',reps:'10',weight:'',section:'Main',comment:'',video:''});setSelected(null);void load()}}async function remove(id:string){const{error}=await supabase.from('workout_templates').delete().eq('id',id);if(error)Alert.alert('Could not delete',error.message);else void load()}return <><Card><Text style={textStyles.heading}>Create workout</Text><Input value={name} onChangeText={setName} placeholder="Workout name"/><Input value={description} onChangeText={setDescription} placeholder="Description" multiline/><Input value={difficulty} onChangeText={setDifficulty} placeholder="Difficulty"/><Input value={notes} onChangeText={setNotes} placeholder="Notes" multiline/><Button onPress={addWorkout}>CREATE WORKOUT</Button></Card>{selected?<Card><Text style={textStyles.heading}>Add exercise to {selected.name}</Text>{Object.entries({name:'Exercise name',section:'Section',sets:'Sets',reps:'Reps',weight:'Weight',comment:'Coach note',video:'Video URL'}).map(([k,label])=><Input key={k} value={(exercise as any)[k]} onChangeText={v=>setExercise({...exercise,[k]:v})} placeholder={label}/>) }<Button onPress={addExercise}>ADD EXERCISE</Button><Button secondary onPress={()=>setSelected(null)}>CANCEL</Button></Card>:null}{!rows?<ActivityIndicator color={colors.accent}/>:rows.map(x=><Card key={x.id}><Text style={textStyles.heading}>{x.name}</Text><Text style={textStyles.muted}>{x.difficulty||'Custom'} · {(x.workout_template_exercises??[]).length} exercises</Text>{(x.workout_template_exercises??[]).map((e:any)=><Text key={e.id} style={textStyles.body}>• {e.name} · {e.target_sets??'—'}×{e.target_reps??'—'}</Text>)}<View style={styles.row}><View style={styles.flex}><Button secondary onPress={()=>setSelected(x)}>ADD EXERCISE</Button></View><View style={styles.flex}><Button danger onPress={()=>remove(x.id)}>DELETE</Button></View></View></Card>)}</>}
+export function WorkoutLibrary() {
+  const { session } = useAuth();
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [difficulty, setDifficulty] = useState("Beginner");
+  const [notes, setNotes] = useState("");
+  const [editingWorkout, setEditingWorkout] = useState<any>(null);
+  const [selected, setSelected] = useState<any>(null);
+  const [editingExercise, setEditingExercise] = useState<any>(null);
+  const [exercise, setExercise] = useState({
+    name: "",
+    sets: "3",
+    reps: "10",
+    weight: "",
+    section: "Main",
+    comment: "",
+    video: "",
+  });
+  async function load() {
+    const { data } = await supabase
+      .from("workout_templates")
+      .select("*,workout_template_exercises(*)")
+      .order("name");
+    setRows(data ?? []);
+  }
+  useEffect(() => {
+    void load();
+  }, []);
+  async function saveWorkout() {
+    if (!name.trim()) return;
+    const payload = {
+      coach_id: session!.user.id,
+      name: name.trim(),
+      description: description.trim() || null,
+      difficulty,
+      notes: notes.trim() || null,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = editingWorkout
+      ? await supabase
+          .from("workout_templates")
+          .update(payload)
+          .eq("id", editingWorkout.id)
+      : await supabase.from("workout_templates").insert(payload);
+    if (error) Alert.alert("Could not save", error.message);
+    else {
+      setName("");
+      setDescription("");
+      setNotes("");
+      setDifficulty("Beginner");
+      setEditingWorkout(null);
+      void load();
+    }
+  }
+  function editWorkout(row: any) {
+    setEditingWorkout(row);
+    setName(row.name ?? "");
+    setDescription(row.description ?? "");
+    setDifficulty(row.difficulty ?? "Beginner");
+    setNotes(row.notes ?? "");
+  }
+  function editExercise(row: any, parent: any) {
+    setSelected(parent);
+    setEditingExercise(row);
+    setExercise({
+      name: row.name ?? "",
+      sets: String(row.target_sets ?? ""),
+      reps: row.target_reps ?? "",
+      weight: row.target_weight ?? "",
+      section: row.section_name ?? "",
+      comment: row.coach_comment ?? "",
+      video: row.coach_video_url ?? "",
+    });
+  }
+  async function saveExercise() {
+    if (!selected || !exercise.name.trim()) return;
+    const count = selected.workout_template_exercises?.length ?? 0;
+    const payload = {
+      template_id: selected.id,
+      position: editingExercise?.position ?? count,
+      name: exercise.name.trim(),
+      target_sets: Number(exercise.sets) || null,
+      target_reps: exercise.reps || null,
+      target_weight: exercise.weight || null,
+      section_name: exercise.section || null,
+      coach_comment: exercise.comment || null,
+      coach_video_url: exercise.video || null,
+      coach_video_is_external: !!exercise.video,
+    };
+    const { error } = editingExercise
+      ? await supabase
+          .from("workout_template_exercises")
+          .update(payload)
+          .eq("id", editingExercise.id)
+      : await supabase.from("workout_template_exercises").insert(payload);
+    if (error) Alert.alert("Could not add", error.message);
+    else {
+      setExercise({
+        name: "",
+        sets: "3",
+        reps: "10",
+        weight: "",
+        section: "Main",
+        comment: "",
+        video: "",
+      });
+      setSelected(null);
+      setEditingExercise(null);
+      void load();
+    }
+  }
+  async function removeExercise(id: string) {
+    const { error } = await supabase
+      .from("workout_template_exercises")
+      .delete()
+      .eq("id", id);
+    if (error) Alert.alert("Could not delete", error.message);
+    else void load();
+  }
+  async function remove(id: string) {
+    const { error } = await supabase
+      .from("workout_templates")
+      .delete()
+      .eq("id", id);
+    if (error) Alert.alert("Could not delete", error.message);
+    else void load();
+  }
+  return (
+    <>
+      <Card>
+        <Text style={textStyles.heading}>
+          {editingWorkout ? "Edit workout" : "Create workout"}
+        </Text>
+        <Input value={name} onChangeText={setName} placeholder="Workout name" />
+        <Input
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Description"
+          multiline
+        />
+        <Input
+          value={difficulty}
+          onChangeText={setDifficulty}
+          placeholder="Difficulty"
+        />
+        <Input
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="Notes"
+          multiline
+        />
+        <Button onPress={saveWorkout}>
+          {editingWorkout ? "SAVE WORKOUT" : "CREATE WORKOUT"}
+        </Button>
+        {editingWorkout ? (
+          <Button
+            secondary
+            onPress={() => {
+              setEditingWorkout(null);
+              setName("");
+              setDescription("");
+              setDifficulty("Beginner");
+              setNotes("");
+            }}
+          >
+            CANCEL
+          </Button>
+        ) : null}
+      </Card>
+      {selected ? (
+        <Card>
+          <Text style={textStyles.heading}>
+            {editingExercise ? "Edit exercise in" : "Add exercise to"}{" "}
+            {selected.name}
+          </Text>
+          {Object.entries({
+            name: "Exercise name",
+            section: "Section",
+            sets: "Sets",
+            reps: "Reps",
+            weight: "Weight",
+            comment: "Coach note",
+            video: "Video URL",
+          }).map(([k, label]) => (
+            <Input
+              key={k}
+              value={(exercise as any)[k]}
+              onChangeText={(v) => setExercise({ ...exercise, [k]: v })}
+              placeholder={label}
+            />
+          ))}
+          <Button onPress={saveExercise}>
+            {editingExercise ? "SAVE EXERCISE" : "ADD EXERCISE"}
+          </Button>
+          <Button
+            secondary
+            onPress={() => {
+              setSelected(null);
+              setEditingExercise(null);
+            }}
+          >
+            CANCEL
+          </Button>
+        </Card>
+      ) : null}
+      {!rows ? (
+        <ActivityIndicator color={colors.accent} />
+      ) : (
+        rows.map((x) => (
+          <Card key={x.id}>
+            <Text style={textStyles.heading}>{x.name}</Text>
+            <Text style={textStyles.muted}>
+              {x.difficulty || "Custom"} ·{" "}
+              {(x.workout_template_exercises ?? []).length} exercises
+            </Text>
+            {(x.workout_template_exercises ?? []).map((e: any) => (
+              <Text key={e.id} style={textStyles.body}>
+                • {e.name} · {e.target_sets ?? "—"}×{e.target_reps ?? "—"}
+              </Text>
+            ))}
+            {(x.workout_template_exercises ?? []).map((e: any) => (
+              <View key={`actions-${e.id}`} style={styles.exerciseRow}>
+                <Text style={[textStyles.muted, styles.flex]}>{e.name}</Text>
+                <Button secondary onPress={() => editExercise(e, x)}>
+                  EDIT
+                </Button>
+                <Button danger onPress={() => removeExercise(e.id)}>
+                  DELETE
+                </Button>
+              </View>
+            ))}
+            <View style={styles.row}>
+              <View style={styles.flex}>
+                <Button secondary onPress={() => editWorkout(x)}>
+                  EDIT WORKOUT
+                </Button>
+              </View>
+              <View style={styles.flex}>
+                <Button
+                  secondary
+                  onPress={() => {
+                    setSelected(x);
+                    setEditingExercise(null);
+                  }}
+                >
+                  ADD EXERCISE
+                </Button>
+              </View>
+              <View style={styles.flex}>
+                <Button danger onPress={() => remove(x.id)}>
+                  DELETE
+                </Button>
+              </View>
+            </View>
+          </Card>
+        ))
+      )}
+    </>
+  );
+}
 
-export function DietLibrary(){const{session}=useAuth();const[rows,setRows]=useState<any[]|null>(null);const[name,setName]=useState('');const[label,setLabel]=useState('Meal 1');const[food,setFood]=useState('');const[grams,setGrams]=useState('');const[comment,setComment]=useState('');async function load(){const{data}=await supabase.from('diet_templates').select('*').order('name');setRows(data??[])}useEffect(()=>{void load()},[]);async function add(){if(!name.trim()||!food.trim())return Alert.alert('Missing information','Template name and food are required.');const meals=[{type:'meal',label:label.trim()||'Meal 1',content:'',items:[{food:food.trim(),grams:grams.trim()}]}];const{error}=await supabase.from('diet_templates').insert({coach_id:session!.user.id,name:name.trim(),meals,comment:comment.trim()||null});if(error)Alert.alert('Could not save',error.message);else{setName('');setFood('');setGrams('');setComment('');void load()}}async function remove(id:string){const{error}=await supabase.from('diet_templates').delete().eq('id',id);if(error)Alert.alert('Could not delete',error.message);else void load()}return <><Card><Text style={textStyles.heading}>Create diet template</Text><Input value={name} onChangeText={setName} placeholder="Template name"/><Input value={label} onChangeText={setLabel} placeholder="Meal label"/><Input value={food} onChangeText={setFood} placeholder="Food"/><Input value={grams} onChangeText={setGrams} placeholder="Grams" keyboardType="numeric"/><Input value={comment} onChangeText={setComment} placeholder="Coach comment" multiline/><Button onPress={add}>SAVE DIET TEMPLATE</Button></Card>{!rows?<ActivityIndicator color={colors.accent}/>:rows.map(x=><Card key={x.id}><Text style={textStyles.heading}>{x.name}</Text><Text style={textStyles.muted}>{(x.meals??[]).length} meals · {x.comment||'No note'}</Text><Button danger onPress={()=>remove(x.id)}>DELETE</Button></Card>)}</>}
+export function DietLibrary() {
+  const { session } = useAuth();
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [name, setName] = useState("");
+  const [label, setLabel] = useState("Meal 1");
+  const [food, setFood] = useState("");
+  const [grams, setGrams] = useState("");
+  const [comment, setComment] = useState("");
+  async function load() {
+    const { data } = await supabase
+      .from("diet_templates")
+      .select("*")
+      .order("name");
+    setRows(data ?? []);
+  }
+  useEffect(() => {
+    void load();
+  }, []);
+  async function add() {
+    if (!name.trim() || !food.trim())
+      return Alert.alert(
+        "Missing information",
+        "Template name and food are required.",
+      );
+    const meals = [
+      {
+        type: "meal",
+        label: label.trim() || "Meal 1",
+        content: "",
+        items: [{ food: food.trim(), grams: grams.trim() }],
+      },
+    ];
+    const { error } = await supabase.from("diet_templates").insert({
+      coach_id: session!.user.id,
+      name: name.trim(),
+      meals,
+      comment: comment.trim() || null,
+    });
+    if (error) Alert.alert("Could not save", error.message);
+    else {
+      setName("");
+      setFood("");
+      setGrams("");
+      setComment("");
+      void load();
+    }
+  }
+  async function remove(id: string) {
+    const { error } = await supabase
+      .from("diet_templates")
+      .delete()
+      .eq("id", id);
+    if (error) Alert.alert("Could not delete", error.message);
+    else void load();
+  }
+  return (
+    <>
+      <Card>
+        <Text style={textStyles.heading}>Create diet template</Text>
+        <Input
+          value={name}
+          onChangeText={setName}
+          placeholder="Template name"
+        />
+        <Input value={label} onChangeText={setLabel} placeholder="Meal label" />
+        <Input value={food} onChangeText={setFood} placeholder="Food" />
+        <Input
+          value={grams}
+          onChangeText={setGrams}
+          placeholder="Grams"
+          keyboardType="numeric"
+        />
+        <Input
+          value={comment}
+          onChangeText={setComment}
+          placeholder="Coach comment"
+          multiline
+        />
+        <Button onPress={add}>SAVE DIET TEMPLATE</Button>
+      </Card>
+      {!rows ? (
+        <ActivityIndicator color={colors.accent} />
+      ) : (
+        rows.map((x) => (
+          <Card key={x.id}>
+            <Text style={textStyles.heading}>{x.name}</Text>
+            <Text style={textStyles.muted}>
+              {(x.meals ?? []).length} meals · {x.comment || "No note"}
+            </Text>
+            <Button danger onPress={() => remove(x.id)}>
+              DELETE
+            </Button>
+          </Card>
+        ))
+      )}
+    </>
+  );
+}
 
-export function ProgramLibrary(){const{session}=useAuth();const[rows,setRows]=useState<any[]|null>(null);const[name,setName]=useState('');const[description,setDescription]=useState('');const[difficulty,setDifficulty]=useState('Beginner');const[duration,setDuration]=useState('4');async function load(){const{data}=await supabase.from('program_templates').select('*').order('name');setRows(data??[])}useEffect(()=>{void load()},[]);async function add(){if(!name.trim())return;const weeks=Math.min(104,Math.max(1,Number(duration)||1));const{error}=await supabase.from('program_templates' as never).insert({coach_id:session!.user.id,name:name.trim(),description:description.trim()||null,difficulty: difficulty.trim()||'Beginner',duration_weeks:weeks} as never);if(error)Alert.alert('Could not save',error.message);else{setName('');setDescription('');void load()}}async function remove(id:string){const{error}=await supabase.from('program_templates' as never).delete().eq('id',id);if(error)Alert.alert('Could not delete',error.message);else void load()}return <><Card><Text style={textStyles.heading}>Create program</Text><Input value={name} onChangeText={setName} placeholder="Program name"/><Input value={description} onChangeText={setDescription} placeholder="Description" multiline/><Input value={difficulty} onChangeText={setDifficulty} placeholder="Difficulty"/><Input value={duration} onChangeText={setDuration} placeholder="Duration in weeks" keyboardType="number-pad"/><Button onPress={add}>CREATE PROGRAM</Button></Card>{!rows?<ActivityIndicator color={colors.accent}/>:rows.map(x=><Card key={x.id}><Text style={textStyles.heading}>{x.name}</Text><Text style={textStyles.muted}>{x.difficulty} · {x.duration_weeks} weeks</Text><Text style={textStyles.body}>{x.description||'No description'}</Text><Button danger onPress={()=>remove(x.id)}>DELETE</Button></Card>)}</>}
-const styles=StyleSheet.create({row:{flexDirection:'row',gap:8},flex:{flex:1}});
+function LegacyProgramLibrary() {
+  const { session } = useAuth();
+  const [rows, setRows] = useState<any[] | null>(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [difficulty, setDifficulty] = useState("Beginner");
+  const [duration, setDuration] = useState("4");
+  async function load() {
+    const { data } = await supabase
+      .from("program_templates")
+      .select("*")
+      .order("name");
+    setRows(data ?? []);
+  }
+  useEffect(() => {
+    void load();
+  }, []);
+  async function add() {
+    if (!name.trim()) return;
+    const weeks = Math.min(104, Math.max(1, Number(duration) || 1));
+    const { error } = await supabase.from("program_templates" as never).insert({
+      coach_id: session!.user.id,
+      name: name.trim(),
+      description: description.trim() || null,
+      difficulty: difficulty.trim() || "Beginner",
+      duration_weeks: weeks,
+    } as never);
+    if (error) Alert.alert("Could not save", error.message);
+    else {
+      setName("");
+      setDescription("");
+      void load();
+    }
+  }
+  async function remove(id: string) {
+    const { error } = await supabase
+      .from("program_templates" as never)
+      .delete()
+      .eq("id", id);
+    if (error) Alert.alert("Could not delete", error.message);
+    else void load();
+  }
+  return (
+    <>
+      <Card>
+        <Text style={textStyles.heading}>Create program</Text>
+        <Input value={name} onChangeText={setName} placeholder="Program name" />
+        <Input
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Description"
+          multiline
+        />
+        <Input
+          value={difficulty}
+          onChangeText={setDifficulty}
+          placeholder="Difficulty"
+        />
+        <Input
+          value={duration}
+          onChangeText={setDuration}
+          placeholder="Duration in weeks"
+          keyboardType="number-pad"
+        />
+        <Button onPress={add}>CREATE PROGRAM</Button>
+      </Card>
+      {!rows ? (
+        <ActivityIndicator color={colors.accent} />
+      ) : (
+        rows.map((x) => (
+          <Card key={x.id}>
+            <Text style={textStyles.heading}>{x.name}</Text>
+            <Text style={textStyles.muted}>
+              {x.difficulty} · {x.duration_weeks} weeks
+            </Text>
+            <Text style={textStyles.body}>
+              {x.description || "No description"}
+            </Text>
+            <Button danger onPress={() => remove(x.id)}>
+              DELETE
+            </Button>
+          </Card>
+        ))
+      )}
+    </>
+  );
+}
+const styles = StyleSheet.create({
+  row: { flexDirection: "row", gap: 8 },
+  exerciseRow: {
+    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: 8,
+  },
+  flex: { flex: 1 },
+});

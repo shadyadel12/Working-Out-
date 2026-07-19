@@ -125,7 +125,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   );
 }
 export function ChatScreen() {
-  const { session, profile } = useAuth();
+  const { session, profile, effectiveCoachId } = useAuth();
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -164,21 +164,49 @@ export function ChatScreen() {
           .select(
             "player_id,is_vip,profiles!coach_player_links_player_id_fkey(name,email)",
           )
-          .eq("coach_id", session!.user.id)
+          .eq("coach_id", effectiveCoachId!)
           .eq("status", "active")
           .not("player_id", "is", null);
-        const { data: recent } = await supabase.from("chat_messages").select("player_id,sender_id,body,created_at").eq("coach_id",session!.user.id).order("created_at",{ascending:false}).limit(1000);
-        const latest=new Map<string,any>();for(const row of recent??[])if(!latest.has(row.player_id))latest.set(row.player_id,row);
-        const mapped=await Promise.all((data??[]).map(async(x:any)=>{const last=latest.get(x.player_id),read=await AsyncStorage.getItem(`lastRead_${session!.user.id}_${x.player_id}`);return{
-            coachId: session!.user.id,
-            playerId: x.player_id,
-            name: x.profiles?.name || x.profiles?.email || "Player",
-            vip:x.is_vip===true,latest:last?.body||"No messages yet",latestAt:last?.created_at||"",unread:!!last&&last.sender_id!==session!.user.id&&last.created_at>(read||new Date(0).toISOString())}}));
-        mapped.sort((a,b)=>Number(b.vip&&b.unread)-Number(a.vip&&a.unread)||Number(b.unread)-Number(a.unread)||b.latestAt.localeCompare(a.latestAt));setThreads(mapped);
+        const { data: recent } = await supabase
+          .from("chat_messages")
+          .select("player_id,sender_id,body,created_at")
+          .eq("coach_id", effectiveCoachId!)
+          .order("created_at", { ascending: false })
+          .limit(1000);
+        const latest = new Map<string, any>();
+        for (const row of recent ?? [])
+          if (!latest.has(row.player_id)) latest.set(row.player_id, row);
+        const mapped = await Promise.all(
+          (data ?? []).map(async (x: any) => {
+            const last = latest.get(x.player_id),
+              read = await AsyncStorage.getItem(
+                `lastRead_${session!.user.id}_${x.player_id}`,
+              );
+            return {
+              coachId: effectiveCoachId!,
+              playerId: x.player_id,
+              name: x.profiles?.name || x.profiles?.email || "Player",
+              vip: x.is_vip === true,
+              latest: last?.body || "No messages yet",
+              latestAt: last?.created_at || "",
+              unread:
+                !!last &&
+                last.sender_id !== session!.user.id &&
+                last.created_at > (read || new Date(0).toISOString()),
+            };
+          }),
+        );
+        mapped.sort(
+          (a, b) =>
+            Number(b.vip && b.unread) - Number(a.vip && a.unread) ||
+            Number(b.unread) - Number(a.unread) ||
+            b.latestAt.localeCompare(a.latestAt),
+        );
+        setThreads(mapped);
       }
     }
     void load();
-  }, [profile, session]);
+  }, [profile, session, effectiveCoachId]);
   useEffect(() => {
     if (!selected) return;
     let active = true;
@@ -224,20 +252,29 @@ export function ChatScreen() {
     if (!body.trim() || !selected) return;
     const text = body.trim();
     setBody("");
-    const { error } = await supabase
-      .from("chat_messages")
-      .insert({
-        coach_id: selected.coachId,
-        player_id: selected.playerId,
-        sender_id: session!.user.id,
-        body: text,
-      });
+    const { error } = await supabase.from("chat_messages").insert({
+      coach_id: selected.coachId,
+      player_id: selected.playerId,
+      sender_id: session!.user.id,
+      body: text,
+    });
     if (error) {
       setBody(text);
       Alert.alert("Could not send", error.message);
     }
   }
-  async function openThread(thread:any){await AsyncStorage.setItem(`lastRead_${session!.user.id}_${thread.playerId}`,new Date().toISOString());setThreads(current=>current.map(x=>x.playerId===thread.playerId?{...x,unread:false}:x));setSelected(thread)}
+  async function openThread(thread: any) {
+    await AsyncStorage.setItem(
+      `lastRead_${session!.user.id}_${thread.playerId}`,
+      new Date().toISOString(),
+    );
+    setThreads((current) =>
+      current.map((x) =>
+        x.playerId === thread.playerId ? { ...x, unread: false } : x,
+      ),
+    );
+    setSelected(thread);
+  }
   async function upload(
     uri: string,
     mime: string,
@@ -274,19 +311,18 @@ export function ChatScreen() {
         .upload(path, bytes, { contentType: mime, upsert: false });
       if (error) throw error;
       uploadedPath = path;
-      const sent = await supabase
-        .from("chat_messages")
-        .insert({
-          coach_id: selected.coachId,
-          player_id: selected.playerId,
-          sender_id: session!.user.id,
-          body: "",
-          attachment_path: path,
-          attachment_type: type,
-        });
+      const sent = await supabase.from("chat_messages").insert({
+        coach_id: selected.coachId,
+        player_id: selected.playerId,
+        sender_id: session!.user.id,
+        body: "",
+        attachment_path: path,
+        attachment_type: type,
+      });
       if (sent.error) throw sent.error;
     } catch (e) {
-      if (uploadedPath) await supabase.storage.from("chat-attachments").remove([uploadedPath]);
+      if (uploadedPath)
+        await supabase.storage.from("chat-attachments").remove([uploadedPath]);
       Alert.alert("Upload failed", (e as Error).message);
     } finally {
       setUploading(false);
@@ -354,7 +390,10 @@ export function ChatScreen() {
         threads.map((thread) => (
           <Pressable key={thread.playerId} onPress={() => openThread(thread)}>
             <Card>
-              <Text style={textStyles.heading}>{thread.name} {thread.vip?'· VIP':''} {thread.unread?'●':''}</Text>
+              <Text style={textStyles.heading}>
+                {thread.name} {thread.vip ? "· VIP" : ""}{" "}
+                {thread.unread ? "●" : ""}
+              </Text>
               <Text style={textStyles.muted}>{thread.latest}</Text>
             </Card>
           </Pressable>

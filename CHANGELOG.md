@@ -6,6 +6,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Security
 
+- Team members now receive separate viewer, chat, head-coach, or sales access, with the same restrictions enforced by the app and database.
 - Player renewals now verify that the selected player belongs to the coach making the change.
 - Team invitations can no longer be used to convert an existing player account into a staff account.
 - VIP and weekly check-up schedules now stay consistent when subscriptions are created or renewed.
@@ -19,6 +20,11 @@ This page explains what the app can do and what has changed in everyday language
 - Meal checkboxes in the player's daily diet check-in now align correctly with their meal names on desktop and mobile.
 - Player meal cards now stay closed by default and open only when the player selects a meal.
 - Mobile player-key creation and renewals now send the complete subscription choices, preventing an unclear database-function error.
+
+### New Features
+
+- Coaches can now edit saved workouts, individual saved exercises, program details, and every scheduled program day from mobile.
+- Mobile sign-in, account creation, invitation fields, validation messages, and new library tools now support Arabic and right-to-left layout.
 
 ## July 18, 2026
 

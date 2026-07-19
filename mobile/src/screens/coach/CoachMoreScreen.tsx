@@ -13,15 +13,16 @@ import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { colors } from "../../theme";
 import CoachSupportScreen from "./CoachSupportScreen";
-import {
-  DietLibrary,
-  ExerciseLibrary,
-  ProgramLibrary,
-  WorkoutLibrary,
-} from "./CoachLibraries";
+import { DietLibrary, ExerciseLibrary, WorkoutLibrary } from "./CoachLibraries";
+import { ProgramLibrary } from "./ProgramLibrary";
 import CoachTeam from "./CoachTeam";
 import { TermsScreen, UpdatesScreen } from "../LegalUpdatesScreen";
-import { importDietWorkbook,importProgramWorkbook,shareDietTemplate,shareProgramTemplate } from "../../lib/workbookImport";
+import {
+  importDietWorkbook,
+  importProgramWorkbook,
+  shareDietTemplate,
+  shareProgramTemplate,
+} from "../../lib/workbookImport";
 
 type Page =
   | "menu"
@@ -43,14 +44,25 @@ const pages: [Page, string, string][] = [
   ["workout", "Workout Library", "Reusable workouts"],
   ["diet", "Diet Library", "Reusable diet days"],
   ["program", "Program Library", "Reusable programs"],
-  ["imports", "Excel Import & Export", "Share templates and replace player plans"],
+  [
+    "imports",
+    "Excel Import & Export",
+    "Share templates and replace player plans",
+  ],
   ["support", "Admin Support", "Message the admin team"],
   ["updates", "Features & Updates", "See what the app can do"],
   ["terms", "Terms of Use", "Accounts, data, ownership, and safety"],
   ["account", "Account", "Profile and sign out"],
 ];
 export default function CoachMoreScreen() {
+  const { teamMembership } = useAuth();
   const [page, setPage] = useState<Page>("menu");
+  const visiblePages =
+    teamMembership?.role === "sales"
+      ? pages.filter(([key]) =>
+          ["subs", "updates", "terms", "account"].includes(key),
+        )
+      : pages;
   if (page === "support")
     return (
       <View style={{ flex: 1 }}>
@@ -65,13 +77,13 @@ export default function CoachMoreScreen() {
       title={
         page === "menu"
           ? "More"
-          : (pages.find((x) => x[0] === page)?.[1] ?? "More")
+          : (visiblePages.find((x) => x[0] === page)?.[1] ?? "More")
       }
     >
       {page !== "menu" ? (
         <Back onPress={() => setPage("menu")} />
       ) : (
-        pages.map(([key, title, desc]) => (
+        visiblePages.map(([key, title, desc]) => (
           <Pressable key={key} onPress={() => setPage(key)}>
             <Card>
               <Text style={textStyles.heading}>{title} ›</Text>
@@ -107,9 +119,92 @@ function Back({ onPress }: { onPress: () => void }) {
     </Button>
   );
 }
-function WorkbookTools(){const{session}=useAuth();const[players,setPlayers]=useState<any[]>([]);const[player,setPlayer]=useState('');const[busy,setBusy]=useState(false);useEffect(()=>{supabase.from('coach_player_links').select('player_id,profiles!coach_player_links_player_id_fkey(name,email)').eq('coach_id',session!.user.id).not('player_id','is',null).then(({data})=>{const x=(data??[]).map((r:any)=>({id:r.player_id,name:r.profiles?.name||r.profiles?.email}));setPlayers(x);if(x[0])setPlayer(x[0].id)})},[]);async function run(kind:'program'|'diet'){if(!player)return Alert.alert('Choose player','Select a player first.');setBusy(true);try{const result=kind==='program'?await importProgramWorkbook(player):await importDietWorkbook(player);if(result)Alert.alert('Import complete',kind==='program'?'The player program was replaced.':'The player diet was replaced.')}catch(e){Alert.alert('Import failed',(e as Error).message)}finally{setBusy(false)}}return <><Card><Text style={textStyles.heading}>Blank templates</Text><Text style={textStyles.muted}>Share a blank Excel workbook to email, Drive, or another phone app.</Text><Button secondary onPress={shareProgramTemplate}>SHARE PROGRAM TEMPLATE</Button><Button secondary onPress={shareDietTemplate}>SHARE DIET TEMPLATE</Button></Card><Card><Text style={textStyles.heading}>Import for player</Text><View style={styles.wrap}>{players.map(p=><Pressable key={p.id} onPress={()=>setPlayer(p.id)} style={[styles.choice,player===p.id&&styles.active]}><Text style={textStyles.body}>{p.name}</Text></Pressable>)}</View><Text style={textStyles.muted}>Importing replaces the selected player’s complete existing plan only after the workbook is validated.</Text><Button disabled={busy||!player} onPress={()=>run('program')}>IMPORT PROGRAM EXCEL</Button><Button disabled={busy||!player} onPress={()=>run('diet')}>IMPORT DIET EXCEL</Button></Card></>}
-function Subscriptions() {
+function WorkbookTools() {
   const { session } = useAuth();
+  const [players, setPlayers] = useState<any[]>([]);
+  const [player, setPlayer] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    supabase
+      .from("coach_player_links")
+      .select(
+        "player_id,profiles!coach_player_links_player_id_fkey(name,email)",
+      )
+      .eq("coach_id", session!.user.id)
+      .not("player_id", "is", null)
+      .then(({ data }) => {
+        const x = (data ?? []).map((r: any) => ({
+          id: r.player_id,
+          name: r.profiles?.name || r.profiles?.email,
+        }));
+        setPlayers(x);
+        if (x[0]) setPlayer(x[0].id);
+      });
+  }, []);
+  async function run(kind: "program" | "diet") {
+    if (!player) return Alert.alert("Choose player", "Select a player first.");
+    setBusy(true);
+    try {
+      const result =
+        kind === "program"
+          ? await importProgramWorkbook(player)
+          : await importDietWorkbook(player);
+      if (result)
+        Alert.alert(
+          "Import complete",
+          kind === "program"
+            ? "The player program was replaced."
+            : "The player diet was replaced.",
+        );
+    } catch (e) {
+      Alert.alert("Import failed", (e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <>
+      <Card>
+        <Text style={textStyles.heading}>Blank templates</Text>
+        <Text style={textStyles.muted}>
+          Share a blank Excel workbook to email, Drive, or another phone app.
+        </Text>
+        <Button secondary onPress={shareProgramTemplate}>
+          SHARE PROGRAM TEMPLATE
+        </Button>
+        <Button secondary onPress={shareDietTemplate}>
+          SHARE DIET TEMPLATE
+        </Button>
+      </Card>
+      <Card>
+        <Text style={textStyles.heading}>Import for player</Text>
+        <View style={styles.wrap}>
+          {players.map((p) => (
+            <Pressable
+              key={p.id}
+              onPress={() => setPlayer(p.id)}
+              style={[styles.choice, player === p.id && styles.active]}
+            >
+              <Text style={textStyles.body}>{p.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <Text style={textStyles.muted}>
+          Importing replaces the selected player’s complete existing plan only
+          after the workbook is validated.
+        </Text>
+        <Button disabled={busy || !player} onPress={() => run("program")}>
+          IMPORT PROGRAM EXCEL
+        </Button>
+        <Button disabled={busy || !player} onPress={() => run("diet")}>
+          IMPORT DIET EXCEL
+        </Button>
+      </Card>
+    </>
+  );
+}
+function Subscriptions() {
+  const { effectiveCoachId } = useAuth();
   const [rows, setRows] = useState<any[] | null>(null);
   const [end, setEnd] = useState(() => {
     const d = new Date();
@@ -123,7 +218,7 @@ function Subscriptions() {
     const { data } = await supabase
       .from("coach_player_links")
       .select("*,profiles!coach_player_links_player_id_fkey(name,email)")
-      .eq("coach_id", session!.user.id)
+      .eq("coach_id", effectiveCoachId!)
       .order("created_at", { ascending: false });
     setRows(data ?? []);
   }

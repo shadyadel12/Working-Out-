@@ -68,6 +68,50 @@ const ar: Record<string, string> = {
   "No logged sessions yet.": "لا توجد جلسات مسجلة بعد.",
   "No diet check-ins yet.": "لا توجد متابعات غذائية بعد.",
   "No plan for this day.": "لا توجد خطة لهذا اليوم.",
+  "COACH PLATFORM": "منصة التدريب",
+  "Join coach team": "الانضمام إلى فريق المدرب",
+  "Coach signup": "تسجيل مدرب",
+  "Player signup": "تسجيل لاعب",
+  OWNER: "المالك",
+  "TEAM MEMBER": "عضو الفريق",
+  "Full name": "الاسم الكامل",
+  Email: "البريد الإلكتروني",
+  Password: "كلمة المرور",
+  "Team invitation key": "مفتاح دعوة الفريق",
+  "Coach invitation key": "مفتاح دعوة المدرب",
+  "Subscription key": "مفتاح الاشتراك",
+  "SIGN IN": "تسجيل الدخول",
+  "CREATE ACCOUNT": "إنشاء حساب",
+  "Invalid email or password.": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "Name and access key are required.": "الاسم ومفتاح الدخول مطلوبان.",
+  "Password needs 10 characters with upper/lowercase, a number, and a symbol.":
+    "يجب أن تتكون كلمة المرور من 10 أحرف وتحتوي على أحرف كبيرة وصغيرة ورقم ورمز.",
+  "That access key is invalid or already used.":
+    "مفتاح الدخول غير صالح أو تم استخدامه.",
+  "Check your email, then return to sign in.":
+    "تحقق من بريدك الإلكتروني ثم عد لتسجيل الدخول.",
+  "Create workout": "إنشاء حصة تدريبية",
+  "Edit workout": "تعديل الحصة التدريبية",
+  "Workout name": "اسم الحصة التدريبية",
+  Description: "الوصف",
+  Difficulty: "مستوى الصعوبة",
+  Notes: "ملاحظات",
+  "CREATE WORKOUT": "إنشاء الحصة",
+  "SAVE WORKOUT": "حفظ الحصة",
+  "ADD EXERCISE": "إضافة تمرين",
+  "EDIT WORKOUT": "تعديل الحصة",
+  "SAVE EXERCISE": "حفظ التمرين",
+  "DELETE PROGRAM": "حذف البرنامج",
+  "EDIT PROGRAM": "تعديل البرنامج",
+  "ADD SCHEDULE DAY": "إضافة يوم للجدول",
+  "SAVE SCHEDULE": "حفظ الجدول",
+  "Week number": "رقم الأسبوع",
+  "Day 1 to 7": "اليوم من 1 إلى 7",
+  "Workout notes": "ملاحظات الحصة",
+  "No players match this search.": "لا يوجد لاعبون مطابقون للبحث.",
+  "Search players or keys": "ابحث عن لاعب أو مفتاح",
+  "This section is available to head coaches only.":
+    "هذا القسم متاح للمدرب الرئيسي فقط.",
 };
 export function tr(value: string, language: Lang) {
   if (language === "en") return value;
@@ -107,12 +151,16 @@ export function LanguageButton() {
 }
 export function localizeTree(node: ReactNode, language: Lang): ReactNode {
   if (typeof node === "string") return tr(node, language);
-  if (typeof node === "number" || node == null || typeof node === "boolean") return node;
+  if (typeof node === "number" || node == null || typeof node === "boolean")
+    return node;
   if (Array.isArray(node)) return node.map((x) => localizeTree(x, language));
   if (isValidElement(node)) {
     const props = node.props as { children?: ReactNode; placeholder?: string };
     const next: Record<string, unknown> = {};
-    if (props.children !== undefined) next.children = Children.map(props.children, (x) => localizeTree(x, language));
+    if (props.children !== undefined)
+      next.children = Children.map(props.children, (x) =>
+        localizeTree(x, language),
+      );
     if (props.placeholder) next.placeholder = tr(props.placeholder, language);
     return cloneElement(node, next);
   }

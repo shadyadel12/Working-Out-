@@ -7,7 +7,7 @@ import { colors, radius } from "../../theme";
 import { FitnessHero, OutlinePill } from "../../components/FitnessHero";
 
 export default function CoachDashboardScreen() {
-  const { session, profile } = useAuth();
+  const { effectiveCoachId, profile } = useAuth();
   const [data, setData] = useState<any | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   async function load() {
@@ -19,17 +19,17 @@ export default function CoachDashboardScreen() {
         .select(
           "id,status,subscription_end_date,is_vip,checkup_weekdays,player_id",
         )
-        .eq("coach_id", session!.user.id),
+        .eq("coach_id", effectiveCoachId!),
       supabase
         .from("chat_messages")
         .select("player_id,created_at")
-        .eq("coach_id", session!.user.id)
+        .eq("coach_id", effectiveCoachId!)
         .order("created_at", { ascending: false })
         .limit(100),
       supabase
         .from("checkups")
         .select("player_id,is_checked")
-        .eq("coach_id", session!.user.id)
+        .eq("coach_id", effectiveCoachId!)
         .eq("check_date", today),
     ]);
     const rows = links.data ?? [];
@@ -56,7 +56,7 @@ export default function CoachDashboardScreen() {
   }
   useEffect(() => {
     void load();
-  }, [session]);
+  }, [effectiveCoachId]);
   return (
     <Screen
       title={`Welcome, ${profile?.name?.split(" ")[0] || "Coach"}`}
@@ -64,7 +64,14 @@ export default function CoachDashboardScreen() {
       refreshing={refreshing}
       onRefresh={load}
     >
-      <FitnessHero eyebrow="Coach command center" title="Build stronger athletes" subtitle="Programming, accountability, and communication in one focused workspace."><OutlinePill text="Daily coaching"/><OutlinePill text="Live progress"/></FitnessHero>
+      <FitnessHero
+        eyebrow="Coach command center"
+        title="Build stronger athletes"
+        subtitle="Programming, accountability, and communication in one focused workspace."
+      >
+        <OutlinePill text="Daily coaching" />
+        <OutlinePill text="Live progress" />
+      </FitnessHero>
       {!data ? (
         <ActivityIndicator color={colors.accent} />
       ) : (

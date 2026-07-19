@@ -15,7 +15,7 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Terms and feature/update screens before sign-in.
 - Complete — Picture, video, audio, and voice chat with content and size checks.
 - Complete — Workout video quarantine and server safety scan.
-- In progress — Arabic is persistent with translated shared screens/navigation and RTL direction; login dialogs and remaining dynamic phrases still require explicit translation coverage.
+- In progress — Arabic is persistent with RTL direction across shared navigation, sign-in/account creation, invitation fields, validation messages, and library tools; remaining dynamic phrases are being audited screen by screen.
 - Complete — VIP-unread conversations sort first, followed by other unread conversations, with persistent read state.
 
 ## Coach
@@ -32,8 +32,8 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Team invitations, roles, client assignment, and revocation.
 - Complete — Administrator support chat and account controls.
 - Complete — Native Excel workout/diet import and template sharing with file, size, row, and atomic replacement validation.
-- Remaining — Field-by-field editing of existing workout/program library schedules; current mobile editor creates and assigns them but some detailed edits still use the web app.
-- Remaining — Team-role-specific mobile navigation and server permissions beyond assigned-client reading.
+- Complete — Field-by-field editing of existing workout/program library details, exercises, and scheduled days.
+- Ready to deploy — Team-role-specific navigation and server permissions are implemented; database migration 0047 must be applied to the hosted project before production use.
 
 ## Player
 

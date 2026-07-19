@@ -89,23 +89,80 @@ function PlayerTabs() {
   if (!active) return <RenewSubscriptionScreen onRenewed={check} />;
   return (
     <Tabs.Navigator screenOptions={tabOptions}>
-      <Tabs.Screen name="Home" component={PlayerHomeScreen} options={{tabBarLabel:tr('Home',language)}} />
-      <Tabs.Screen name="Program" component={ProgramScreen} options={{tabBarLabel:tr('Program',language)}} />
-      <Tabs.Screen name="Diet" component={DietScreen} options={{tabBarLabel:tr('Diet',language)}} />
-      <Tabs.Screen name="Progress" component={PlayerProgressScreen} options={{tabBarLabel:tr('Progress',language)}} />
-      <Tabs.Screen name="Coach" component={ChatScreen} options={{tabBarLabel:tr('Coach',language)}} />
+      <Tabs.Screen
+        name="Home"
+        component={PlayerHomeScreen}
+        options={{ tabBarLabel: tr("Home", language) }}
+      />
+      <Tabs.Screen
+        name="Program"
+        component={ProgramScreen}
+        options={{ tabBarLabel: tr("Program", language) }}
+      />
+      <Tabs.Screen
+        name="Diet"
+        component={DietScreen}
+        options={{ tabBarLabel: tr("Diet", language) }}
+      />
+      <Tabs.Screen
+        name="Progress"
+        component={PlayerProgressScreen}
+        options={{ tabBarLabel: tr("Progress", language) }}
+      />
+      <Tabs.Screen
+        name="Coach"
+        component={ChatScreen}
+        options={{ tabBarLabel: tr("Coach", language) }}
+      />
     </Tabs.Navigator>
   );
 }
 function CoachTabs() {
   const { language } = useLanguage();
+  const { teamMembership } = useAuth();
+  const role = teamMembership?.role;
   return (
     <Tabs.Navigator screenOptions={tabOptions}>
-      <Tabs.Screen name="Home" component={CoachDashboardScreen} options={{tabBarLabel:tr('Home',language)}} />
-      <Tabs.Screen name="Players" component={PlayersScreen} options={{tabBarLabel:tr('Players',language)}} />
-      <Tabs.Screen name="Plans" component={CoachPlanScreen} options={{tabBarLabel:tr('Plans',language)}} />
-      <Tabs.Screen name="Messages" component={ChatScreen} options={{tabBarLabel:tr('Messages',language)}} />
-      <Tabs.Screen name="More" component={CoachMoreScreen} options={{tabBarLabel:tr('More',language)}} />
+      {!role || role === "head_coach" ? (
+        <Tabs.Screen
+          name="Home"
+          component={CoachDashboardScreen}
+          options={{ tabBarLabel: tr("Home", language) }}
+        />
+      ) : null}
+      <Tabs.Screen
+        name="Players"
+        component={PlayersScreen}
+        options={{ tabBarLabel: tr("Players", language) }}
+      />
+      {!role || role === "head_coach" ? (
+        <Tabs.Screen
+          name="Plans"
+          component={CoachPlanScreen}
+          options={{ tabBarLabel: tr("Plans", language) }}
+        />
+      ) : null}
+      {!role || role === "head_coach" || role === "chat" ? (
+        <Tabs.Screen
+          name="Messages"
+          component={ChatScreen}
+          options={{ tabBarLabel: tr("Messages", language) }}
+        />
+      ) : null}
+      {!role || role === "sales" ? (
+        <Tabs.Screen
+          name="More"
+          component={CoachMoreScreen}
+          options={{ tabBarLabel: tr("More", language) }}
+        />
+      ) : null}
+      {role ? (
+        <Tabs.Screen
+          name="Account"
+          component={AccountScreen}
+          options={{ tabBarLabel: tr("Account", language) }}
+        />
+      ) : null}
     </Tabs.Navigator>
   );
 }
@@ -113,10 +170,26 @@ function AdminTabs() {
   const { language } = useLanguage();
   return (
     <Tabs.Navigator screenOptions={tabOptions}>
-      <Tabs.Screen name="Overview" component={AdminOverviewScreen} options={{tabBarLabel:tr('Overview',language)}} />
-      <Tabs.Screen name="Users & Keys" component={AdminManagementScreen} options={{tabBarLabel:tr('Users & Keys',language)}} />
-      <Tabs.Screen name="Support" component={AdminSupportScreen} options={{tabBarLabel:tr('Support',language)}} />
-      <Tabs.Screen name="Account" component={AccountScreen} options={{tabBarLabel:tr('Account',language)}} />
+      <Tabs.Screen
+        name="Overview"
+        component={AdminOverviewScreen}
+        options={{ tabBarLabel: tr("Overview", language) }}
+      />
+      <Tabs.Screen
+        name="Users & Keys"
+        component={AdminManagementScreen}
+        options={{ tabBarLabel: tr("Users & Keys", language) }}
+      />
+      <Tabs.Screen
+        name="Support"
+        component={AdminSupportScreen}
+        options={{ tabBarLabel: tr("Support", language) }}
+      />
+      <Tabs.Screen
+        name="Account"
+        component={AccountScreen}
+        options={{ tabBarLabel: tr("Account", language) }}
+      />
     </Tabs.Navigator>
   );
 }

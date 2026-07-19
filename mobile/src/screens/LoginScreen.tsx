@@ -11,8 +11,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
 import { TermsScreen, UpdatesScreen } from "./LegalUpdatesScreen";
+import { localizeTree, tr, useLanguage } from "../i18n/MobileLanguage";
 
 export default function LoginScreen() {
+  const { language } = useLanguage();
   const [mode, setMode] = useState<"login" | "player" | "coach">("login");
   const [team, setTeam] = useState(false);
   const [email, setEmail] = useState("");
@@ -21,7 +23,9 @@ export default function LoginScreen() {
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [publicPage, setPublicPage] = useState<"terms" | "updates" | null>(null);
+  const [publicPage, setPublicPage] = useState<"terms" | "updates" | null>(
+    null,
+  );
   async function submit() {
     setBusy(true);
     setError("");
@@ -80,117 +84,135 @@ export default function LoginScreen() {
       }
     } catch (e) {
       setError(
-        mode === "login" ? "Invalid email or password." : (e as Error).message,
+        tr(
+          mode === "login"
+            ? "Invalid email or password."
+            : (e as Error).message,
+          language,
+        ),
       );
     } finally {
       setBusy(false);
     }
   }
-  if (publicPage === "terms") return <TermsScreen back={() => setPublicPage(null)} />;
-  if (publicPage === "updates") return <UpdatesScreen back={() => setPublicPage(null)} />;
+  if (publicPage === "terms")
+    return <TermsScreen back={() => setPublicPage(null)} />;
+  if (publicPage === "updates")
+    return <UpdatesScreen back={() => setPublicPage(null)} />;
   return (
     <SafeAreaView style={styles.page}>
-      <View style={styles.card}>
-        <Text style={styles.brand}>COACH PLATFORM</Text>
-        <Text style={styles.title}>
-          {mode === "login"
-            ? "Sign in"
-            : mode === "coach"
-              ? team
-                ? "Join coach team"
-                : "Coach signup"
-              : "Player signup"}
-        </Text>
-        {mode === "coach" ? (
-          <View style={styles.authChoice}>
-            <Pressable
-              style={[styles.modeButton, !team && styles.modeOn]}
-              onPress={() => setTeam(false)}
-            >
-              <Text style={styles.buttonText}>OWNER</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.modeButton, team && styles.modeOn]}
-              onPress={() => setTeam(true)}
-            >
-              <Text style={styles.buttonText}>TEAM MEMBER</Text>
-            </Pressable>
-          </View>
-        ) : null}
-        {mode !== "login" ? (
-          <TextInput
-            style={styles.input}
-            placeholder="Full name"
-            placeholderTextColor={colors.muted}
-            value={name}
-            onChangeText={setName}
-          />
-        ) : null}
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor={colors.muted}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor={colors.muted}
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        {mode !== "login" ? (
-          <TextInput
-            style={styles.input}
-            placeholder={
-              mode === "coach"
-                ? team
-                  ? "Team invitation key"
-                  : "Coach invitation key"
-                : "Subscription key"
-            }
-            placeholderTextColor={colors.muted}
-            autoCapitalize="characters"
-            value={key}
-            onChangeText={setKey}
-          />
-        ) : null}
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Pressable
-          style={styles.button}
-          disabled={busy || !email || !password}
-          onPress={submit}
-        >
-          {busy ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>
-              {mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+      <View style={[styles.card, language === "ar" && styles.rtl]}>
+        {localizeTree(
+          <>
+            <Text style={styles.brand}>COACH PLATFORM</Text>
+            <Text style={styles.title}>
+              {mode === "login"
+                ? "Sign in"
+                : mode === "coach"
+                  ? team
+                    ? "Join coach team"
+                    : "Coach signup"
+                  : "Player signup"}
             </Text>
-          )}
-        </Pressable>
-        <View style={styles.links}>
-          {mode === "login" ? (
-            <>
-              <Pressable onPress={() => setMode("player")}>
-                <Text style={styles.link}>Create player account</Text>
-              </Pressable>
-              <Pressable onPress={() => setMode("coach")}>
-                <Text style={styles.link}>Create coach or team account</Text>
-              </Pressable>
-            </>
-          ) : (
-            <Pressable onPress={() => setMode("login")}>
-              <Text style={styles.link}>Back to sign in</Text>
+            {mode === "coach" ? (
+              <View style={styles.authChoice}>
+                <Pressable
+                  style={[styles.modeButton, !team && styles.modeOn]}
+                  onPress={() => setTeam(false)}
+                >
+                  <Text style={styles.buttonText}>OWNER</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.modeButton, team && styles.modeOn]}
+                  onPress={() => setTeam(true)}
+                >
+                  <Text style={styles.buttonText}>TEAM MEMBER</Text>
+                </Pressable>
+              </View>
+            ) : null}
+            {mode !== "login" ? (
+              <TextInput
+                style={styles.input}
+                placeholder="Full name"
+                placeholderTextColor={colors.muted}
+                value={name}
+                onChangeText={setName}
+              />
+            ) : null}
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={colors.muted}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor={colors.muted}
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            {mode !== "login" ? (
+              <TextInput
+                style={styles.input}
+                placeholder={
+                  mode === "coach"
+                    ? team
+                      ? "Team invitation key"
+                      : "Coach invitation key"
+                    : "Subscription key"
+                }
+                placeholderTextColor={colors.muted}
+                autoCapitalize="characters"
+                value={key}
+                onChangeText={setKey}
+              />
+            ) : null}
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Pressable
+              style={styles.button}
+              disabled={busy || !email || !password}
+              onPress={submit}
+            >
+              {busy ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>
+                  {mode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+                </Text>
+              )}
             </Pressable>
-          )}
-          <Pressable onPress={() => setPublicPage("updates")}><Text style={styles.link}>Features & Updates</Text></Pressable>
-          <Pressable onPress={() => setPublicPage("terms")}><Text style={styles.link}>Terms of Use</Text></Pressable>
-        </View>
+            <View style={styles.links}>
+              {mode === "login" ? (
+                <>
+                  <Pressable onPress={() => setMode("player")}>
+                    <Text style={styles.link}>Create player account</Text>
+                  </Pressable>
+                  <Pressable onPress={() => setMode("coach")}>
+                    <Text style={styles.link}>
+                      Create coach or team account
+                    </Text>
+                  </Pressable>
+                </>
+              ) : (
+                <Pressable onPress={() => setMode("login")}>
+                  <Text style={styles.link}>Back to sign in</Text>
+                </Pressable>
+              )}
+              <Pressable onPress={() => setPublicPage("updates")}>
+                <Text style={styles.link}>Features & Updates</Text>
+              </Pressable>
+              <Pressable onPress={() => setPublicPage("terms")}>
+                <Text style={styles.link}>Terms of Use</Text>
+              </Pressable>
+            </View>
+          </>,
+          language,
+        )}
       </View>
     </SafeAreaView>
   );
@@ -232,6 +254,7 @@ const styles = StyleSheet.create({
   links: { gap: 10, alignItems: "center" },
   link: { color: colors.muted, textDecorationLine: "underline" },
   authChoice: { flexDirection: "row", gap: 8 },
+  rtl: { direction: "rtl" },
   modeButton: {
     flex: 1,
     borderWidth: 1,
