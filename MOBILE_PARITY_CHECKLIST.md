@@ -33,7 +33,7 @@ This is a live evidence checklist. “Complete” means a native mobile implemen
 - Complete — Administrator support chat and account controls.
 - Complete — Native Excel workout/diet import and template sharing with file, size, row, and atomic replacement validation.
 - Complete — Field-by-field editing of existing workout/program library details, exercises, and scheduled days.
-- Ready to deploy — Team-role-specific navigation and server permissions are implemented; database migration 0047 must be applied to the hosted project before production use.
+- Complete — Team-role-specific navigation and server permissions are live on the hosted database; role helpers and anonymous access boundaries were verified after deployment.
 
 ## Player
 
