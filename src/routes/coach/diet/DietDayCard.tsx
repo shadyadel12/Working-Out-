@@ -30,6 +30,8 @@ export default function DietDayCard({
   );
   const [templateId, setTemplateId] = useState('');
   const [templateName, setTemplateName] = useState(`${dayName} diet`);
+  const [selectedMeal, setSelectedMeal] = useState(0);
+  const [foodSearch, setFoodSearch] = useState('');
   const { data: templates = [] } = useQuery({ queryKey: ['diet-templates', coachId], queryFn: () => listDietTemplates(coachId) });
   const useTemplate = useMutation({
     mutationFn: () => assignDietTemplate(playerId, week, dayOfWeek, templateId),
@@ -77,6 +79,14 @@ export default function DietDayCard({
         idx === mi ? { ...m, items: (m.items ?? []).filter((_, j) => j !== ii) } : m
       )
     );
+  const addKnownFood = (name: string) => setMeals((current) => current.map((meal, index) => index === selectedMeal ? { ...meal, items: [...(meal.items ?? []), { food: name, grams: '' }] } : meal));
+  const moveMeal = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= meals.length) return;
+    setMeals((current) => { const next = [...current]; [next[index], next[target]] = [next[target], next[index]]; return next; });
+    setSelectedMeal(target);
+  };
+  const selected = meals[selectedMeal];
 
   const save = useMutation({
     mutationFn: async () => {
@@ -197,70 +207,20 @@ export default function DietDayCard({
           </p>
         )}
 
-        {meals.map((m, mi) => (
-          <div
-            key={mi}
-            className="card stack"
-            style={{
-              background: 'var(--surface-2)',
-              gap: '0.5rem',
-              borderLeft: m.type === 'snack' ? '3px solid var(--warning, #fbbf24)' : '3px solid var(--accent)',
-            }}
-          >
-            <strong style={{ fontSize: '0.9rem' }}>{m.label}</strong>
-
-            {(m.items ?? []).map((it, ii) => (
-              <div key={ii} className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                <div className="field" style={{ margin: 0, flex: 2, minWidth: 160 }}>
-                  <label>Food type</label>
-                  <FoodPicker
-                    value={it.food}
-                    onChange={(v) => setItem(mi, ii, { food: v })}
-                    options={foodNames}
-                  />
-                </div>
-                <div className="field" style={{ margin: 0, flex: 1, minWidth: 90 }}>
-                  <label>Grams</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={it.grams}
-                    onChange={(e) => setItem(mi, ii, { grams: e.target.value })}
-                    placeholder="150"
-                  />
-                </div>
-                <button
-                  className="danger"
-                  type="button"
-                  onClick={() => removeItem(mi, ii)}
-                  style={{ padding: '0.55em 0.8em' }}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-
-            <button
-              className="secondary"
-              type="button"
-              onClick={() => addItem(mi)}
-              style={{ alignSelf: 'flex-start' }}
-            >
-              + Add food
-            </button>
-          </div>
-        ))}
-
-        <div className="field" style={{ margin: 0 }}>
-          <label>Coach note for this day</label>
-          <textarea
-            rows={3}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Optional note to the player about this day's diet…"
-            style={{ resize: 'vertical' }}
-          />
-        </div>
+        {meals.length > 0 && <div className="diet-builder-grid">
+          <aside className="diet-builder-sources" aria-label="Food library">
+            <h3>Food library</h3>
+            <input aria-label="Search foods" placeholder="Search foods" value={foodSearch} onChange={(event) => setFoodSearch(event.target.value)} />
+            <div className="player-source-list">{foodNames.filter((foodName) => foodName.toLowerCase().includes(foodSearch.toLowerCase())).slice(0, 40).map((foodName) => <button type="button" key={foodName} onClick={() => addKnownFood(foodName)}><span><strong>{foodName}</strong><small>Add to {selected?.label ?? 'meal'}</small></span><span aria-hidden="true">+</span></button>)}</div>
+          </aside>
+          <main className="diet-builder-canvas">
+            <div className="training-canvas-heading"><div><h3>Day arrangement</h3><span>{meals.length} slots</span></div></div>
+            <ol>{meals.map((meal, index) => <li key={`${meal.label}-${index}`} className={selectedMeal === index ? 'selected' : ''}><button type="button" className="training-item-main" onClick={() => setSelectedMeal(index)}><span className={`diet-slot-index ${meal.type}`}>{index + 1}</span><span><strong>{meal.label}</strong><small>{meal.items?.length ?? 0} food{meal.items?.length === 1 ? '' : 's'} · {meal.type}</small></span></button><div className="training-item-actions"><button type="button" className="secondary" aria-label={`Move ${meal.label} up`} disabled={index === 0} onClick={() => moveMeal(index, -1)}>↑</button><button type="button" className="secondary" aria-label={`Move ${meal.label} down`} disabled={index === meals.length - 1} onClick={() => moveMeal(index, 1)}>↓</button></div></li>)}</ol>
+          </main>
+          <aside className="diet-builder-inspector" aria-label="Meal details">
+            {selected ? <><h3>{selected.label}</h3><p className="muted">Add foods from the library or enter a custom food.</p>{(selected.items ?? []).map((item, itemIndex) => <div className="diet-food-row" key={itemIndex}><div className="field"><label>Food</label><FoodPicker value={item.food} onChange={(value) => setItem(selectedMeal, itemIndex, { food: value })} options={foodNames} /></div><div className="field"><label>Grams</label><input type="number" min={0} value={item.grams} onChange={(event) => setItem(selectedMeal, itemIndex, { grams: event.target.value })} placeholder="150" /></div><button className="danger" type="button" aria-label={`Remove ${item.food || 'food'}`} onClick={() => removeItem(selectedMeal, itemIndex)}>×</button></div>)}<button className="secondary" type="button" onClick={() => addItem(selectedMeal)}>+ Add custom food</button><div className="field diet-day-note"><label>Coach note for this day</label><textarea rows={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Optional instructions for the player…" /></div></> : <p className="muted">Select a meal or snack to edit it.</p>}
+          </aside>
+        </div>}
 
         <div className="row" style={{ flexWrap: 'wrap' }}>
           <button onClick={() => save.mutate()} disabled={save.isPending || meals.length === 0}>
@@ -283,4 +243,3 @@ export default function DietDayCard({
     </div>
   );
 }
-

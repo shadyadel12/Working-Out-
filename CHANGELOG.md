@@ -6,6 +6,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Player Training and Diet now use focused three-pane builders with reusable sources, an ordered day canvas, and a detailed prescription or meal inspector.
+- Coaches can reorder player exercises, meals, and snacks with accessible controls while keeping the existing assignment and schedule workflow.
 - Coaches can now build workouts in a focused three-pane editor using searchable exercises and reusable sections, a clear arrangement canvas, and a detailed prescription inspector.
 - Workout prescriptions now support sets, reps or time, rest, load or percentage load, tempo, each-side targets, coaching notes, and linked exercise groups.
 - Workouts now support keyboard-accessible ordering, continuous validation, revision publishing, duplication, and safe archiving.
