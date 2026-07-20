@@ -6,6 +6,7 @@ import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { dayNames } from "../../lib/dates";
 import { colors } from "../../theme";
+import { currentProgramWeek } from "../../lib/dates";
 
 type Mode = "schedule" | "dietSchedule" | "workout" | "diet" | "assign";
 type DuplicateRange =
@@ -28,7 +29,7 @@ export default function CoachPlanScreen() {
       supabase
         .from("coach_player_links")
         .select(
-          "player_id,profiles!coach_player_links_player_id_fkey(name,email)",
+          "player_id,created_at,subscription_end_date,profiles!coach_player_links_player_id_fkey(name,email)",
         )
         .eq("coach_id", coachId)
         .eq("status", "active")
@@ -40,6 +41,8 @@ export default function CoachPlanScreen() {
     const list = (p.data ?? []).map((x: any) => ({
       id: x.player_id,
       name: x.profiles?.name || x.profiles?.email,
+      createdAt: x.created_at,
+      maxWeek: Math.max(1,Math.ceil((new Date(x.subscription_end_date).getTime()-new Date(x.created_at).getTime())/(7*24*60*60*1000))),
     }));
     setPlayers(list);
     setWorkouts(w.data ?? []);
@@ -285,7 +288,7 @@ export default function CoachPlanScreen() {
           </Card>
         ) : (
           players.map((player) => (
-            <Pressable key={player.id} onPress={() => setPlayerId(player.id)}>
+            <Pressable key={player.id} onPress={() => {setPlayerId(player.id);setWeek(currentProgramWeek(player.createdAt,player.maxWeek));}}>
               <View style={styles.playerCard}>
                 <View style={styles.playerRow}>
                   <View style={styles.playerAvatar}>

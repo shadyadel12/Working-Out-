@@ -37,7 +37,7 @@ This address can continue working while Cloudflare storage is being prepared.
 - [x] Prepare the storage connection for the website and Android/iOS apps.
 - [x] Preserve video scanning and automatic deletion protections.
 - [ ] Add the R2 bucket CORS policy and Supabase secrets.
-- [x] Apply migrations 0050 and 0051 and deploy the three Edge Functions.
+- [x] Apply migrations 0050, 0051, and 0052 and deploy the three Edge Functions.
 - [ ] Complete the production verification checklist.
 
 Deployment instructions are in `docs/cloudflare-r2-setup.md`.

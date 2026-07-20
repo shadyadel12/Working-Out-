@@ -10,8 +10,8 @@ import {
 import { Card, Screen, textStyles } from "../../components/Screen";
 import { Button, Input } from "../../components/Controls";
 import { useAuth } from "../../auth/AuthProvider";
-import { getProgram, getTodayLog, saveTodayLog } from "../../api/player";
-import { dayNames, todayISO } from "../../lib/dates";
+import { getActivePlayerLink, getProgram, getTodayLog, saveTodayLog } from "../../api/player";
+import { currentProgramWeek, dayNames, todayISO } from "../../lib/dates";
 import { colors } from "../../theme";
 import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
@@ -27,7 +27,7 @@ export default function ProgramScreen() {
   const [error, setError] = useState("");
   async function load() {
     try {
-      const [program, guidance] = await Promise.all([
+      const [program, guidance, activeLink] = await Promise.all([
         getProgram(session!.user.id),
         supabase
           .from("messages")
@@ -35,8 +35,11 @@ export default function ProgramScreen() {
           .eq("player_id", session!.user.id)
           .order("created_at", { ascending: false })
           .limit(20),
+        getActivePlayerLink(session!.user.id),
       ]);
       setDays(program);
+      const availableWeeks=[...new Set(program.map((day:any)=>Number(day.week_number)))];
+      if(activeLink&&availableWeeks.length)setWeek(currentProgramWeek(activeLink.created_at,Math.max(...availableWeeks)));
       setMessages(guidance.data ?? []);
     } catch (e) {
       setError((e as Error).message);

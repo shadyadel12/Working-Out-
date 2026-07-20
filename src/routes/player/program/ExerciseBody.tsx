@@ -12,10 +12,12 @@ export default function ExerciseBody({
   exercise,
   playerId,
   logDate,
+  locked = false,
 }: {
   exercise: Exercise;
   playerId: string;
   logDate: string;
+  locked?: boolean;
 }) {
   const qc = useQueryClient();
 
@@ -131,6 +133,7 @@ export default function ExerciseBody({
                 <label>Reps</label>
                 <input
                   value={r.reps}
+                  disabled={locked}
                   onChange={(e) => setField(i, { reps: e.target.value })}
                   placeholder={exercise.target_reps ?? ''}
                 />
@@ -139,12 +142,13 @@ export default function ExerciseBody({
                 <label>Weight</label>
                 <input
                   value={r.weight}
+                  disabled={locked}
                   onChange={(e) => setField(i, { weight: e.target.value })}
                   placeholder={exercise.target_weight ?? '60kg'}
                 />
               </div>
               {rows.length > 1 && (
-                <button className="secondary" type="button" onClick={() => removeRow(i)} title="Remove this set">
+                <button className="secondary" type="button" disabled={locked} onClick={() => removeRow(i)} title="Remove this set">
                   ✕
                 </button>
               )}
@@ -152,20 +156,20 @@ export default function ExerciseBody({
           ))}
         </div>
 
-        <button className="secondary" type="button" onClick={addRow} style={{ marginTop: '0.4rem' }}>
+        <button className="secondary" type="button" disabled={locked} onClick={addRow} style={{ marginTop: '0.4rem' }}>
           + Add set
         </button>
 
         <div className="field" style={{ margin: '0.7rem 0 0' }}>
           <label>Your comment</label>
-          <textarea rows={2} value={comment} onChange={(e) => setComment(e.target.value)} />
+          <textarea rows={2} value={comment} disabled={locked} onChange={(e) => setComment(e.target.value)} />
         </div>
         <div style={{ marginTop: '0.5rem' }}>
-          <VideoInput ownerId={playerId} value={video} onChange={setVideo} />
+          <VideoInput ownerId={playerId} value={video} onChange={setVideo} disabled={locked} />
         </div>
         <div className="row" style={{ marginTop: '0.7rem' }}>
-          <button className={done ? 'danger' : ''} onClick={() => save.mutate(!done)} disabled={save.isPending}>
-            {save.isPending ? 'Saving…' : done ? 'Mark not done' : 'Mark done ✓'}
+          <button onClick={() => save.mutate(true)} disabled={save.isPending || locked}>
+            {save.isPending ? 'Saving…' : done ? 'Save exercise changes' : 'Save exercise ✓'}
           </button>
           {save.error && <span className="error">{(save.error as Error).message}</span>}
         </div>

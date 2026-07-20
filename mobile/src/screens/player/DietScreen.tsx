@@ -3,14 +3,14 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'rea
 import { Card, Screen, textStyles } from '../../components/Screen';
 import { Button, Input } from '../../components/Controls';
 import { useAuth } from '../../auth/AuthProvider';
-import { getDiet, saveDietCheckin } from '../../api/player';
-import { dayNames } from '../../lib/dates';
+import { getActivePlayerLink, getDiet, saveDietCheckin } from '../../api/player';
+import { currentProgramWeek, dayNames } from '../../lib/dates';
 import { colors } from '../../theme';
 export default function DietScreen(){
   const{session}=useAuth();
   const[days,setDays]=useState<any[]|null>(null);
   const[week,setWeek]=useState(1);
-  useEffect(()=>{getDiet(session!.user.id).then(setDays).catch(e=>Alert.alert('Could not load diet',e.message));},[session]);
+  useEffect(()=>{Promise.all([getDiet(session!.user.id),getActivePlayerLink(session!.user.id)]).then(([diet,link])=>{setDays(diet);const available=[...new Set(diet.map((day:any)=>Number(day.week_number)))];if(link&&available.length)setWeek(currentProgramWeek(link.created_at,Math.max(...available)));}).catch(e=>Alert.alert('Could not load diet',e.message));},[session]);
   const weeks=[...new Set((days??[]).map(d=>d.week_number))];
   return <Screen title="My Diet">
     {!days ? <ActivityIndicator/> : <>

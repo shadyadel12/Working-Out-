@@ -42,3 +42,11 @@ export function addDays(iso: string, days: number): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
+
+/** One-based week elapsed since a player's subscription began. */
+export function currentProgramWeek(startedAt: string, maxWeek = Number.MAX_SAFE_INTEGER): number {
+  const started = new Date(startedAt);
+  if (Number.isNaN(started.getTime())) return 1;
+  const elapsed = Math.max(0, Date.now() - started.getTime());
+  return Math.min(Math.max(1, maxWeek), Math.floor(elapsed / (7 * 24 * 60 * 60 * 1000)) + 1);
+}

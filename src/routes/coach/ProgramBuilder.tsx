@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
-import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, todayDayOfWeek } from '../../lib/dates';
+import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, currentProgramWeek, todayDayOfWeek } from '../../lib/dates';
 import { getPlayerForCoach } from '../../api/players';
 import {
   listProgramDays,
@@ -37,6 +37,12 @@ export default function ProgramBuilder() {
     const days = Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(1, Math.ceil(days / 7));
   })();
+  const weekInitialized = useRef(false);
+  useEffect(() => {
+    if (weekInitialized.current || !player?.link) return;
+    setWeek(currentProgramWeek(player.link.created_at, totalWeeks));
+    weekInitialized.current = true;
+  }, [player, totalWeeks]);
 
   const { data: days } = useQuery({
     queryKey: ['program', playerId],

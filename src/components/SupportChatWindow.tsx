@@ -10,6 +10,7 @@ import {
 } from '../api/adminChat';
 import { useMarkReadOnMount, markRead } from '../hooks/useUnreadCounts';
 import LoadingSkeleton from './LoadingSkeleton';
+import { Paperclip } from 'lucide-react';
 
 /** Renders one attachment — image preview, video player, or download link. */
 function Attachment({ path, type }: { path: string; type: string }) {
@@ -192,11 +193,12 @@ export default function SupportChatWindow({
           type="button"
           className="secondary"
           title="Attach image, video, or file"
+          aria-label="Attach image, video, or file"
           disabled={uploading || send.isPending}
           onClick={() => fileRef.current?.click()}
           style={{ padding: '0.55em 0.75em', alignSelf: 'flex-end', flexShrink: 0 }}
         >
-          {uploading ? '…' : '📎'}
+          {uploading ? '…' : <Paperclip size={20} aria-hidden="true" />}
         </button>
         <input
           ref={fileRef}

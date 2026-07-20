@@ -15,10 +15,12 @@ export default function VideoInput({
   ownerId,
   value,
   onChange,
+  disabled = false,
 }: {
   ownerId: string;
   value: VideoValue;
   onChange: (v: VideoValue) => void;
+  disabled?: boolean;
 }) {
   const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -66,13 +68,14 @@ export default function VideoInput({
             }
           }}
           maxLength={2048}
+          disabled={disabled}
         />
       </div>
       <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
         <span className="muted" style={{ fontSize: '0.8rem' }}>
           or upload:
         </span>
-        <input type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={handleFile} disabled={uploading} />
+        <input type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={handleFile} disabled={uploading || disabled} />
         {uploading && <span className="muted">Uploading…</span>}
       </div>
       {value.url && !value.isExternal && (

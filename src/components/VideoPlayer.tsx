@@ -62,8 +62,12 @@ export default function VideoPlayer({
 }
 
 function toYouTubeEmbed(url: string): string | null {
-  const m = url.match(
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/
-  );
-  return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+  const parsed = new URL(url);
+  const host = parsed.hostname.replace(/^www\./, '');
+  const id = host === 'youtu.be'
+    ? parsed.pathname.split('/')[1]
+    : host.endsWith('youtube.com')
+      ? parsed.searchParams.get('v') ?? parsed.pathname.match(/^\/(?:embed|shorts)\/([\w-]{11})/)?.[1]
+      : null;
+  return id && /^[\w-]{11}$/.test(id) ? `https://www.youtube.com/embed/${id}` : null;
 }

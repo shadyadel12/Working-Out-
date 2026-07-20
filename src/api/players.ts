@@ -101,6 +101,21 @@ export async function getLastActivity(playerId: string): Promise<string | null> 
   return data?.log_date ?? null;
 }
 
+/** The player's active subscription link, used to open plans on the current week. */
+export async function getActivePlayerLink(playerId: string): Promise<CoachPlayerLink | null> {
+  const { data, error } = await supabase
+    .from('coach_player_links')
+    .select('*')
+    .eq('player_id', playerId)
+    .eq('status', 'active')
+    .gte('subscription_end_date', new Date().toISOString().slice(0, 10))
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
+}
+
 /**
  * Coach generates or renews a subscription key for one of their players.
  * Creates the coach_player_link if it doesn't exist; renews it if it does.

@@ -10,6 +10,7 @@ import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import ExerciseEditor from './ExerciseEditor';
 import WeekPicker from '../../../components/WeekPicker';
 import { listLibraryExercises } from '../../../api/exerciseLibrary';
+import { useWorkoutCompletion } from '../../../hooks/useWorkoutCompletion';
 
 const emptyVideo: VideoValue = { url: null, isExternal: false };
 
@@ -26,6 +27,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
   const [weight, setWeight] = useState('');
   const [comment, setComment] = useState('');
   const [video, setVideo] = useState<VideoValue>(emptyVideo);
+  const completion = useWorkoutCompletion(workout.id, playerId);
   const rename = useMutation({ mutationFn: () => updateWorkout(workout.id, name), onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }) });
   const del = useMutation({ mutationFn: () => deleteWorkout(workout.id), onSuccess: () => qc.invalidateQueries({ queryKey: ['workouts', programDayId] }) });
   const duplicate = useMutation({ mutationFn: (weeks: number[]) => duplicateWorkoutToWeeks(playerId, coachId, workout.id, weeks), onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['program', playerId] }); setDuplicateOpen(false); } });
@@ -51,7 +53,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
   return <div className={`workout-accordion ${expanded ? 'expanded' : ''}`}>
     <div className="workout-accordion-header">
       <button type="button" className="workout-accordion-trigger" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded} aria-controls={`workout-${workout.id}`}>
-        <span><small>Workout</small><strong>{workout.name}</strong></span><span className="workout-accordion-chevron" aria-hidden="true">⌄</span>
+        <span><small>Workout</small><strong>{workout.name}</strong>{completion.data?.completed && <span className="workout-completion-badge">✓ Player completed</span>}</span><span className="workout-accordion-chevron" aria-hidden="true">⌄</span>
       </button>
       <button type="button" className="workout-add-exercise" onClick={() => setExerciseOpen(true)}>+ Add exercise</button>
       <button type="button" className="workout-row-action" onClick={() => setDuplicateOpen(true)}>Duplicate</button>

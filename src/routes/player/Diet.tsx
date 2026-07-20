@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
-import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, todayDayOfWeek } from '../../lib/dates';
+import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, currentProgramWeek, todayDayOfWeek } from '../../lib/dates';
+import { getActivePlayerLink } from '../../api/players';
 import { listDietDays } from '../../api/diet';
 import { saveDietLog } from '../../api/dietProgress';
 import type { DietDay } from '../../types/database.types';
@@ -17,8 +18,19 @@ export default function PlayerDiet() {
     queryKey: ['diet', playerId],
     queryFn: () => listDietDays(playerId),
   });
+  const { data: activeLink } = useQuery({
+    queryKey: ['active-player-link', playerId],
+    queryFn: () => getActivePlayerLink(playerId),
+  });
 
   const weeks = Array.from(new Set((dietDays ?? []).map((d) => d.week_number))).sort((a, b) => a - b);
+  const weekInitialized = useRef(false);
+  useEffect(() => {
+    if (weekInitialized.current || !activeLink || weeks.length === 0) return;
+    const current = currentProgramWeek(activeLink.created_at, Math.max(...weeks));
+    setWeek(weeks.includes(current) ? current : weeks.reduce((closest, value) => Math.abs(value - current) < Math.abs(closest - current) ? value : closest));
+    weekInitialized.current = true;
+  }, [activeLink, weeks]);
   const weekDays = (dietDays ?? []).filter((d) => d.week_number === week);
   const byDow = new Map(weekDays.map((d) => [d.day_of_week, d]));
 

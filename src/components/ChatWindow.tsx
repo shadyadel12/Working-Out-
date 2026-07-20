@@ -10,6 +10,7 @@ import {
 import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
 import LoadingSkeleton from './LoadingSkeleton';
 import ChatAttachment from './chat/ChatAttachment';
+import { Mic, Paperclip, Square } from 'lucide-react';
 
 export default function ChatWindow({
   coachId,
@@ -219,19 +220,20 @@ export default function ChatWindow({
           aria-label={recording ? 'Stop and send voice message' : 'Record voice message'}
           onClick={toggleRecording}
           disabled={uploading || send.isPending}
-          style={recording ? { alignSelf: 'flex-end', background: '#c62828' } : { alignSelf: 'flex-end' }}
+          style={recording ? { alignSelf: 'flex-end', background: '#c62828', width: 46, height: 42, padding: 0 } : { alignSelf: 'flex-end', width: 46, height: 42, padding: 0 }}
         >
-          {recording ? `Stop ${Math.floor(recordingSeconds / 60)}:${String(recordingSeconds % 60).padStart(2, '0')}` : 'Mic'}
+          {recording ? <><Square size={17} aria-hidden="true" /><span className="sr-only">Stop {Math.floor(recordingSeconds / 60)}:{String(recordingSeconds % 60).padStart(2, '0')}</span></> : <Mic size={20} aria-hidden="true" />}
         </button>
         <button
           type="button"
           className="secondary"
           title="Send a picture, video, or audio file"
+          aria-label="Attach picture, video, or audio file"
           onClick={() => fileRef.current?.click()}
           disabled={uploading || send.isPending || recording}
-          style={{ alignSelf: 'flex-end' }}
+          style={{ alignSelf: 'flex-end', width: 46, height: 42, padding: 0 }}
         >
-          {uploading ? '…' : 'Attach'}
+          {uploading ? <span aria-label="Uploading">…</span> : <Paperclip size={20} aria-hidden="true" />}
         </button>
         <input
           ref={fileRef}
