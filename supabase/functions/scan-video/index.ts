@@ -13,6 +13,47 @@ function json(body: unknown, status = 200, extraHeaders: Record<string, string> 
   });
 }
 
+function streamedMultipartFile(source: ReadableStream<Uint8Array>, fileName: string, contentType: string, size: number) {
+  const boundary = `----pulsefit-${crypto.randomUUID()}`;
+  const safeName = fileName.replace(/[\r\n"]/g, '_');
+  const prefix = new TextEncoder().encode(
+    `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${safeName}"\r\nContent-Type: ${contentType}\r\n\r\n`,
+  );
+  const suffix = new TextEncoder().encode(`\r\n--${boundary}--\r\n`);
+  const reader = source.getReader();
+  let phase: 'prefix' | 'file' | 'suffix' | 'done' = 'prefix';
+  const body = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      if (phase === 'prefix') {
+        phase = 'file';
+        controller.enqueue(prefix);
+        return;
+      }
+      if (phase === 'file') {
+        const chunk = await reader.read();
+        if (!chunk.done) {
+          controller.enqueue(chunk.value);
+          return;
+        }
+        phase = 'suffix';
+      }
+      if (phase === 'suffix') {
+        phase = 'done';
+        controller.enqueue(suffix);
+        controller.close();
+      }
+    },
+    cancel(reason) { return reader.cancel(reason); },
+  });
+  return {
+    body,
+    headers: {
+      'Content-Type': `multipart/form-data; boundary=${boundary}`,
+      'Content-Length': String(prefix.byteLength + size + suffix.byteLength),
+    },
+  };
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
@@ -84,12 +125,16 @@ Deno.serve(async (request) => {
   }
   if (!authorized) return json({ error: 'Access denied.' }, 403);
 
+  let r2Ready = false;
   try {
     let blob: Blob;
+    let r2Download: Response | null = null;
     if (r2Row) {
       const download = await r2Request(quarantinePath, 'GET');
       if (!download.ok) throw new Error('R2 quarantined video could not be read.');
-      blob = await download.blob();
+      if (!download.body) throw new Error('R2 quarantined video returned no content.');
+      r2Download = download;
+      blob = new Blob();
     } else {
       const { data, error: downloadError } = await admin.storage.from('video-quarantine').download(quarantinePath);
       if (downloadError || !data) throw new Error('Quarantined video could not be read.');
@@ -97,7 +142,8 @@ Deno.serve(async (request) => {
     }
 
     let uploadUrl = 'https://www.virustotal.com/api/v3/files';
-    if (blob.size > 32 * 1024 * 1024) {
+    const fileSize = r2Row ? Number(r2Row.byte_size) : blob.size;
+    if (fileSize > 32 * 1024 * 1024) {
       const largeResponse = await fetch('https://www.virustotal.com/api/v3/files/upload_url', {
         headers: { 'x-apikey': virusTotalKey },
       });
@@ -105,10 +151,15 @@ Deno.serve(async (request) => {
       uploadUrl = (await largeResponse.json()).data;
     }
 
-    const form = new FormData();
-    form.append('file', new File([blob], fileName, { type: contentType }));
+    const streamed = r2Download
+      ? streamedMultipartFile(r2Download.body!, fileName, contentType, fileSize)
+      : null;
+    const form = streamed ? null : new FormData();
+    form?.append('file', new File([blob], fileName, { type: contentType }));
     const scanResponse = await fetch(uploadUrl, {
-      method: 'POST', headers: { 'x-apikey': virusTotalKey }, body: form,
+      method: 'POST',
+      headers: { 'x-apikey': virusTotalKey, ...(streamed?.headers ?? {}) },
+      body: streamed?.body ?? form,
     });
     if (!scanResponse.ok) throw new Error('Malware scan could not be started.');
     const analysisId = (await scanResponse.json()).data?.id;
@@ -138,17 +189,11 @@ Deno.serve(async (request) => {
 
     const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     if (r2Row) {
-      const finalPath = `files/workout-video/${ownerId}/${r2Row.id}-${safeName}`;
-      const stored = await r2Request(finalPath, 'PUT', await blob.arrayBuffer(), contentType);
-      if (!stored.ok) throw new Error('Clean video could not be stored in R2.');
-      await r2Request(quarantinePath, 'DELETE');
       const { error: updateError } = await admin.from('private_files').update({
-        object_key: finalPath, status: 'ready', verified_at: new Date().toISOString(),
+        status: 'ready', verified_at: new Date().toISOString(),
       }).eq('id', r2Row.id).eq('status', 'quarantined');
-      if (updateError) {
-        await r2Request(finalPath, 'DELETE').catch(() => {});
-        throw updateError;
-      }
+      if (updateError) throw updateError;
+      r2Ready = true;
       return json({ path: `r2:${r2Row.id}` });
     } else {
       const finalPath = `${ownerId}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
@@ -165,7 +210,7 @@ Deno.serve(async (request) => {
     return json({ error: error instanceof Error ? error.message : 'Video scan failed.' });
   } finally {
     if (r2Row) {
-      if (r2Row.status !== 'ready') {
+      if (!r2Ready) {
         await r2Request(quarantinePath, 'DELETE').catch(() => {});
         await admin.from('private_files').update({ status: 'rejected', deleted_at: new Date().toISOString() })
           .eq('id', r2Row.id).neq('status', 'ready');

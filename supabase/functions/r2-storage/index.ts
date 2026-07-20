@@ -10,7 +10,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 });
 
 const rules: Record<string, { max: number; types: Set<string> }> = {
-  'workout-video': { max: 50 * 1024 * 1024, types: new Set(['video/mp4', 'video/webm', 'video/quicktime']) },
+  'workout-video': { max: 500 * 1024 * 1024, types: new Set(['video/mp4', 'video/webm', 'video/quicktime']) },
   'chat-attachment': { max: 50 * 1024 * 1024, types: new Set([
     'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime',
     'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/ogg', 'audio/webm',
@@ -115,7 +115,7 @@ Deno.serve(async (request) => {
         attachment_type: purpose === 'workout-video' ? 'video' : attachmentType(contentType),
       });
       if (error) throw error;
-      return json({ ref: `r2:${id}`, uploadUrl: await presignR2(objectKey, 'PUT', 900) });
+      return json({ ref: `r2:${id}`, uploadUrl: await presignR2(objectKey, 'PUT', purpose === 'workout-video' ? 3600 : 900) });
     }
 
     const ref = String(payload.ref ?? '');

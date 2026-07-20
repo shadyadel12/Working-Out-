@@ -8,7 +8,7 @@ const features = [
 
 export default function Landing() {
   return <div className="pulse-landing">
-    <header className="pulse-header"><Link to="/" className="pulse-logo"><span aria-hidden="true">P</span>PULSE<strong>FIT</strong></Link><nav aria-label="Main navigation"><a href="#experience">Experience</a><a href="#features">Features</a><Link to="/changelog">Updates</Link></nav><div><Link to="/login/player">Log in</Link><Link className="pulse-header-cta" to="/signup/player">Start training</Link></div></header>
+    <header className="pulse-header"><Link to="/" className="pulse-logo"><span aria-hidden="true">P</span>PULSE<strong>FIT</strong></Link><nav aria-label="Main navigation"><a href="#experience">Experience</a><a href="#features">Features</a><Link to="/changelog">Updates</Link></nav><div className="pulse-auth-actions"><details className="pulse-auth-menu"><summary>Sign in</summary><div role="menu" aria-label="Choose how to sign in"><Link role="menuitem" to="/login/player"><span>Athlete</span><small>Open your training space</small></Link><Link role="menuitem" to="/login/coach"><span>Coach</span><small>Open your coaching workspace</small></Link></div></details><details className="pulse-auth-menu pulse-auth-menu-primary"><summary>Sign up</summary><div role="menu" aria-label="Choose how to sign up"><Link role="menuitem" to="/signup/player"><span>Athlete</span><small>Start training with a coach</small></Link><Link role="menuitem" to="/signup/coach"><span>Coach</span><small>Create your coaching account</small></Link></div></details></div></header>
     <main>
       <section className="pulse-hero">
         <div className="pulse-noise" aria-hidden="true" />

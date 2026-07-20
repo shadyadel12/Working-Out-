@@ -17,7 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
 import { supabase } from "../../lib/supabase";
 import { validateMedia } from "../../lib/mediaSecurity";
-import { deletePrivateFile, uploadPrivateBytes } from "../../api/privateFiles";
+import { deletePrivateFile, uploadPrivateUri } from "../../api/privateFiles";
 
 export default function ProgramScreen() {
   const { session } = useAuth();
@@ -167,10 +167,10 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
     });
     if (result.canceled) return;
     const a = result.assets[0];
-    if (!a.fileSize || a.fileSize > 50 * 1024 * 1024)
+    if (!a.fileSize || a.fileSize > 500 * 1024 * 1024)
       return Alert.alert(
         "Video too large",
-        "Choose a video smaller than 50 MB.",
+        "Choose a video no larger than 500 MB.",
       );
     setBusy(true);
     let r2Ref: string | null = null;
@@ -180,9 +180,9 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
         throw new Error("Only MP4, WebM, and MOV videos are allowed.");
       const ext = mime === "video/quicktime" ? "mov" : mime.split("/")[1];
       const name = `mobile-${Crypto.randomUUID()}.${ext}`;
-      const bytes = await fetch(a.uri).then((r) => r.arrayBuffer());
-      validateMedia(bytes, mime, a.fileSize, "video");
-      r2Ref = await uploadPrivateBytes(bytes, name, mime, {
+      const signature = await fetch(a.uri).then((r) => r.blob()).then((blob) => blob.slice(0, 16).arrayBuffer());
+      validateMedia(signature, mime, a.fileSize, "video", 500);
+      r2Ref = await uploadPrivateUri(a.uri, a.fileSize, name, mime, {
         purpose: "workout-video",
         playerId,
       });

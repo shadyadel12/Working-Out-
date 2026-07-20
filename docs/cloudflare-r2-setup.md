@@ -49,7 +49,7 @@ The existing `VIRUSTOTAL_API_KEY` secret must remain configured.
 
 ## 4. Apply and deploy
 
-Apply migrations 0048, 0049, and 0050 in order if they are not already hosted,
+Apply migrations 0048, 0049, 0050, and 0051 in order if they are not already hosted,
 then deploy the storage functions:
 
 ```sh

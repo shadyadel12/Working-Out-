@@ -41,7 +41,7 @@ const VIDEO_EXTENSIONS: Record<string, string> = {
 /** Verify extension, reported MIME, and the file's actual container signature. */
 export async function validateVideoFile(file: File, maxBytes: number): Promise<void> {
   const maxMb = Math.floor(maxBytes / (1024 * 1024));
-  if (file.size <= 0 || file.size > maxBytes) throw new Error(`Video must be smaller than ${maxMb} MB.`);
+  if (file.size <= 0 || file.size > maxBytes) throw new Error(`Video must be no larger than ${maxMb} MB.`);
   const expectedExtension = VIDEO_EXTENSIONS[file.type];
   if (!expectedExtension) throw new Error('Only MP4, WebM, and MOV videos are allowed.');
   if (file.name.includes('\0') || /[\\/]/.test(file.name)) throw new Error('Invalid video filename.');

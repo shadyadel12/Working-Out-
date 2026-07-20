@@ -10,6 +10,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Workout video uploads can now be up to 500 MB on the website and mobile app.
+- The landing page now lets visitors choose Sign in or Sign up, then continue as an athlete or coach.
 - The website now fits phone screens throughout the coach, player, and admin areas, with compact menus, readable forms, finger-friendly controls, and safely scrollable wide tables.
 - Support conversations now open as a focused phone view with a clear way back to the conversation list.
 

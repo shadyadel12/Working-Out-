@@ -4,7 +4,7 @@ import { deletePrivateFile, getPrivateFileUrl, isPrivateFileRef, uploadPrivateFi
 
 const BUCKET = 'videos';
 const QUARANTINE_BUCKET = 'video-quarantine';
-const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
 
 /**
  * Upload a video to private quarantine, then ask the server-side scanner to

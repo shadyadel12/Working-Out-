@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import * as FileSystem from 'expo-file-system/legacy';
 
 type UploadContext = {
   purpose: 'chat-attachment' | 'workout-video';
@@ -27,6 +28,32 @@ export async function uploadPrivateBytes(
       method: 'PUT', headers: { 'Content-Type': contentType }, body: bytes,
     });
     if (!uploaded.ok) throw new Error('Cloud storage rejected the upload.');
+    await action({ action: 'finalize', ref: created.ref });
+    return created.ref;
+  } catch (error) {
+    await action({ action: 'delete', ref: created.ref }).catch(() => {});
+    throw error;
+  }
+}
+
+/** Stream a device file to R2 without copying a large video into JS memory. */
+export async function uploadPrivateUri(
+  uri: string,
+  size: number,
+  fileName: string,
+  contentType: string,
+  context: UploadContext,
+) {
+  const created = await action<{ ref: string; uploadUrl: string }>({
+    action: 'create-upload', ...context, fileName, contentType, size,
+  });
+  try {
+    const uploaded = await FileSystem.uploadAsync(created.uploadUrl, uri, {
+      httpMethod: 'PUT',
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      headers: { 'Content-Type': contentType },
+    });
+    if (uploaded.status < 200 || uploaded.status >= 300) throw new Error('Cloud storage rejected the upload.');
     await action({ action: 'finalize', ref: created.ref });
     return created.ref;
   } catch (error) {
