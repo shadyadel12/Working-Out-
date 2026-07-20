@@ -28,10 +28,6 @@ enable_signup = true
 enable_signup = true
 enable_confirmations = false
 
-[auth.password]
-min_length = 10
-requirements = "lower_upper_letters_digits_symbols"
-
 [auth.mfa]
 max_enrolled_factors = 10
 

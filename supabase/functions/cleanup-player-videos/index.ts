@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { privateFileId, r2Request } from '../_shared/r2.ts';
 
 const headers = { 'Content-Type': 'application/json' };
 const respond = (body: unknown, status = 200) =>
@@ -28,10 +29,25 @@ Deno.serve(async (request) => {
   const failures: Array<{ id: string; error: string }> = [];
   for (const log of expired ?? []) {
     const path = log.player_video_url as string;
-    const { error: storageError } = await admin.storage.from('videos').remove([path]);
-    if (storageError) {
-      failures.push({ id: log.id, error: storageError.message });
-      continue;
+    const r2Id = privateFileId(path);
+    if (r2Id) {
+      const { data: file } = await admin.from('private_files').select('object_key,status').eq('id', r2Id).maybeSingle();
+      if (!file) {
+        failures.push({ id: log.id, error: 'R2 metadata was not found.' });
+        continue;
+      }
+      const removed = await r2Request(file.object_key, 'DELETE');
+      if (!removed.ok && removed.status !== 404) {
+        failures.push({ id: log.id, error: `R2 deletion failed (${removed.status}).` });
+        continue;
+      }
+      await admin.from('private_files').update({ status: 'deleted', deleted_at: new Date().toISOString() }).eq('id', r2Id);
+    } else {
+      const { error: storageError } = await admin.storage.from('videos').remove([path]);
+      if (storageError) {
+        failures.push({ id: log.id, error: storageError.message });
+        continue;
+      }
     }
     const { error: updateError } = await admin.from('exercise_logs').update({
       player_video_url: null,
@@ -42,5 +58,32 @@ Deno.serve(async (request) => {
     if (updateError) failures.push({ id: log.id, error: updateError.message });
     else deleted++;
   }
-  return respond({ checked: expired?.length ?? 0, deleted, failures }, failures.length ? 207 : 200);
+
+  // Remove uploads abandoned before finalization or after a rejected scan.
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: abandoned, error: abandonedError } = await admin.from('private_files')
+    .select('id,object_key').in('status', ['pending', 'quarantined', 'rejected'])
+    .lt('created_at', cutoff).order('created_at', { ascending: true }).limit(100);
+  if (abandonedError) failures.push({ id: 'private-files', error: abandonedError.message });
+  let abandonedDeleted = 0;
+  for (const file of abandoned ?? []) {
+    const removed = await r2Request(file.object_key, 'DELETE');
+    if (!removed.ok && removed.status !== 404) {
+      failures.push({ id: file.id, error: `Abandoned R2 deletion failed (${removed.status}).` });
+      continue;
+    }
+    const { error } = await admin.from('private_files').update({
+      status: 'deleted', deleted_at: new Date().toISOString(),
+    }).eq('id', file.id);
+    if (error) failures.push({ id: file.id, error: error.message });
+    else abandonedDeleted++;
+  }
+
+  return respond({
+    checked: expired?.length ?? 0,
+    deleted,
+    abandonedChecked: abandoned?.length ?? 0,
+    abandonedDeleted,
+    failures,
+  }, failures.length ? 207 : 200);
 });

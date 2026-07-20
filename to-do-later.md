@@ -1,6 +1,7 @@
-# Cloudflare Setup — To Do Later
+# Cloudflare R2 Setup
 
-We paused this setup because there is currently a problem with the payment card.
+R2 is enabled and the private bucket is ready. The application integration was
+prepared on July 20, 2026.
 
 ## Goal
 
@@ -17,7 +18,7 @@ The app is currently deployed at:
 
 This address can continue working while Cloudflare storage is being prepared.
 
-## Resume when the card problem is solved
+## Cloudflare account setup
 
 1. Sign in to the Cloudflare account.
 2. Open **R2 Object Storage**.
@@ -25,16 +26,21 @@ This address can continue working while Cloudflare storage is being prepared.
 4. Add the payment card if Cloudflare requests it. R2 has a free allowance, but Cloudflare may still require a card.
 5. Create a bucket named `coach-platform-private`.
 6. Keep the bucket **private**. Do not turn on public access.
-7. Tell Codex that R2 is enabled and the private bucket has been created.
+7. Tell Codex that R2 is enabled and the private bucket has been created. **Done.**
 
-## What Codex will do afterward
+## Application integration
 
-- Add the Cloudflare storage code to this project.
-- Secure uploads so clients cannot view each other's files.
-- Connect video uploads and chat attachments to R2.
-- Keep file ownership information in Supabase.
-- Prepare the storage connection for the website and future Android/iOS apps.
-- Preserve the video scanning and automatic deletion protections.
+- [x] Add the Cloudflare storage code to this project.
+- [x] Secure uploads so clients cannot view each other's files.
+- [x] Connect video uploads and chat attachments to R2.
+- [x] Keep file ownership information in Supabase.
+- [x] Prepare the storage connection for the website and Android/iOS apps.
+- [x] Preserve video scanning and automatic deletion protections.
+- [ ] Add the R2 bucket CORS policy and Supabase secrets.
+- [ ] Apply migration 0050 and deploy the three Edge Functions.
+- [ ] Complete the production verification checklist.
+
+Deployment instructions are in `docs/cloudflare-r2-setup.md`.
 
 ## Later: Cloudflare protection for the website
 

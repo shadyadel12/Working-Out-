@@ -91,14 +91,7 @@ export default function AdminSupport() {
     <div className="stack">
       <h1>Coach Support</h1>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: selectedCoachId ? '280px 1fr' : '280px',
-          gap: '1rem',
-          alignItems: 'start',
-        }}
-      >
+      <div className={`support-layout ${selectedCoachId ? 'has-selection' : ''}`}>
         {/* Coach list */}
         <div className="card stack" style={{ gap: 0, padding: '0.5rem' }}>
           <strong
@@ -240,7 +233,10 @@ export default function AdminSupport() {
 
         {/* Chat pane */}
         {selectedCoachId && (
-          <div className="stack">
+          <div className="stack support-chat-pane">
+            <button type="button" className="secondary support-back-button" onClick={() => setSelectedCoachId(null)}>
+              ← Conversations
+            </button>
             <strong style={{ fontSize: '1rem' }}>
               {selectedCoach?.name ?? selectedCoach?.email ?? '…'}
               <span style={{ fontWeight: 400, fontSize: '0.82rem', marginLeft: '0.5rem', color: 'var(--text-dim)' }}>

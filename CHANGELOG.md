@@ -2,6 +2,21 @@
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
+## July 20, 2026
+
+### New Features
+
+- New workout videos, chat media, voice messages, and support attachments can now use private cloud file storage shared by the website and mobile apps.
+
+### Improvements
+
+- The website now fits phone screens throughout the coach, player, and admin areas, with compact menus, readable forms, finger-friendly controls, and safely scrollable wide tables.
+- Support conversations now open as a focused phone view with a clear way back to the conversation list.
+
+### Security
+
+- Private files now use short-lived upload and viewing links, relationship-based access checks, malware scanning for workout videos, and automatic cleanup without exposing storage credentials to users.
+
 ## July 19, 2026
 
 ### New Features

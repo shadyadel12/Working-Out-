@@ -1,0 +1,33 @@
+:root,
+.preview-root {
+  --canvas: #f7fafc;
+  --surface: #ffffff;
+  --surface-subtle: #f2f6fa;
+  --ink: #17212b;
+  --ink-muted: #667085;
+  --border: #e7ecf2;
+  --primary: #119da4;
+  --primary-hover: #0b858c;
+  --primary-strong: #087078;
+  --primary-soft: #ddf7f6;
+  --secondary: #8b5cf6;
+  --secondary-soft: #f0e9ff;
+  --blue: #3b82f6;
+  --blue-soft: #e8f1ff;
+  --pink: #ec4899;
+  --pink-soft: #fde7f3;
+  --green: #22c55e;
+  --green-soft: #e6f8ec;
+  --orange: #f97316;
+  --orange-soft: #fff0e6;
+  --yellow: #d8a800;
+  --yellow-soft: #fff8d8;
+  --danger: #ef4444;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 8px 24px rgb(16 24 40 / 6%);
+  --shadow-overlay: 0 20px 48px rgb(16 24 40 / 14%);
+}

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { validateChatAttachment, type ChatAttachmentType } from '../lib/security';
+import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateFile } from './privateFiles';
 
 export interface ChatMessage {
   id: string;
@@ -71,17 +72,14 @@ export async function uploadChatAttachment(
   senderId: string,
   file: File
 ): Promise<{ path: string; type: ChatAttachmentType }> {
-  const { type, extension } = await validateChatAttachment(file);
-  const path = `${coachId}/${playerId}/${senderId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
-  const { error } = await supabase.storage.from('chat-attachments').upload(path, file, {
-    upsert: false,
-    contentType: file.type,
-  });
-  if (error) throw error;
+  const { type } = await validateChatAttachment(file);
+  if (!senderId) throw new Error('Authentication is required.');
+  const path = await uploadPrivateFile(file, { purpose: 'chat-attachment', coachId, playerId });
   return { path, type };
 }
 
 export async function getChatAttachmentUrl(path: string): Promise<string> {
+  if (isPrivateFileRef(path)) return getPrivateFileUrl(path);
   const { data, error } = await supabase.storage.from('chat-attachments').createSignedUrl(path, 3600);
   if (error) throw error;
   return data.signedUrl;

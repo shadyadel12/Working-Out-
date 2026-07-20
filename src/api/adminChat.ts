@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { validateVideoFile } from '../lib/security';
+import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateFile } from './privateFiles';
 
 export interface AdminMessage {
   id: string;
@@ -113,9 +114,7 @@ export async function uploadSupportAttachment(
   if (!ext) throw new Error('This file type is not allowed.');
   if (file.size <= 0 || file.size > 25 * 1024 * 1024) throw new Error('Attachment must be smaller than 25 MB.');
   if (file.type.startsWith('video/')) await validateVideoFile(file, 25 * 1024 * 1024);
-  const path = `${coachId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { error } = await supabase.storage.from('support').upload(path, file);
-  if (error) throw error;
+  const path = await uploadPrivateFile(file, { purpose: 'support-attachment', coachId });
   const type = file.type.startsWith('image/')
     ? 'image'
     : file.type.startsWith('video/')
@@ -126,6 +125,7 @@ export async function uploadSupportAttachment(
 
 /** Get a 1-hour signed URL for a support attachment. */
 export async function getSupportAttachmentUrl(path: string): Promise<string> {
+  if (isPrivateFileRef(path)) return getPrivateFileUrl(path);
   const { data, error } = await supabase.storage
     .from('support')
     .createSignedUrl(path, 3600);

@@ -24,3 +24,8 @@ supabase/.branches
 
 .mcp.json
 supabase/_all_migrations_combined.sql
+
+# Local Codex/browser test artifacts
+.codex/
+.vite-*.log
+New Text Document.txt

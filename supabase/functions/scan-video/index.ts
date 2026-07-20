@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { privateFileId, r2Request } from '../_shared/r2.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,14 +35,27 @@ Deno.serve(async (request) => {
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return json({ error: 'Invalid or expired session.' }, 401);
 
-  let payload: { quarantinePath?: string; ownerId?: string; fileName?: string; contentType?: string };
+  let payload: { quarantinePath?: string; ownerId?: string; fileName?: string; contentType?: string; fileRef?: string };
   try {
     payload = await request.json();
   } catch {
     return json({ error: 'Invalid request.' }, 400);
   }
-  const { quarantinePath, ownerId, fileName, contentType } = payload;
-  if (!quarantinePath || !ownerId || !fileName || !contentType || !quarantinePath.startsWith(`${ownerId}/`)) {
+  let { quarantinePath, ownerId, fileName, contentType } = payload;
+  const r2Id = payload.fileRef ? privateFileId(payload.fileRef) : null;
+  let r2Row: Record<string, any> | null = null;
+  if (r2Id) {
+    const { data } = await admin.from('private_files').select('*').eq('id', r2Id).maybeSingle();
+    if (!data || data.purpose !== 'workout-video' || data.status !== 'quarantined') {
+      return json({ error: 'Invalid R2 quarantine upload.' }, 400);
+    }
+    r2Row = data;
+    quarantinePath = data.object_key;
+    ownerId = data.player_id;
+    fileName = data.original_name;
+    contentType = data.content_type;
+  }
+  if (!quarantinePath || !ownerId || !fileName || !contentType || (!r2Row && !quarantinePath.startsWith(`${ownerId}/`))) {
     return json({ error: 'Invalid quarantine upload.' }, 400);
   }
   if (!['video/mp4', 'video/webm', 'video/quicktime'].includes(contentType)) {
@@ -54,19 +68,33 @@ Deno.serve(async (request) => {
   if (profile?.role === 'coach') {
     const { data: link } = await admin
       .from('coach_player_links')
-      .select('id')
-      .eq('coach_id', user.id)
+      .select('id,coach_id')
       .eq('player_id', ownerId)
+      .eq('status', 'active')
+      .gte('subscription_end_date', new Date().toISOString().slice(0, 10))
+      .limit(1)
       .maybeSingle();
-    authorized = !!link;
+    authorized = !!link && link.coach_id === user.id;
+    if (link && !authorized) {
+      const { data: teamAllowed } = await userClient.rpc('team_can_manage_player', {
+        p_owner: link.coach_id, p_player: ownerId,
+      });
+      authorized = teamAllowed === true;
+    }
   }
   if (!authorized) return json({ error: 'Access denied.' }, 403);
 
   try {
-    const { data: blob, error: downloadError } = await admin.storage
-      .from('video-quarantine')
-      .download(quarantinePath);
-    if (downloadError || !blob) throw new Error('Quarantined video could not be read.');
+    let blob: Blob;
+    if (r2Row) {
+      const download = await r2Request(quarantinePath, 'GET');
+      if (!download.ok) throw new Error('R2 quarantined video could not be read.');
+      blob = await download.blob();
+    } else {
+      const { data, error: downloadError } = await admin.storage.from('video-quarantine').download(quarantinePath);
+      if (downloadError || !data) throw new Error('Quarantined video could not be read.');
+      blob = data;
+    }
 
     let uploadUrl = 'https://www.virustotal.com/api/v3/files';
     if (blob.size > 32 * 1024 * 1024) {
@@ -109,18 +137,41 @@ Deno.serve(async (request) => {
     }
 
     const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const finalPath = `${ownerId}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
-    const { error: finalError } = await admin.storage.from('videos').upload(finalPath, blob, {
-      contentType, cacheControl: '3600', upsert: false,
-    });
-    if (finalError) throw new Error('Clean video could not be stored.');
-    return json({ path: finalPath });
+    if (r2Row) {
+      const finalPath = `files/workout-video/${ownerId}/${r2Row.id}-${safeName}`;
+      const stored = await r2Request(finalPath, 'PUT', await blob.arrayBuffer(), contentType);
+      if (!stored.ok) throw new Error('Clean video could not be stored in R2.');
+      await r2Request(quarantinePath, 'DELETE');
+      const { error: updateError } = await admin.from('private_files').update({
+        object_key: finalPath, status: 'ready', verified_at: new Date().toISOString(),
+      }).eq('id', r2Row.id).eq('status', 'quarantined');
+      if (updateError) {
+        await r2Request(finalPath, 'DELETE').catch(() => {});
+        throw updateError;
+      }
+      return json({ path: `r2:${r2Row.id}` });
+    } else {
+      const finalPath = `${ownerId}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+      const { error: finalError } = await admin.storage.from('videos').upload(finalPath, blob, {
+        contentType, cacheControl: '3600', upsert: false,
+      });
+      if (finalError) throw new Error('Clean video could not be stored.');
+      return json({ path: finalPath });
+    }
   } catch (error) {
     // A handled rejection is a successful function invocation with no path;
     // this lets the browser show the scanner's clear reason while still
     // treating the upload itself as rejected.
     return json({ error: error instanceof Error ? error.message : 'Video scan failed.' });
   } finally {
-    await admin.storage.from('video-quarantine').remove([quarantinePath]);
+    if (r2Row) {
+      if (r2Row.status !== 'ready') {
+        await r2Request(quarantinePath, 'DELETE').catch(() => {});
+        await admin.from('private_files').update({ status: 'rejected', deleted_at: new Date().toISOString() })
+          .eq('id', r2Row.id).neq('status', 'ready');
+      }
+    } else {
+      await admin.storage.from('video-quarantine').remove([quarantinePath]);
+    }
   }
 });

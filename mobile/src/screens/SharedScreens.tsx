@@ -19,6 +19,7 @@ import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
 import { validateMedia } from "../lib/mediaSecurity";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateBytes } from "../api/privateFiles";
 
 export function ProgressScreen() {
   const { session, profile } = useAuth();
@@ -291,7 +292,6 @@ export function ChatScreen() {
       return;
     }
     setUploading(true);
-    let uploadedPath = "";
     try {
       const bytes = await fetch(uri).then((r) => r.arrayBuffer());
       validateMedia(bytes, mime, size, type);
@@ -305,12 +305,11 @@ export function ChatScreen() {
               : mime === "audio/mp4"
                 ? "m4a"
                 : mime.split("/")[1]?.split(";")[0] || "bin";
-      const path = `${selected.coachId}/${selected.playerId}/${session!.user.id}/${Date.now()}-${Crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage
-        .from("chat-attachments")
-        .upload(path, bytes, { contentType: mime, upsert: false });
-      if (error) throw error;
-      uploadedPath = path;
+      const path = await uploadPrivateBytes(bytes, `${Date.now()}-${Crypto.randomUUID()}.${ext}`, mime, {
+        purpose: "chat-attachment",
+        coachId: selected.coachId,
+        playerId: selected.playerId,
+      });
       const sent = await supabase.from("chat_messages").insert({
         coach_id: selected.coachId,
         player_id: selected.playerId,
@@ -321,8 +320,6 @@ export function ChatScreen() {
       });
       if (sent.error) throw sent.error;
     } catch (e) {
-      if (uploadedPath)
-        await supabase.storage.from("chat-attachments").remove([uploadedPath]);
       Alert.alert("Upload failed", (e as Error).message);
     } finally {
       setUploading(false);
@@ -378,6 +375,14 @@ export function ChatScreen() {
     setRecording(true);
   }
   async function openAttachment(path: string) {
+    if (isPrivateFileRef(path)) {
+      try {
+        await Linking.openURL(await getPrivateFileUrl(path));
+      } catch (error) {
+        Alert.alert("Could not open", (error as Error).message);
+      }
+      return;
+    }
     const { data, error } = await supabase.storage
       .from("chat-attachments")
       .createSignedUrl(path, 3600);

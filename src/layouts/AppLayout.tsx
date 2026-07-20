@@ -17,6 +17,8 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const libraryActive = links.some((link) => link.group === 'library' && location.pathname.startsWith(link.to));
   const [libraryOpen, setLibraryOpen] = useState(libraryActive);
   useEffect(() => { if (libraryActive) setLibraryOpen(true); }, [libraryActive]);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  useEffect(() => { setMobileNavOpen(false); }, [location.pathname]);
   const countFor = (key?: 'chat' | 'support') => key === 'chat' ? chatCount : key === 'support' ? supportCount : 0;
   async function handleSignOut() { await signOut(); navigate('/', { replace: true }); }
   const themeToggle = <button type="button" className="secondary theme-toggle" aria-label={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} title={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span></button>;
@@ -30,7 +32,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   function navLink(link: NavLink_, nested = false) {
     const count = countFor(link.badgeKey);
     const label = isCoach && link.label === 'Dashboard' ? 'Clients' : link.label;
-    return <NavLink key={link.to} to={link.to} className={({ isActive }) => `${isActive ? 'active' : ''}${nested ? ' library-child' : ''}`}>
+    return <NavLink key={link.to} to={link.to} onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `${isActive ? 'active' : ''}${nested ? ' library-child' : ''}`}>
       {isCoach && !nested && <span className="coach-nav-icon"><AppIcon name={iconFor(label)} size={16} /></span>}<span>{label}</span>
       {count > 0 && <span className="nav-count">{count > 99 ? '99+' : count}</span>}
     </NavLink>;
@@ -56,9 +58,31 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
     </div>
   </details>;
 
+  const menuButton = <button
+    type="button"
+    className="secondary mobile-nav-toggle"
+    aria-expanded={mobileNavOpen}
+    aria-controls="signed-in-navigation"
+    aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
+    onClick={() => setMobileNavOpen((open) => !open)}
+  ><span aria-hidden="true">{mobileNavOpen ? '×' : '☰'}</span><span>Menu</span></button>;
+
   return <div className={`${isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'} route-background route-${pageTheme}`}>
-    {isCoach && <header className="coach-topnav"><div className="coach-brand"><span className="coach-brand-mark"><AppIcon name="pulse" size={19} /></span><span>PULSE<strong>FIT</strong></span></div><div className="coach-nav">{navigation}</div><div className="coach-top-account">{coachProfileMenu}{themeToggle}</div></header>}
-    <div className="app-content"><header className="topbar"><div className="row"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && navigation}</div><div className="row"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}>Sign out</button></div></header><main className="container"><Outlet /></main><footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer></div>
+    {isCoach && <header className="coach-topnav">
+      <div className="coach-brand"><span className="coach-brand-mark"><AppIcon name="pulse" size={19} /></span><span>PULSE<strong>FIT</strong></span></div>
+      {menuButton}
+      <div id="signed-in-navigation" className={`coach-nav mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>{navigation}</div>
+      <div className="coach-top-account">{coachProfileMenu}{themeToggle}</div>
+    </header>}
+    <div className="app-content">
+      <header className="topbar">
+        <div className="signed-in-heading"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && menuButton}</div>
+        {!isCoach && <div id="signed-in-navigation" className={`player-navigation mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>{navigation}</div>}
+        <div className="topbar-account"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}>Sign out</button></div>
+      </header>
+      <main className="container"><Outlet /></main>
+      <footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer>
+    </div>
   </div>;
 }
 

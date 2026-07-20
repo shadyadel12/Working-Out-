@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
 import { supabase } from "../../lib/supabase";
 import { validateMedia } from "../../lib/mediaSecurity";
+import { deletePrivateFile, uploadPrivateBytes } from "../../api/privateFiles";
 
 export default function ProgramScreen() {
   const { session } = useAuth();
@@ -172,26 +173,21 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
         "Choose a video smaller than 50 MB.",
       );
     setBusy(true);
+    let r2Ref: string | null = null;
     try {
       const mime = a.mimeType || "video/mp4";
       if (!["video/mp4", "video/webm", "video/quicktime"].includes(mime))
         throw new Error("Only MP4, WebM, and MOV videos are allowed.");
       const ext = mime === "video/quicktime" ? "mov" : mime.split("/")[1];
       const name = `mobile-${Crypto.randomUUID()}.${ext}`;
-      const quarantinePath = `${playerId}/${Date.now()}-${name}`;
       const bytes = await fetch(a.uri).then((r) => r.arrayBuffer());
       validateMedia(bytes, mime, a.fileSize, "video");
-      const uploaded = await supabase.storage
-        .from("video-quarantine")
-        .upload(quarantinePath, bytes, { contentType: mime, upsert: false });
-      if (uploaded.error) throw uploaded.error;
+      r2Ref = await uploadPrivateBytes(bytes, name, mime, {
+        purpose: "workout-video",
+        playerId,
+      });
       const scan = await supabase.functions.invoke("scan-video", {
-        body: {
-          quarantinePath,
-          ownerId: playerId,
-          fileName: name,
-          contentType: mime,
-        },
+        body: { fileRef: r2Ref },
       });
       if (scan.error || !scan.data?.path)
         throw new Error(
@@ -201,6 +197,7 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
       setExternal(false);
       Alert.alert("Video ready", "The video passed its safety check.");
     } catch (e) {
+      if (r2Ref) await deletePrivateFile(r2Ref).catch(() => {});
       Alert.alert("Upload failed", (e as Error).message);
     } finally {
       setBusy(false);

@@ -41,6 +41,7 @@ import Blocked from './routes/player/Blocked';
 import PlayerProfileDetails from './routes/player/Profile';
 import AdminCoaches from './routes/admin/Coaches';
 import AdminSupport from './routes/admin/Support';
+import DesignPreview from './routes/DesignPreview';
 
 const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard', badgeKey: 'chat' as const },
@@ -88,6 +89,7 @@ export default function App() {
           <Route path="/login/admin" element={<AdminLogin />} />
           <Route path="/signup/coach" element={<CoachSignup />} />
           <Route path="/signup/player" element={<PlayerSignup />} />
+          <Route path="/design-preview/:view" element={<DesignPreview />} />
 
           {/* Coach */}
           <Route
