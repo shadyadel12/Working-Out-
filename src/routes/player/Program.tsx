@@ -8,6 +8,7 @@ import {
   WEEK_ORDER_SAT_FIRST,
   todayDayOfWeek,
   currentProgramWeek,
+  closestProgramWeek,
 } from '../../lib/dates';
 import { listProgramDays } from '../../api/programs';
 import { getActivePlayerLink } from '../../api/players';
@@ -28,16 +29,20 @@ export default function PlayerProgram() {
     queryFn: () => getActivePlayerLink(playerId),
   });
 
-  const weeks = Array.from(new Set((days ?? []).map((d) => d.week_number))).sort((a, b) => a - b);
   const weekInitialized = useRef(false);
+  const weeks = Array.from(new Set((days ?? []).map((d) => d.week_number))).sort((a, b) => a - b);
+  const automaticWeek = activeLink && weeks.length > 0
+    ? closestProgramWeek(weeks, currentProgramWeek(activeLink.created_at, Math.max(...weeks)))
+    : week;
+  const visibleWeek = weekInitialized.current ? week : automaticWeek;
   useEffect(() => {
     if (weekInitialized.current || !activeLink || weeks.length === 0) return;
     const current = currentProgramWeek(activeLink.created_at, Math.max(...weeks));
-    setWeek(weeks.includes(current) ? current : weeks.reduce((closest, value) => Math.abs(value - current) < Math.abs(closest - current) ? value : closest));
+    setWeek(closestProgramWeek(weeks, current));
     weekInitialized.current = true;
   }, [activeLink, weeks]);
   const weekDays = (days ?? [])
-    .filter((d) => d.week_number === week)
+    .filter((d) => d.week_number === visibleWeek)
     .sort((a, b) => a.day_of_week - b.day_of_week);
   const byDow = new Map(weekDays.map((d) => [d.day_of_week, d]));
 
@@ -53,11 +58,11 @@ export default function PlayerProgram() {
   return (
     <div className="stack">
       <div className="row" style={{ justifyContent: 'space-between' }}>
-        <h1>Week {week}: Training program for {profile?.name ?? 'you'}</h1>
+        <h1>Week {visibleWeek}: Training program for {profile?.name ?? 'you'}</h1>
         {weeks.length > 0 && (
           <div className="field" style={{ margin: 0, minWidth: 120 }}>
             <label>Week</label>
-            <select value={week} onChange={(e) => setWeek(Number(e.target.value))}>
+            <select value={visibleWeek} onChange={(e) => { weekInitialized.current = true; setWeek(Number(e.target.value)); }}>
               {weeks.map((w) => (
                 <option key={w} value={w}>Week {w}</option>
               ))}

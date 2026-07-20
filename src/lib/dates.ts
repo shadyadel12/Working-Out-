@@ -50,3 +50,8 @@ export function currentProgramWeek(startedAt: string, maxWeek = Number.MAX_SAFE_
   const elapsed = Math.max(0, Date.now() - started.getTime());
   return Math.min(Math.max(1, maxWeek), Math.floor(elapsed / (7 * 24 * 60 * 60 * 1000)) + 1);
 }
+
+export function closestProgramWeek(weeks: number[], target: number): number {
+  if (weeks.length === 0) return target;
+  return weeks.reduce((closest, value) => Math.abs(value - target) < Math.abs(closest - target) ? value : closest);
+}

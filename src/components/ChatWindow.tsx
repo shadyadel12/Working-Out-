@@ -212,10 +212,10 @@ export default function ChatWindow({
       </div>
 
       {/* Input */}
-      <div className="row" style={{ gap: '0.5rem', alignItems: 'flex-end' }}>
+      <div className="chat-composer-row">
         <button
           type="button"
-          className={recording ? '' : 'secondary'}
+          className={recording ? 'chat-tool-button recording mic' : 'chat-tool-button mic'}
           title={recording ? 'Stop and send recording' : 'Record a voice message'}
           aria-label={recording ? 'Stop and send voice message' : 'Record voice message'}
           onClick={toggleRecording}
@@ -226,7 +226,7 @@ export default function ChatWindow({
         </button>
         <button
           type="button"
-          className="secondary"
+          className="chat-tool-button attach"
           title="Send a picture, video, or audio file"
           aria-label="Attach picture, video, or audio file"
           onClick={() => fileRef.current?.click()}
@@ -243,6 +243,7 @@ export default function ChatWindow({
           style={{ display: 'none' }}
         />
         <textarea
+          className="chat-composer-input"
           rows={2}
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -252,6 +253,7 @@ export default function ChatWindow({
           disabled={send.isPending || uploading || recording}
         />
         <button
+          className="chat-send-button"
           onClick={() => send.mutate(text.trim())}
           disabled={!text.trim() || send.isPending || uploading || recording}
           style={{ alignSelf: 'flex-end', minWidth: 72 }}

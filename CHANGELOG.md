@@ -14,6 +14,7 @@ This page explains what the app can do and what has changed in everyday language
 
 - Training and diet pages now open on the player’s current subscription week for both players and coaches.
 - Chat attachment and voice-recording actions now use clear paperclip and microphone icons.
+- Chat media icons now sit inside the message box, and completing an exercise automatically opens the next exercise.
 - Workout video uploads can now be up to 500 MB on the website and mobile app.
 - The landing page now lets visitors choose Sign in or Sign up, then continue as an athlete or coach.
 - The website now fits phone screens throughout the coach, player, and admin areas, with compact menus, readable forms, finger-friendly controls, and safely scrollable wide tables.

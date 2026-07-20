@@ -13,11 +13,13 @@ export default function ExerciseBody({
   playerId,
   logDate,
   locked = false,
+  onCompleted,
 }: {
   exercise: Exercise;
   playerId: string;
   logDate: string;
   locked?: boolean;
+  onCompleted?: () => void;
 }) {
   const qc = useQueryClient();
 
@@ -86,9 +88,12 @@ export default function ExerciseBody({
         rows.map((r) => ({ reps: r.reps || null, weight: r.weight || null }))
       );
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['log', exercise.id, playerId, logDate] });
-      qc.invalidateQueries({ queryKey: ['setlogs', log?.id] });
+    onSuccess: async () => {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['log', exercise.id, playerId, logDate] }),
+        qc.invalidateQueries({ queryKey: ['setlogs', log?.id] }),
+      ]);
+      onCompleted?.();
     },
   });
 

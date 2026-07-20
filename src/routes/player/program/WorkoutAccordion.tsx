@@ -10,6 +10,7 @@ import ExerciseAccordion from './ExerciseAccordion';
 export default function WorkoutAccordion({ workout, playerId }: { workout: Workout; playerId: string }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const completion = useWorkoutCompletion(workout.id, playerId);
   const locked = completion.data?.completed === true && !editing;
@@ -35,7 +36,16 @@ export default function WorkoutAccordion({ workout, playerId }: { workout: Worko
       <span><strong>{workout.name}</strong>{completion.data?.completed && <span className="workout-completion-badge" style={{ marginLeft: 8 }}>✓ Done</span>}</span>
       <span>{open ? '▾' : '▸'}</span>
     </button>
-    {open && (exercises ?? []).map((exercise) => <ExerciseAccordion key={exercise.id} exercise={exercise} playerId={playerId} locked={locked} logDate={completion.data?.logDate ?? todayISO()} />)}
+    {open && (exercises ?? []).map((exercise, index) => <ExerciseAccordion
+      key={exercise.id}
+      exercise={exercise}
+      playerId={playerId}
+      locked={locked}
+      logDate={completion.data?.logDate ?? todayISO()}
+      open={activeExerciseId === exercise.id}
+      onToggle={() => setActiveExerciseId((current) => current === exercise.id ? null : exercise.id)}
+      onCompleted={() => setActiveExerciseId(exercises?.[index + 1]?.id ?? null)}
+    />)}
     {open && (exercises ?? []).length === 0 && <p className="muted" style={{ fontSize: '0.85rem' }}>No exercises.</p>}
     {open && (exercises ?? []).length > 0 && <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
       {locked ? <><span className="workout-locked-note">Workout submitted. Select Edit to change your sets, note, or video.</span><button type="button" className="secondary" onClick={() => setEditing(true)}>Edit workout</button></> : <><span className="muted">{editing ? 'Editing a submitted workout. Confirm again when finished.' : 'Confirm when you have finished the complete workout.'}</span><button type="button" onClick={() => confirm.mutate()} disabled={confirm.isPending}>{confirm.isPending ? 'Submitting…' : completion.data?.completed ? 'Confirm changes ✓' : 'Confirm workout ✓'}</button></>}
