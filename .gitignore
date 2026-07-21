@@ -29,3 +29,4 @@ supabase/_all_migrations_combined.sql
 .codex/
 .vite-*.log
 New Text Document.txt
+.vercel
