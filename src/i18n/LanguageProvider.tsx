@@ -387,15 +387,173 @@ Object.assign(ar, {
   "Personal coaching platform": "منصة تدريب شخصي",
 });
 
+// Complete UI coverage for navigation, helper copy, dialogs, uploads, and
+// dynamically rendered status text. Keep these exact phrases centralized so
+// every route and popup receives the same Arabic wording.
+Object.assign(ar, {
+  "Checking admin security…": "جارٍ التحقق من أمان الإدارة…",
+  "Signup failed.": "فشل إنشاء الحساب.", "Invalid email or password.": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "Invalid or already-used coach key.": "مفتاح المدرب غير صالح أو مستخدم بالفعل.",
+  "Invalid or already-used subscription key.": "مفتاح الاشتراك غير صالح أو مستخدم بالفعل.",
+  "Invalid coach key": "مفتاح المدرب غير صالح", "This coach key has been revoked": "تم إلغاء مفتاح المدرب هذا",
+  "This coach key is already in use": "مفتاح المدرب هذا مستخدم بالفعل", "Not authenticated": "لم يتم تسجيل الدخول",
+  "Admin verification": "تحقق الإدارة",
+  "Try again": "حاول مرة أخرى",
+  "Scan this QR code with your authenticator app, then enter its six-digit code.": "امسح رمز QR بتطبيق المصادقة ثم أدخل الرمز المكون من ستة أرقام.",
+  "Manual key:": "المفتاح اليدوي:",
+  "Enter the six-digit code from your authenticator app.": "أدخل الرمز المكون من ستة أرقام من تطبيق المصادقة.",
+  "Authenticator code": "رمز المصادقة",
+  "This week (Sat–Fri)": "هذا الأسبوع (السبت–الجمعة)",
+  "Updating results…": "جارٍ تحديث النتائج…",
+  "Exercises shown": "التمارين المعروضة",
+  "View video": "عرض الفيديو",
+  Page: "الصفحة", of: "من",
+  "Audio recording is not supported by this browser.": "هذا المتصفح لا يدعم تسجيل الصوت.",
+  "Microphone permission is required to record audio.": "يلزم السماح بالميكروفون لتسجيل الصوت.",
+  "No messages yet. Say hello!": "لا توجد رسائل بعد. ابدأ بالتحية!",
+  "No messages yet. Send a message to the admin team.": "لا توجد رسائل بعد. أرسل رسالة إلى فريق الإدارة.",
+  "Send a picture or video (videos up to 500 MB)": "إرسال صورة أو فيديو (حتى 500 ميجابايت)",
+  "Attach a photo or video (videos up to 500 MB)": "إرفاق صورة أو فيديو (حتى 500 ميجابايت)",
+  "Attach picture or video": "إرفاق صورة أو فيديو",
+  "Attach a photo or video": "إرفاق صورة أو فيديو",
+  Uploading: "جارٍ الرفع", "Uploading…": "جارٍ الرفع…",
+  "Add emoji": "إضافة رمز تعبيري", "Choose an emoji": "اختر رمزًا تعبيريًا",
+  "Type a message": "اكتب رسالة", "Diet adherence": "الالتزام بالنظام الغذائي",
+  "Days logged": "الأيام المسجلة", Preparing: "جارٍ التجهيز",
+  "Your workspace is almost ready": "مساحة عملك أوشكت على الجاهزية",
+  selected: "محدد", "Download file": "تنزيل الملف", "Close video": "إغلاق الفيديو",
+  "Video link (YouTube or any URL)": "رابط الفيديو (يوتيوب أو أي رابط)",
+  "or upload:": "أو ارفع:", "Uploaded file attached ✓": "تم إرفاق الملف المرفوع ✓",
+  "No weeks after Week": "لا توجد أسابيع بعد الأسبوع", "to copy into.": "للنسخ إليها.",
+  "Open coach profile menu": "فتح قائمة ملف المدرب", Menu: "القائمة",
+  "Coach Platform. All rights reserved. ·": "منصة التدريب. جميع الحقوق محفوظة. ·",
+  COACHES: "المدربون", "No coaches yet.": "لا يوجد مدربون بعد.",
+  "← Conversations": "المحادثات →", "Select a coach to open their support thread.": "اختر مدربًا لفتح محادثة الدعم الخاصة به.",
+  "← Back": "رجوع →", "← Back to sign in": "العودة لتسجيل الدخول →",
+  "Use at least 8 characters with uppercase, lowercase, a number, and a symbol.": "استخدم 8 أحرف على الأقل تشمل حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا.",
+  "Enter the subscription key your coach gave you.": "أدخل مفتاح الاشتراك الذي أعطاك إياه مدربك.",
+  "Chat —": "المحادثة —", "Messages —": "الرسائل —", "Analysis —": "التحليل —", "Program —": "البرنامج —", "Diet —": "النظام الغذائي —",
+  "You do not have permission to use player chat.": "ليست لديك صلاحية استخدام محادثة اللاعب.",
+  "You do not have permission to send player messages.": "ليست لديك صلاحية إرسال رسائل للاعب.",
+  "You do not have permission to manage subscriptions.": "ليست لديك صلاحية إدارة الاشتراكات.",
+  "VIP unread messages stay at the top, followed by other unread conversations.": "تبقى رسائل VIP غير المقروءة في الأعلى ثم بقية المحادثات غير المقروءة.",
+  "Good day,": "يوم سعيد،", "Start with the players who need you most, then keep the rest of the roster moving.": "ابدأ باللاعبين الأكثر احتياجًا ثم تابع بقية الفريق.",
+  "Start check-ups": "بدء المتابعات", "Coaching overview": "نظرة عامة على التدريب",
+  "Need attention": "يحتاج متابعة", "Unread messages": "رسائل غير مقروءة",
+  "Check-ups due": "متابعات مستحقة", "Inactive 7+ days": "غير نشط منذ 7 أيام أو أكثر",
+  "View today’s check-ups": "عرض متابعات اليوم", "You’re caught up.": "أنت على اطلاع بكل شيء.",
+  "Unread message": "رسالة غير مقروءة", Subscription: "الاشتراك",
+  "Quick coach actions": "إجراءات سريعة للمدرب", "Start from a reusable plan": "ابدأ من خطة قابلة لإعادة الاستخدام",
+  "Invite a player": "دعوة لاعب", "Quick actions": "إجراءات سريعة",
+  "Regenerate meal slots? Existing text for this day will be cleared.": "إعادة إنشاء خانات الوجبات؟ سيتم مسح النص الحالي لهذا اليوم.",
+  "Use saved diet": "استخدام نظام غذائي محفوظ", "Select from library…": "اختر من المكتبة…",
+  "Saved once for reuse ✓": "تم الحفظ لإعادة الاستخدام ✓", "Saved ✓": "تم الحفظ ✓",
+  "Choose how many meals and snacks, then press \"Generate slots\".": "اختر عدد الوجبات والوجبات الخفيفة ثم اضغط «إنشاء الخانات».",
+  "Meal details": "تفاصيل الوجبة", "+ Add custom food": "+ إضافة طعام مخصص",
+  "Delete this diet day?": "حذف يوم النظام الغذائي هذا؟", "Delete day": "حذف اليوم",
+  "Copy Week": "نسخ الأسبوع", "Search by exercise name…": "البحث باسم التمرين…",
+  "Target Muscle Groups": "العضلات المستهدفة", "Movement Patterns": "أنماط الحركة",
+  "Start adding exercises to reuse in programs.": "ابدأ بإضافة تمارين لإعادة استخدامها في البرامج.",
+  "Exercise Name *": "اسم التمرين *", "Category *": "التصنيف *", "Video Link": "رابط الفيديو",
+  "Coach Library": "مكتبة المدرب", Create: "إنشاء", "Lifecycle filter": "تصفية دورة الحياة",
+  Visibility: "الظهور", Updated: "محدّث", found: "موجود", "Create the first reusable": "أنشئ أول عنصر قابل لإعادة الاستخدام",
+  "Close editor": "إغلاق المحرر", "Team workspace": "مساحة عمل الفريق", "Body weight": "وزن الجسم",
+  Unit: "الوحدة", "What would you like to ask?": "ماذا تريد أن تسأل؟", "Short text": "نص قصير",
+  "Single choice": "اختيار واحد", "Yes / No": "نعم / لا", Required: "مطلوب",
+  "Reps / target": "التكرارات / الهدف", "Rest seconds": "ثواني الراحة", Breakfast: "الإفطار",
+  "Send a message": "إرسال رسالة", "Sent messages": "الرسائل المرسلة", "No messages yet.": "لا توجد رسائل بعد.",
+  "Return to clients": "العودة إلى العملاء", "Player sections": "أقسام اللاعب", Summary: "الملخص", Training: "التدريب",
+  Gender: "النوع", "logged exercises": "تمارين مسجلة", "planned meals completed": "وجبات مخططة مكتملة",
+  "training days currently planned": "أيام تدريب مخططة حاليًا", "diet check-ins recorded": "متابعات غذائية مسجلة",
+  "— not set": "— غير محدد", "Remove exercise": "إزالة التمرين", "+ Add exercise": "+ إضافة تمرين",
+  "+ Add workout": "+ إضافة حصة", "✓ Player completed": "✓ أكمل اللاعب", "Technique, tempo, or rest instructions": "تعليمات الأداء أو الإيقاع أو الراحة",
+  "Choose where to copy this workout": "اختر مكان نسخ هذه الحصة", "Close builder": "إغلاق أداة الإنشاء",
+  "+ Blank exercise": "+ تمرين فارغ", "Exercise prescription": "وصفة التمرين", "exercises ready": "تمارين جاهزة",
+  "Apply a complete saved program starting from Week": "تطبيق برنامج محفوظ كامل بدءًا من الأسبوع",
+  "+ Assign Program": "+ تعيين برنامج", "Select a program…": "اختر برنامجًا…",
+  "This program extends beyond the player’s available subscription weeks.": "يمتد هذا البرنامج بعد أسابيع اشتراك اللاعب المتاحة.",
+  "Replace the existing schedule in these weeks with this saved program?": "استبدال الجدول الحالي في هذه الأسابيع بهذا البرنامج المحفوظ؟",
+  "+ Create Program": "+ إنشاء برنامج", "Search by program name…": "البحث باسم البرنامج…",
+  "Download template (.xlsx)": "تنزيل القالب (.xlsx)", "— Select a player —": "— اختر لاعبًا —", Imported: "تم الاستيراد",
+  "Download diet template (.xlsx)": "تنزيل قالب النظام الغذائي (.xlsx)",
+  "Share this key with a new player so they can register and join your account.": "شارك هذا المفتاح مع لاعب جديد ليتمكن من التسجيل والانضمام إلى حسابك.",
+  "VIP overrides the weekly frequency.": "يلغي VIP معدل المتابعة الأسبوعي.",
+  "Chat directly with the admin team. You can send text, screenshots, images, or videos.": "تحدث مباشرة مع فريق الإدارة وأرسل نصوصًا أو لقطات شاشة أو صورًا أو فيديوهات.",
+  "Search team members…": "البحث عن أعضاء الفريق…", "Revoke this team member?": "إلغاء صلاحية عضو الفريق هذا؟",
+  "Generate a key to invite your first team member.": "أنشئ مفتاحًا لدعوة أول عضو في فريقك.",
+  "Training catalog": "دليل التدريب", "Search workouts…": "البحث عن الحصص…", "Search workouts": "البحث عن الحصص",
+  Revision: "الإصدار", "Session blueprint": "مخطط الحصة", "Upper body strength": "قوة الجزء العلوي",
+  "Session goal and context": "هدف الحصة وسياقها", "Workout arrangement": "ترتيب الحصة",
+  "Use the arrow buttons for keyboard-accessible ordering.": "استخدم أزرار الأسهم للترتيب عبر لوحة المفاتيح.",
+  "Start building your workout": "ابدأ إنشاء حصتك", Reusable: "قابل لإعادة الاستخدام",
+  "Open section library": "فتح مكتبة الأقسام", "Select an exercise to edit its prescription.": "اختر تمرينًا لتعديل وصفته.",
+  "Workout notes": "ملاحظات الحصة", "Instructions shown with this workout": "التعليمات المعروضة مع هذه الحصة",
+  "Workout is ready to save.": "الحصة جاهزة للحفظ.", "Save & close": "حفظ وإغلاق",
+  Seconds: "ثوانٍ", "Rest (sec)": "الراحة (ثانية)", "Open navigation": "فتح التنقل", Notifications: "الإشعارات",
+  "Coaching metrics": "مؤشرات التدريب", "Exercise source": "مصدر التمرين", "Previous page": "الصفحة السابقة", "Next page": "الصفحة التالية",
+  "Main navigation": "التنقل الرئيسي", "Choose how to sign in": "اختر طريقة تسجيل الدخول", Athlete: "رياضي",
+  "Open your training space": "افتح مساحة تدريبك", "Open your coaching workspace": "افتح مساحة التدريب الخاصة بك",
+  "Choose how to sign up": "اختر طريقة إنشاء الحساب", "Start training with a coach": "ابدأ التدريب مع مدرب",
+  "Create your coaching account": "أنشئ حساب التدريب الخاص بك", "A preview of today's personalized workout": "معاينة لحصة اليوم المخصصة",
+  "Your subscription has expired": "انتهى اشتراكك", "Already renewed? Enter your updated key:": "جددت بالفعل؟ أدخل المفتاح المحدّث:",
+  "Today’s diet check-in": "متابعة غذاء اليوم", "Tick each meal you followed, then save.": "حدد كل وجبة التزمت بها ثم احفظ.",
+  "Select sport level": "اختر المستوى الرياضي", "Select experience": "اختر مستوى الخبرة",
+  "Remove this set": "إزالة هذه المجموعة", "Add set": "إضافة مجموعة", "Your comment": "تعليقك",
+  "Workout submitted. Select Edit to change your sets, note, or video.": "تم إرسال الحصة. اختر تعديل لتغيير المجموعات أو الملاحظة أو الفيديو.",
+  "Nothing scheduled for": "لا يوجد شيء مجدول ليوم", "Coach's demo:": "عرض المدرب:", Target: "الهدف:",
+  "No diet check-ins yet.": "لا توجد متابعات غذائية بعد.", video: "فيديو", week: "أسبوع",
+  "Coach:": "المدرب:", "Last updated: July 18, 2026": "آخر تحديث: 18 يوليو 2026",
+  "This Changelog is now available before sign-in.": "سجل التحديثات متاح الآن قبل تسجيل الدخول.",
+  "Workout and diet plans can be saved and reused without changing other players’ plans.": "يمكن حفظ خطط التدريب والغذاء وإعادة استخدامها دون تغيير خطط اللاعبين الآخرين.",
+  "Progress and diet pages load only the information requested by the user.": "تحمّل صفحات التقدم والغذاء المعلومات التي يطلبها المستخدم فقط.",
+  "Private chat supports text, pictures, videos, audio, and recorded voice messages.": "تدعم المحادثة الخاصة النصوص والصور والفيديو والصوت والرسائل الصوتية المسجلة.",
+  VIP: "VIP", "Duplicated to": "تم النسخ إلى", "Add to": "إضافة إلى", slots: "خانات", food: "طعام",
+  "'s diet to the next N weeks (overwrites target weeks):": " الغذائي إلى الأسابيع التالية (يستبدل الأسابيع المستهدفة):",
+  "Copied to": "تم النسخ إلى", "+ Add New Exercise": "+ إضافة تمرين جديد",
+  ", or change the current search and status filters.": "، أو غيّر فلاتر البحث والحالة الحالية.",
+  kg: "كجم", "completed of": "مكتمل من",
+  "Add workouts and exercises now — they'll be saved together with the day.": "أضف الحصص والتمارين الآن وسيتم حفظها مع اليوم.",
+  Push: "دفع", "Chest Press": "ضغط الصدر", Comment: "تعليق", to: "إلى",
+  "and all its exercises": "وكل تمارينه", "This will delete": "سيؤدي هذا إلى حذف",
+  "and all its exercises from this day.": "وكل تمارينه من هذا اليوم.", exercise: "تمرين", "+ Exercise": "+ تمرين",
+  "sets ·": "مجموعات ·", "'s full schedule to the next N weeks (overwrites target weeks):": " الكامل إلى الأسابيع التالية (يستبدل الأسابيع المستهدفة):",
+  "This replaces the player’s existing schedule from Week": "سيستبدل هذا جدول اللاعب الحالي من الأسبوع",
+  "through Week": "حتى الأسبوع", "Add notes for this workout": "أضف ملاحظات لهذه الحصة",
+  "+ &nbsp; Exercise": "+ تمرين", "Search Exercises…": "البحث عن التمارين…", exercises: "تمارين",
+  "Download a blank Excel template, fill it with a full program (weeks, days, workouts, exercises), then import it for a player below.": "نزّل قالب Excel فارغًا واملأه ببرنامج كامل ثم استورده للاعب أدناه.",
+  "Choose a player, then upload a filled template. This replaces the player's entire existing program.": "اختر لاعبًا ثم ارفع القالب المكتمل. سيستبدل هذا برنامج اللاعب الحالي بالكامل.",
+  "days,": "أيام،", "exercises ✓": "تمارين ✓",
+  "Download the blank diet workbook, fill in its weeks and days, then import it for a selected player.": "نزّل ملف الغذاء الفارغ واملأ أسابيعه وأيامه ثم استورده للاعب محدد.",
+  "Choose a player first. Importing replaces that player's entire diet plan.": "اختر لاعبًا أولًا. سيستبدل الاستيراد خطة غذائه بالكامل.",
+  "meals, and": "وجبات، و", "food rows ✓": "صفوف طعام ✓",
+  "1 day — Monday": "يوم واحد — الاثنين", "2 days — Monday and Thursday": "يومان — الاثنين والخميس",
+  "3 days — Monday, Wednesday and Friday": "3 أيام — الاثنين والأربعاء والجمعة",
+  "1 month": "شهر واحد", "3 months": "3 أشهر", "6 months": "6 أشهر", "1 year": "سنة واحدة",
+  "Share this with the new": "شارك هذا مع", rounds: "جولات", blocks: "مجموعات", sections: "أقسام", groups: "مجموعات",
+  "% max": "% من الحد الأقصى", "Pulse Coach": "مدرب Pulse", "Preview navigation": "معاينة التنقل",
+  "Strength / 04": "القوة / 04", "4 sets · 8 reps": "4 مجموعات · 8 تكرارات", "3 sets · 10 reps": "3 مجموعات · 10 تكرارات",
+  "3 sets · 12 reps": "3 مجموعات · 12 تكرارًا", "32 min": "32 دقيقة", "4 week streak": "سلسلة 4 أسابيع",
+  "TRAIN SMARTER": "تدرّب بذكاء", "RECOVER BETTER": "تعافَ أفضل", "STAY CONSISTENT": "استمر بثبات",
+  ". Please renew with your coach to view your training program.": ". يرجى التجديد مع مدربك لعرض برنامجك التدريبي.",
+  ": Diet plan for": ": خطة الغذاء ليوم", "Coach note": "ملاحظة المدرب", "No diet set for": "لا يوجد غذاء محدد ليوم",
+  "e.g. 175 cm": "مثال: 175 سم", "Mobile number": "رقم الهاتف", "Your sport": "رياضتك", "Position or role": "المركز أو الدور",
+  "sets ×": "مجموعات ×", reps: "تكرارات", Set: "مجموعة", "✓ Done": "✓ تم", "Edit workout": "تعديل الحصة",
+  ": Training program for": ": برنامج التدريب ليوم", "Last updated: July": "آخر تحديث: يوليو",
+});
+
 const textOriginals = new WeakMap<Text, string>();
 const attributeOriginals = new WeakMap<Element, Map<string, string>>();
+const arCaseInsensitive = new Map(
+  Object.entries(ar).map(([english, arabic]) => [english.toLocaleLowerCase("en"), arabic]),
+);
 
 function translateText(value: string): string {
   const leading = value.match(/^\s*/)?.[0] ?? "";
   const trailing = value.match(/\s*$/)?.[0] ?? "";
   const core = value.trim();
   if (!core) return value;
-  if (ar[core]) return leading + ar[core] + trailing;
+  const exact = ar[core] ?? arCaseInsensitive.get(core.toLocaleLowerCase("en"));
+  if (exact) return leading + exact + trailing;
   const patterns: Array<[RegExp, (...parts: string[]) => string]> = [
     [/^Week (\d+)$/, (n) => `الأسبوع ${n}`],
     [/^Day (\d+)$/, (n) => `اليوم ${n}`],
@@ -428,6 +586,18 @@ function translateText(value: string): string {
     [/^Remove (.+)$/, (x) => `إزالة ${x}`],
     [/^Expires (.+)$/, (d) => `ينتهي ${d}`],
     [/^to (.+)$/, (x) => `إلى ${x}`],
+    [/^Welcome, (.+)$/, (name) => `مرحبًا، ${name}`],
+    [/^Hi, (.+)$/, (name) => `مرحبًا، ${name}`],
+    [/^Coach: (.+)$/, (name) => `المدرب: ${name}`],
+    [/^(.+) days logged$/, (n) => `${n} أيام مسجلة`],
+    [/^(.+) meals followed$/, (n) => `${n} وجبات ملتزم بها`],
+    [/^(.+) of (.+)$/, (a, b) => `${a} من ${b}`],
+    [/^Delete (.+)\?$/, (x) => `حذف ${x}؟`],
+    [/^Remove (.+)\?$/, (x) => `إزالة ${x}؟`],
+    [/^Renew (.+)\?$/, (x) => `تجديد ${x}؟`],
+    [/^Revoke (.+)\?$/, (x) => `إلغاء صلاحية ${x}؟`],
+    [/^Could not load (.+)$/, (x) => `تعذر تحميل ${x}`],
+    [/^Could not save (.+)$/, (x) => `تعذر حفظ ${x}`],
   ];
   for (const [pattern, make] of patterns) {
     const match = core.match(pattern);
@@ -464,7 +634,7 @@ function translateNode(root: Node, language: Language) {
       ? [root as Element, ...(root as Element).querySelectorAll("*")]
       : [];
   for (const element of elements)
-    for (const attr of ["placeholder", "title", "aria-label"]) {
+    for (const attr of ["placeholder", "title", "aria-label", "aria-description", "alt"]) {
       const current = element.getAttribute(attr);
       if (!current) continue;
       let map = attributeOriginals.get(element);
@@ -515,8 +685,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
       busy.current = false;
     });
-    observer.observe(document.body, { childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"], subtree: true });
+    observer.observe(document.body, { childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label", "aria-description", "alt"], subtree: true });
     return () => observer.disconnect();
+  }, [language]);
+  useEffect(() => {
+    const originalAlert = window.alert;
+    const originalConfirm = window.confirm;
+    const originalPrompt = window.prompt;
+    window.alert = (message?: unknown) => originalAlert(language === "ar" ? translateText(String(message ?? "")) : message);
+    window.confirm = (message?: string) => originalConfirm(language === "ar" ? translateText(String(message ?? "")) : String(message ?? ""));
+    window.prompt = (message?: string, defaultValue?: string) => originalPrompt(
+      language === "ar" ? translateText(String(message ?? "")) : String(message ?? ""),
+      language === "ar" && defaultValue ? translateText(defaultValue) : defaultValue,
+    );
+    document.title = language === "ar" ? "منصة التدريب" : "Coach Platform";
+    return () => {
+      window.alert = originalAlert;
+      window.confirm = originalConfirm;
+      window.prompt = originalPrompt;
+    };
   }, [language]);
   return (
     <LanguageContext.Provider value={{ language, setLanguage, theme, setTheme }}>

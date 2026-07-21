@@ -2,11 +2,12 @@ import type { PropsWithChildren, ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, type TextInputProps } from 'react-native';
 import { ArrowLeft, ArrowRight, Check, CircleArrowRight, CloudUpload, Copy, Download, Dumbbell, KeyRound, LibraryBig, LogOut, Pencil, Plus, RefreshCw, Save, Send, Share2, Trash2, Utensils, type LucideIcon } from 'lucide-react-native';
 import { colors, radius } from '../theme';
+import { tr, useLanguage } from '../i18n/MobileLanguage';
 
 function buttonLabel(children: ReactNode) {
   return typeof children === 'string' || typeof children === 'number' ? String(children) : 'Action';
 }
-function iconFor(label: string): LucideIcon {
+function iconFor(label: string, rtl = false): LucideIcon {
   const value = label.toLowerCase();
   if (value.includes('sign out')) return LogOut;
   if (value.includes('delete') || value.includes('remove') || value.includes('revoke')) return Trash2;
@@ -19,8 +20,8 @@ function iconFor(label: string): LucideIcon {
   if (value.includes('share') || value.includes('export')) return Share2;
   if (value.includes('download')) return Download;
   if (value.includes('upload') || value.includes('import')) return CloudUpload;
-  if (value.includes('back') || value.includes('previous') || value.includes('cancel')) return ArrowLeft;
-  if (value.includes('next')) return ArrowRight;
+  if (value.includes('back') || value.includes('previous') || value.includes('cancel')) return rtl ? ArrowRight : ArrowLeft;
+  if (value.includes('next')) return rtl ? ArrowLeft : ArrowRight;
   if (value.includes('renew') || value.includes('restore') || value.includes('refresh')) return RefreshCw;
   if (value.includes('key')) return KeyRound;
   if (value.includes('library')) return LibraryBig;
@@ -28,6 +29,6 @@ function iconFor(label: string): LucideIcon {
   if (value.includes('diet') || value.includes('meal')) return Utensils;
   return CircleArrowRight;
 }
-export function Button({children,onPress,disabled=false,secondary=false,danger=false}:PropsWithChildren<{onPress:()=>void;disabled?:boolean;secondary?:boolean;danger?:boolean}>){const label=buttonLabel(children);const Icon=iconFor(label);return <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled}} hitSlop={4} onPress={onPress} disabled={disabled} style={({pressed})=>[styles.button,secondary&&styles.secondary,danger&&styles.danger,disabled&&styles.disabled,pressed&&!disabled&&styles.pressed]}><Icon size={19} strokeWidth={2} color={colors.text}/><Text numberOfLines={1} style={styles.buttonText}>{children}</Text></Pressable>}
-export function Input(props:TextInputProps){return <TextInput placeholderTextColor={colors.muted} {...props} style={[styles.input,props.multiline&&{minHeight:80,textAlignVertical:'top'},props.style]}/>}
+export function Button({children,onPress,disabled=false,secondary=false,danger=false}:PropsWithChildren<{onPress:()=>void;disabled?:boolean;secondary?:boolean;danger?:boolean}>){const{language}=useLanguage();const label=buttonLabel(children);const translated=tr(label,language);const content=label==='Action'?children:translated;const Icon=iconFor(label,language==='ar');return <Pressable accessibilityRole="button" accessibilityLabel={translated} accessibilityState={{disabled}} hitSlop={4} onPress={onPress} disabled={disabled} style={({pressed})=>[styles.button,secondary&&styles.secondary,danger&&styles.danger,disabled&&styles.disabled,pressed&&!disabled&&styles.pressed]}><Icon size={19} strokeWidth={2} color={colors.text}/><Text numberOfLines={1} style={styles.buttonText}>{content}</Text></Pressable>}
+export function Input(props:TextInputProps){const{language}=useLanguage();return <TextInput placeholderTextColor={colors.muted} {...props} placeholder={props.placeholder?tr(props.placeholder,language):props.placeholder} accessibilityLabel={props.accessibilityLabel?tr(props.accessibilityLabel,language):props.accessibilityLabel} style={[styles.input,language==='ar'&&{textAlign:'right',writingDirection:'rtl'},props.multiline&&{minHeight:80,textAlignVertical:'top'},props.style]}/>}
 const styles=StyleSheet.create({button:{minHeight:48,flexDirection:'row',gap:8,justifyContent:'center',paddingHorizontal:16,backgroundColor:colors.accent,borderRadius:radius.md,alignItems:'center',alignSelf:'flex-start'},buttonText:{color:colors.text,fontSize:13,fontWeight:'800',letterSpacing:.35},secondary:{backgroundColor:colors.surfaceSoft,borderWidth:1,borderColor:colors.border},danger:{backgroundColor:colors.danger},disabled:{opacity:.4},pressed:{transform:[{scale:.98}],opacity:.82},input:{minHeight:48,backgroundColor:colors.surfaceSoft,borderWidth:1,borderColor:colors.border,borderRadius:radius.md,padding:12,color:colors.text,fontSize:15}});

@@ -8,6 +8,7 @@
 - Aligned hosted email-confirmation behavior and web password validation with the app signup flow while preserving the hosted security policy.
 - Signup now displays actionable authentication and database messages instead of hiding them behind a generic failure.
 - Restored persistent text labels beside or below every web and mobile navigation icon.
+- Expanded Arabic across web and mobile navigation, headings, helper text, placeholders, status labels, accessibility text, validation messages, alerts, confirmations, and other popups, with RTL-aware directional controls.
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
