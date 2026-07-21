@@ -6,8 +6,17 @@ environment variables.
 
 ## 1. Configure the private bucket
 
-Use the existing private bucket named `coach-platform-private`. In its CORS
-settings, add:
+Use the existing private bucket named `coach-platform-private`. The repository
+keeps the production policy in `docs/r2-cors.json`. Apply and verify it with an
+authenticated Wrangler session:
+
+```sh
+npx wrangler login
+npx wrangler r2 bucket cors set coach-platform-private --file docs/r2-cors.json
+npx wrangler r2 bucket cors list coach-platform-private
+```
+
+The equivalent dashboard policy is:
 
 ```json
 [

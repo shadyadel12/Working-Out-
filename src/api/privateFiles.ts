@@ -8,6 +8,33 @@ type UploadContext = {
   playerId?: string;
 };
 
+const MAX_UPLOAD_ATTEMPTS = 3;
+
+const retryDelay = (attempt: number) => new Promise((resolve) => setTimeout(resolve, attempt * 1_000));
+
+async function putFile(uploadUrl: string, file: File) {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= MAX_UPLOAD_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      if (response.ok) return;
+      if (response.status !== 408 && response.status !== 429 && response.status < 500) {
+        throw new Error('Cloud storage rejected the upload.');
+      }
+      lastError = new Error('Cloud storage temporarily rejected the upload.');
+    } catch (error) {
+      lastError = error;
+      if (error instanceof Error && error.message === 'Cloud storage rejected the upload.') throw error;
+    }
+    if (attempt < MAX_UPLOAD_ATTEMPTS) await retryDelay(attempt);
+  }
+  throw lastError;
+}
+
 async function storageAction<T>(body: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke('r2-storage', { body });
   if (error) throw new Error(error.message || 'Private storage request failed.');
@@ -25,12 +52,7 @@ export async function uploadPrivateFile(file: File, context: UploadContext): Pro
     size: file.size,
   });
   try {
-    const response = await fetch(created.uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
-    });
-    if (!response.ok) throw new Error('Cloud storage rejected the upload.');
+    await putFile(created.uploadUrl, file);
     await storageAction({ action: 'finalize', ref: created.ref });
     return created.ref;
   } catch (error) {

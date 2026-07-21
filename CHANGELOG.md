@@ -2,6 +2,12 @@
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
+## July 21, 2026
+
+### Fixes
+
+- Video uploads automatically recover from brief connection interruptions, can be retried with the same file on the website, and handle device video details more reliably in the mobile app.
+
 ## July 20, 2026
 
 ### New Features

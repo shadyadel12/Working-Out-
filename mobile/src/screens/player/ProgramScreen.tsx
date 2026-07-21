@@ -15,6 +15,7 @@ import { currentProgramWeek, dayNames, todayISO } from "../../lib/dates";
 import { colors } from "../../theme";
 import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
+import * as FileSystem from "expo-file-system/legacy";
 import { supabase } from "../../lib/supabase";
 import { validateMedia } from "../../lib/mediaSecurity";
 import { deletePrivateFile, uploadPrivateUri } from "../../api/privateFiles";
@@ -169,22 +170,19 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
     });
     if (result.canceled) return;
     const a = result.assets[0];
-    if (!a.fileSize || a.fileSize > 500 * 1024 * 1024)
-      return Alert.alert(
-        "Video too large",
-        "Choose a video no larger than 500 MB.",
-      );
     setBusy(true);
     let r2Ref: string | null = null;
     try {
-      const mime = a.mimeType || "video/mp4";
-      if (!["video/mp4", "video/webm", "video/quicktime"].includes(mime))
-        throw new Error("Only MP4, WebM, and MOV videos are allowed.");
+      const info = await FileSystem.getInfoAsync(a.uri);
+      const size = a.fileSize ?? (info.exists && !info.isDirectory ? info.size : undefined);
+      if (!size) throw new Error("The selected video size could not be read. Choose the file again.");
+      if (size > 500 * 1024 * 1024) throw new Error("Choose a video no larger than 500 MB.");
+      const mime = videoMime(a.mimeType, a.fileName, a.uri);
       const ext = mime === "video/quicktime" ? "mov" : mime.split("/")[1];
       const name = `mobile-${Crypto.randomUUID()}.${ext}`;
       const signature = await fetch(a.uri).then((r) => r.blob()).then((blob) => blob.slice(0, 16).arrayBuffer());
-      validateMedia(signature, mime, a.fileSize, "video", 500);
-      r2Ref = await uploadPrivateUri(a.uri, a.fileSize, name, mime, {
+      validateMedia(signature, mime, size, "video", 500);
+      r2Ref = await uploadPrivateUri(a.uri, size, name, mime, {
         purpose: "workout-video",
         playerId,
       });
@@ -334,6 +332,16 @@ function LogForm({ exercise, playerId }: { exercise: any; playerId: string }) {
       </View>
     </View>
   );
+}
+
+function videoMime(reported: string | null | undefined, fileName: string | null | undefined, uri: string) {
+  const normalized = reported?.split(";", 1)[0].trim().toLowerCase();
+  if (normalized && ["video/mp4", "video/webm", "video/quicktime"].includes(normalized)) return normalized;
+  const extension = (fileName || uri).split(/[?#]/, 1)[0].split(".").pop()?.toLowerCase();
+  if (extension === "mov") return "video/quicktime";
+  if (extension === "webm") return "video/webm";
+  if (extension === "mp4" || extension === "m4v") return "video/mp4";
+  throw new Error("Only MP4, WebM, and MOV videos are allowed.");
 }
 const styles = StyleSheet.create({
   error: { color: colors.danger },

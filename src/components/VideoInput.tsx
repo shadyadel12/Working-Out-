@@ -26,7 +26,8 @@ export default function VideoInput({
   const [err, setErr] = useState<string | null>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
     setErr(null);
     setUploading(true);
@@ -37,6 +38,8 @@ export default function VideoInput({
       setErr(er instanceof Error ? er.message : 'Upload failed');
     } finally {
       setUploading(false);
+      // Let the player select the same file again after a failed upload.
+      input.value = '';
     }
   }
 
@@ -83,7 +86,7 @@ export default function VideoInput({
           Uploaded file attached ✓
         </span>
       )}
-      {err && <span className="error">{err}</span>}
+      {err && <span className="error" role="alert">{err}</span>}
     </div>
   );
 }
