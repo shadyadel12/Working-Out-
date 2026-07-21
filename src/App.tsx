@@ -29,7 +29,14 @@ import CoachPlayerProfile from './routes/coach/PlayerProfile';
 import CoachExerciseLibrary from './routes/coach/ExerciseLibrary';
 import CoachWorkoutLibrary from './routes/coach/WorkoutLibrary';
 import CoachProgramLibrary from './routes/coach/ProgramLibrary';
-import LibraryCatalog from './routes/coach/LibraryCatalog';
+import SectionLibrary from './routes/coach/SectionLibrary';
+import TaskLibrary from './routes/coach/TaskLibrary';
+import FormLibrary from './routes/coach/FormLibrary';
+import MealPlanLibrary from './routes/coach/MealPlanLibrary';
+import RecipeLibrary from './routes/coach/RecipeLibrary';
+import IngredientLibrary from './routes/coach/IngredientLibrary';
+import RecipeBookLibrary from './routes/coach/RecipeBookLibrary';
+import MetricGroupLibrary from './routes/coach/MetricGroupLibrary';
 import CoachTeam from './routes/coach/Team';
 import CoachSubs from './routes/coach/Subs';
 import PlayerProgram from './routes/player/Program';
@@ -104,15 +111,15 @@ export default function App() {
             <Route path="dashboard" element={<CoachDashboard />} />
             <Route path="exercise-library" element={<CoachExerciseLibrary />} />
             <Route path="workout-library" element={<CoachWorkoutLibrary />} />
-            <Route path="section-library" element={<LibraryCatalog kind="sections" />} />
+            <Route path="section-library" element={<SectionLibrary />} />
             <Route path="program-library" element={<CoachProgramLibrary />} />
-            <Route path="task-library" element={<LibraryCatalog kind="tasks" />} />
-            <Route path="form-library" element={<LibraryCatalog kind="forms" />} />
-            <Route path="meal-plan-library" element={<LibraryCatalog kind="meal-plans" />} />
-            <Route path="recipe-library" element={<LibraryCatalog kind="recipes" />} />
-            <Route path="ingredient-library" element={<LibraryCatalog kind="ingredients" />} />
-            <Route path="recipe-book-library" element={<LibraryCatalog kind="recipe-books" />} />
-            <Route path="metric-group-library" element={<LibraryCatalog kind="metric-groups" />} />
+            <Route path="task-library" element={<TaskLibrary />} />
+            <Route path="form-library" element={<FormLibrary />} />
+            <Route path="meal-plan-library" element={<MealPlanLibrary />} />
+            <Route path="recipe-library" element={<RecipeLibrary />} />
+            <Route path="ingredient-library" element={<IngredientLibrary />} />
+            <Route path="recipe-book-library" element={<RecipeBookLibrary />} />
+            <Route path="metric-group-library" element={<MetricGroupLibrary />} />
             <Route path="players/:playerId" element={<CoachPlayerProfile />} />
             <Route path="players/:playerId/program" element={<ProgramBuilder />} />
             <Route path="players/:playerId/diet" element={<CoachDiet />} />

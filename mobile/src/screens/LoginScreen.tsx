@@ -10,7 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
-import { TermsScreen, UpdatesScreen } from "./LegalUpdatesScreen";
+import TermsScreen from "./legal/TermsScreen";
+import UpdatesScreen from "./legal/UpdatesScreen";
 import { localizeTree, tr, useLanguage } from "../i18n/MobileLanguage";
 
 export default function LoginScreen() {

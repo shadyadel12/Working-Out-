@@ -14,7 +14,8 @@ import { supabase } from "../../lib/supabase";
 import { colors } from "../../theme";
 import CoachTeam from "./CoachTeam";
 import CoachSupportScreen from "./CoachSupportScreen";
-import { TermsScreen, UpdatesScreen } from "../LegalUpdatesScreen";
+import TermsScreen from "../legal/TermsScreen";
+import UpdatesScreen from "../legal/UpdatesScreen";
 import * as Clipboard from "expo-clipboard";
 
 type Page =

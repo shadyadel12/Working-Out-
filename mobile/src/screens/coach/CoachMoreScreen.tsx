@@ -13,10 +13,13 @@ import { useAuth } from "../../auth/AuthProvider";
 import { supabase } from "../../lib/supabase";
 import { colors } from "../../theme";
 import CoachSupportScreen from "./CoachSupportScreen";
-import { DietLibrary, ExerciseLibrary, WorkoutLibrary } from "./CoachLibraries";
+import DietLibraryScreen from "./DietLibraryScreen";
+import ExerciseLibraryScreen from "./ExerciseLibraryScreen";
+import WorkoutLibraryScreen from "./WorkoutLibraryScreen";
 import { ProgramLibrary } from "./ProgramLibrary";
 import CoachTeam from "./CoachTeam";
-import { TermsScreen, UpdatesScreen } from "../LegalUpdatesScreen";
+import TermsScreen from "../legal/TermsScreen";
+import UpdatesScreen from "../legal/UpdatesScreen";
 import {
   importDietWorkbook,
   importProgramWorkbook,
@@ -91,11 +94,11 @@ export default function CoachMoreScreen() {
       ) : page === "team" ? (
         <CoachTeam />
       ) : page === "exercise" ? (
-        <ExerciseLibrary />
+        <ExerciseLibraryScreen />
       ) : page === "workout" ? (
-        <WorkoutLibrary />
+        <WorkoutLibraryScreen />
       ) : page === "diet" ? (
-        <DietLibrary />
+        <DietLibraryScreen />
       ) : page === "program" ? (
         <ProgramLibrary />
       ) : page === "imports" ? (

@@ -6,12 +6,8 @@ import { useAuth } from "../auth/AuthProvider";
 import LoginScreen from "../screens/LoginScreen";
 import ProgramScreen from "../screens/player/ProgramScreen";
 import DietScreen from "../screens/player/DietScreen";
-import {
-  AccountScreen,
-  AdminScreen,
-  ChatScreen,
-  ProgressScreen,
-} from "../screens/SharedScreens";
+import AccountScreen from "../screens/admin/AccountScreen";
+import ChatScreen from "../screens/shared/ChatScreen";
 import { colors } from "../theme";
 import MfaScreen from "../screens/MfaScreen";
 import AdminSupportScreen from "../screens/admin/AdminSupportScreen";
