@@ -13,8 +13,8 @@ import AppIcon from '../../components/AppIcon';
 const DAY = 86_400_000;
 
 export default function CoachDashboard() {
-  const { session, profile } = useAuth();
-  const coachId = session!.user.id;
+  const { profile, effectiveCoachId, coachCapabilities } = useAuth();
+  const coachId = effectiveCoachId!;
   const today = todayISO();
   const playersQuery = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
   const claimedIds = useMemo(() => (playersQuery.data ?? []).flatMap((player) => player.profile ? [player.profile.id] : []), [playersQuery.data]);
@@ -59,7 +59,7 @@ export default function CoachDashboard() {
   return <div className="coach-overview-page">
     <section className="coach-overview-hero">
       <div><span className="overview-kicker">Coach command center</span><h1>Good day, {firstName}</h1><p>Start with the players who need you most, then keep the rest of the roster moving.</p></div>
-      <div className="overview-hero-actions"><Link className="overview-primary-action" to="/coach/checkups">Start check-ups</Link><Link className="overview-secondary-action" to="/coach/messages">Open inbox</Link></div>
+      <div className="overview-hero-actions">{coachCapabilities.canManagePlayers && <Link className="overview-primary-action" to="/coach/checkups">Start check-ups</Link>}{coachCapabilities.canChat && <Link className="overview-secondary-action" to="/coach/messages">Open inbox</Link>}</div>
     </section>
 
     {loading && <LoadingSkeleton rows={5} />}
@@ -88,7 +88,7 @@ export default function CoachDashboard() {
 
         <aside className="overview-sidebar">
           <section className="overview-side-card"><span className="overview-kicker">Today</span><h2>{dashboard.overdueCheckups === 0 ? 'All clear' : `${dashboard.overdueCheckups} check-ups left`}</h2><p>{dashboard.overdueCheckups === 0 ? 'Every scheduled player has been checked.' : 'Work through the scheduled list while context is fresh.'}</p><Link to="/coach/checkups">Open daily check-ups →</Link></section>
-          <section className="overview-side-card"><span className="overview-kicker">Quick actions</span><nav aria-label="Quick coach actions"><Link to="/coach/program-library"><span><AppIcon name="program" /></span><span><strong>Build a program</strong><small>Start from a reusable plan</small></span></Link><Link to="/coach/workout-library"><span><AppIcon name="workout" /></span><span><strong>Create a workout</strong><small>Add to your library</small></span></Link><Link to="/coach/subs"><span><AppIcon name="add-player" /></span><span><strong>Invite a player</strong><small>Generate a subscription key</small></span></Link></nav></section>
+          <section className="overview-side-card"><span className="overview-kicker">Quick actions</span><nav aria-label="Quick coach actions">{coachCapabilities.canManagePlayers && <><Link to="/coach/program-library"><span><AppIcon name="program" /></span><span><strong>Build a program</strong><small>Start from a reusable plan</small></span></Link><Link to="/coach/workout-library"><span><AppIcon name="workout" /></span><span><strong>Create a workout</strong><small>Add to your library</small></span></Link></>}{coachCapabilities.canSell && <Link to="/coach/subs"><span><AppIcon name="add-player" /></span><span><strong>Invite a player</strong><small>Generate a subscription key</small></span></Link>}</nav></section>
         </aside>
       </div>
     </>}

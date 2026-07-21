@@ -8,8 +8,8 @@ import BackButton from '../../components/BackButton';
 /** Coach's view of a linked player's performance history. */
 export default function PlayerAnalysis() {
   const { playerId } = useParams<{ playerId: string }>();
-  const { session } = useAuth();
-  const coachId = session!.user.id;
+  const { effectiveCoachId } = useAuth();
+  const coachId = effectiveCoachId!;
 
   const { data: player } = useQuery({
     queryKey: ['player', coachId, playerId],

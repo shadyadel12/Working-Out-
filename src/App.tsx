@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import RequireRole from './auth/RequireRole';
 import RequireAdminMfa from './auth/RequireAdminMfa';
+import RequireCoachCapability from './auth/RequireCoachCapability';
 import RequireActiveSubscription from './auth/RequireActiveSubscription';
 import RequirePlayerDetails from './auth/RequirePlayerDetails';
 import AppLayout from './layouts/AppLayout';
@@ -110,28 +111,28 @@ export default function App() {
           >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<CoachDashboard />} />
-            <Route path="exercise-library" element={<CoachExerciseLibrary />} />
-            <Route path="workout-library" element={<CoachWorkoutLibrary />} />
-            <Route path="section-library" element={<SectionLibrary />} />
-            <Route path="program-library" element={<CoachProgramLibrary />} />
-            <Route path="task-library" element={<TaskLibrary />} />
-            <Route path="form-library" element={<FormLibrary />} />
-            <Route path="meal-plan-library" element={<MealPlanLibrary />} />
-            <Route path="recipe-library" element={<RecipeLibrary />} />
-            <Route path="ingredient-library" element={<IngredientLibrary />} />
-            <Route path="recipe-book-library" element={<RecipeBookLibrary />} />
-            <Route path="metric-group-library" element={<MetricGroupLibrary />} />
+            <Route path="exercise-library" element={<RequireCoachCapability capability="owner"><CoachExerciseLibrary /></RequireCoachCapability>} />
+            <Route path="workout-library" element={<RequireCoachCapability capability="owner"><CoachWorkoutLibrary /></RequireCoachCapability>} />
+            <Route path="section-library" element={<RequireCoachCapability capability="owner"><SectionLibrary /></RequireCoachCapability>} />
+            <Route path="program-library" element={<RequireCoachCapability capability="owner"><CoachProgramLibrary /></RequireCoachCapability>} />
+            <Route path="task-library" element={<RequireCoachCapability capability="owner"><TaskLibrary /></RequireCoachCapability>} />
+            <Route path="form-library" element={<RequireCoachCapability capability="owner"><FormLibrary /></RequireCoachCapability>} />
+            <Route path="meal-plan-library" element={<RequireCoachCapability capability="owner"><MealPlanLibrary /></RequireCoachCapability>} />
+            <Route path="recipe-library" element={<RequireCoachCapability capability="owner"><RecipeLibrary /></RequireCoachCapability>} />
+            <Route path="ingredient-library" element={<RequireCoachCapability capability="owner"><IngredientLibrary /></RequireCoachCapability>} />
+            <Route path="recipe-book-library" element={<RequireCoachCapability capability="owner"><RecipeBookLibrary /></RequireCoachCapability>} />
+            <Route path="metric-group-library" element={<RequireCoachCapability capability="owner"><MetricGroupLibrary /></RequireCoachCapability>} />
             <Route path="players/:playerId" element={<CoachPlayerProfile />} />
-            <Route path="players/:playerId/program" element={<ProgramBuilder />} />
-            <Route path="players/:playerId/diet" element={<CoachDiet />} />
+            <Route path="players/:playerId/program" element={<RequireCoachCapability capability="manage"><ProgramBuilder /></RequireCoachCapability>} />
+            <Route path="players/:playerId/diet" element={<RequireCoachCapability capability="manage"><CoachDiet /></RequireCoachCapability>} />
             <Route path="players/:playerId/analysis" element={<CoachPlayerAnalysis />} />
             <Route path="players/:playerId/diet-progress" element={<CoachDietProgress />} />
-            <Route path="players/:playerId/messages" element={<CoachMessages />} />
-            <Route path="players/:playerId/chat" element={<CoachChat />} />
-            <Route path="messages" element={<CoachChatInbox />} />
-            <Route path="checkups" element={<Checkups />} />
-            <Route path="team" element={<CoachTeam />} />
-            <Route path="subs" element={<CoachSubs />} />
+            <Route path="players/:playerId/messages" element={<RequireCoachCapability capability="chat"><CoachMessages /></RequireCoachCapability>} />
+            <Route path="players/:playerId/chat" element={<RequireCoachCapability capability="chat"><CoachChat /></RequireCoachCapability>} />
+            <Route path="messages" element={<RequireCoachCapability capability="chat"><CoachChatInbox /></RequireCoachCapability>} />
+            <Route path="checkups" element={<RequireCoachCapability capability="manage"><Checkups /></RequireCoachCapability>} />
+            <Route path="team" element={<RequireCoachCapability capability="owner"><CoachTeam /></RequireCoachCapability>} />
+            <Route path="subs" element={<RequireCoachCapability capability="sell"><CoachSubs /></RequireCoachCapability>} />
             <Route path="settings" element={<CoachSettings />} />
             <Route path="support" element={<CoachSupport />} />
           </Route>

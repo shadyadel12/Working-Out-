@@ -13,12 +13,12 @@ export function markRead(userId: string, type: 'chat' | 'support') {
 
 /** Returns { chatCount, supportCount } unread message counts for the current user. */
 export function useUnreadCounts() {
-  const { session, profile } = useAuth();
+  const { session, profile, effectiveCoachId, coachCapabilities } = useAuth();
   const userId = session?.user.id;
   const role = profile?.role;
 
   const chatQ = useQuery({
-    queryKey: ['unread', 'chat', userId],
+    queryKey: ['unread', 'chat', userId, effectiveCoachId],
     queryFn: async () => {
       if (!userId || !role) return 0;
       const since = getLastRead(userId, 'chat');
@@ -35,14 +35,14 @@ export function useUnreadCounts() {
         const { count } = await supabase
           .from('chat_messages')
           .select('*', { count: 'exact', head: true })
-          .eq('coach_id', userId)
+          .eq('coach_id', effectiveCoachId!)
           .neq('sender_id', userId)
           .gt('created_at', since);
         return count ?? 0;
       }
       return 0;
     },
-    enabled: !!userId && (role === 'player' || role === 'coach'),
+    enabled: !!userId && (role === 'player' || (role === 'coach' && coachCapabilities.canChat)),
     refetchInterval: 20_000,
   });
 

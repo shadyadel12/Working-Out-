@@ -60,7 +60,7 @@ Deno.serve(async (request) => {
   }
 
   // Remove uploads abandoned before finalization or after a rejected scan.
-  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
   const { data: abandoned, error: abandonedError } = await admin.from('private_files')
     .select('id,object_key').in('status', ['pending', 'quarantined', 'rejected'])
     .lt('created_at', cutoff).order('created_at', { ascending: true }).limit(100);

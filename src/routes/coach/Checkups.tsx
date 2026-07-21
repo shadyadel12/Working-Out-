@@ -7,8 +7,8 @@ import { todayISO } from '../../lib/dates';
 import BackButton from '../../components/BackButton';
 
 export default function Checkups() {
-  const { session } = useAuth();
-  const coachId = session!.user.id;
+  const { effectiveCoachId } = useAuth();
+  const coachId = effectiveCoachId!;
   const qc = useQueryClient();
   const [date, setDate] = useState(todayISO());
 

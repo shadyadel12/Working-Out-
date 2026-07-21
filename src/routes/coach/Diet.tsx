@@ -14,8 +14,8 @@ import DietDayCard from './diet/DietDayCard';
 
 export default function CoachDiet() {
   const { playerId } = useParams<{ playerId: string }>();
-  const { session } = useAuth();
-  const coachId = session!.user.id;
+  const { effectiveCoachId } = useAuth();
+  const coachId = effectiveCoachId!;
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [week, setWeek] = useState(1);
   const qc = useQueryClient();

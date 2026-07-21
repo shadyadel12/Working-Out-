@@ -9,9 +9,9 @@ import ChatWindow from '../../components/ChatWindow';
 
 export default function CoachChat() {
   const { playerId } = useParams<{ playerId: string }>();
-  const { session } = useAuth();
-  const coachId = session!.user.id;
-  useEffect(() => { if (playerId) markCoachThreadRead(coachId, playerId); }, [coachId, playerId]);
+  const { session, effectiveCoachId, coachCapabilities } = useAuth();
+  const coachId = effectiveCoachId!;
+  useEffect(() => { if (playerId && coachCapabilities.canChat) markCoachThreadRead(session!.user.id, playerId); }, [coachCapabilities.canChat, playerId, session]);
 
   const { data: player } = useQuery({
     queryKey: ['player', coachId, playerId],
@@ -27,7 +27,9 @@ export default function CoachChat() {
           Chat — {player?.profile?.name ?? player?.profile?.email ?? '…'}
         </h1>
       </div>
-      <ChatWindow coachId={coachId} playerId={playerId!} currentUserId={coachId} />
+      {coachCapabilities.canChat
+        ? <ChatWindow coachId={coachId} playerId={playerId!} currentUserId={session!.user.id} />
+        : <div className="card"><p>You do not have permission to use player chat.</p></div>}
     </div>
   );
 }

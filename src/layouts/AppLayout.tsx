@@ -9,13 +9,21 @@ import { Apple, BarChart3, BookOpen, CalendarCheck2, CheckSquare, ChevronDown, C
 type NavLink_ = { to: string; label: string; badgeKey?: 'chat' | 'support'; group?: 'library' };
 
 export default function AppLayout({ links }: { links: NavLink_[] }) {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, teamMembership } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { chatCount, supportCount } = useUnreadCounts();
   const { theme, setTheme } = useLanguage();
   const isCoach = profile?.role === 'coach';
-  const libraryActive = links.some((link) => link.group === 'library' && location.pathname.startsWith(link.to));
+  const visibleLinks = !teamMembership ? links : links.filter((link) => {
+    if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support') return true;
+    if (link.group === 'library') return false;
+    if (link.label === 'Messages') return teamMembership.role === 'chat' || teamMembership.role === 'head_coach';
+    if (link.label === 'Check-ups') return teamMembership.role !== 'sales';
+    if (link.label === 'Subs') return teamMembership.role === 'sales';
+    return false;
+  });
+  const libraryActive = visibleLinks.some((link) => link.group === 'library' && location.pathname.startsWith(link.to));
   const [libraryOpen, setLibraryOpen] = useState(libraryActive);
   useEffect(() => { if (libraryActive) setLibraryOpen(true); }, [libraryActive]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -23,8 +31,8 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const countFor = (key?: 'chat' | 'support') => key === 'chat' ? chatCount : key === 'support' ? supportCount : 0;
   async function handleSignOut() { await signOut(); navigate('/', { replace: true }); }
   const themeToggle = <button type="button" className="secondary theme-toggle" aria-label={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} title={theme === 'dark' ? 'Use light mode' : 'Use dark mode'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button>;
-  const libraryLinks = links.filter((link) => link.group === 'library');
-  const regularLinks = links.filter((link) => !link.group);
+  const libraryLinks = visibleLinks.filter((link) => link.group === 'library');
+  const regularLinks = visibleLinks.filter((link) => !link.group);
   const utilityLabels = new Set(['Team', 'Subs', 'Settings', 'Support']);
   const utilityLinks = isCoach ? regularLinks.filter((link) => utilityLabels.has(link.label)) : [];
   const primaryLinks = isCoach ? regularLinks.filter((link) => !utilityLabels.has(link.label)) : regularLinks;
@@ -54,7 +62,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const coachProfileMenu = <details className="coach-profile-menu">
     <summary aria-label="Open coach profile menu"><span className="coach-profile-avatar">{(profile?.name || profile?.email || 'C').slice(0, 2).toUpperCase()}</span></summary>
     <div className="coach-profile-popover">
-      <header><span className="coach-profile-avatar large">{(profile?.name || profile?.email || 'C').slice(0, 2).toUpperCase()}</span><span><strong>{profile?.name || 'Coach'}</strong><small>{profile?.email}</small></span></header>
+      <header><span className="coach-profile-avatar large">{(profile?.name || profile?.email || 'C').slice(0, 2).toUpperCase()}</span><span><strong>{profile?.name || 'Coach'}</strong><small>{profile?.email}{teamMembership ? ` · ${teamMembership.role.replace('_', ' ')}` : ''}</small></span></header>
       <nav>{utilityLinks.map((link) => { const Icon = iconFor(link.label); return <NavLink key={link.to} to={link.to}><span className="coach-profile-action-icon"><Icon size={16} /></span><span>{link.label}</span>{countFor(link.badgeKey) > 0 && <span className="nav-count">{countFor(link.badgeKey) > 99 ? '99+' : countFor(link.badgeKey)}</span>}</NavLink>; })}</nav>
       <button type="button" className="coach-profile-signout" onClick={handleSignOut}><LogOut size={17} /><span>Sign out</span></button>
     </div>

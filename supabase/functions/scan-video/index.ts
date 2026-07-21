@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { privateFileId, r2Request } from '../_shared/r2.ts';
+import { verifiedJwtAal } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -75,6 +76,7 @@ Deno.serve(async (request) => {
   const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return json({ error: 'Invalid or expired session.' }, 401);
+  const aal = verifiedJwtAal(authHeader);
 
   let payload: { quarantinePath?: string; ownerId?: string; fileName?: string; contentType?: string; fileRef?: string };
   try {
@@ -104,7 +106,7 @@ Deno.serve(async (request) => {
   }
 
   const { data: profile } = await admin.from('profiles').select('role').eq('id', user.id).maybeSingle();
-  let authorized = profile?.role === 'admin';
+  let authorized = profile?.role === 'admin' && aal === 'aal2';
   if (profile?.role === 'player' && user.id === ownerId) authorized = true;
   if (profile?.role === 'coach') {
     const { data: link } = await admin

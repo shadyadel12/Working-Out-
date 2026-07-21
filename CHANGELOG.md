@@ -8,17 +8,21 @@ This page explains what the app can do and what has changed in everyday language
 
 - Navigation now keeps inactive destinations icon-only and reveals the active destination label responsively. Action buttons now pair clear icons with their labels across the website and mobile app.
 - Login, signup, and administrator key forms now expose clear field names to screen readers and other accessibility tools.
+- Delegated coach-team accounts now open the correct assigned players and see only the navigation and actions allowed by their team role.
 
 ### Fixes
 
 - Chat attachments now accept only photos and videos, chat videos can be up to 500 MB, and microphone voice messages remain available separately.
 - Administrator support attachments now follow the same photo/video-only policy and 500 MB video limit as direct chat.
+- Private uploads now have fair per-account pending, hourly, and daily limits, and abandoned uploads are cleaned up sooner.
 - Video uploads automatically recover from brief connection interruptions, can be retried with the same file on the website, and handle device video details more reliably in the mobile app.
 - Pictures, videos, attachments, and voice messages now connect correctly between the private database registry and cloud file storage.
 
 ### Security
 
 - Administrator pages now require both an administrator account and authenticator verification before any management controls or protected data are shown.
+- Administrator MFA now protects chat, support, private files, and video scanning consistently. Related users can view shared files without gaining permission to delete someone else's upload.
+- The website now blocks inline scripts, database functions use hardened lookup paths, and deployment checks stop security regressions before release.
 
 ## July 20, 2026
 

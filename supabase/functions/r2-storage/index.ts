@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { presignR2, privateFileId, r2Request } from '../_shared/r2.ts';
+import { verifiedJwtAal } from '../_shared/auth.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -9,6 +10,13 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
   status, headers: { ...cors, 'Content-Type': 'application/json' },
 });
 
+interface AuthorizationContext {
+  purpose: string;
+  owner_id: string;
+  coach_id: string | null;
+  player_id: string | null;
+}
+
 const rules: Record<string, { max: number; types: Set<string> }> = {
   'workout-video': { max: 500 * 1024 * 1024, types: new Set(['video/mp4', 'video/webm', 'video/quicktime']) },
   'chat-attachment': { max: 500 * 1024 * 1024, types: new Set([
@@ -17,10 +25,8 @@ const rules: Record<string, { max: number; types: Set<string> }> = {
   'chat-voice': { max: 25 * 1024 * 1024, types: new Set([
     'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/ogg', 'audio/webm',
   ]) },
-  'support-attachment': { max: 25 * 1024 * 1024, types: new Set([
+  'support-attachment': { max: 500 * 1024 * 1024, types: new Set([
     'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime',
-    'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   ]) },
 };
 
@@ -54,9 +60,6 @@ async function storedContentMatches(objectKey: string, contentType: string) {
     'audio/wav': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WAVE',
     'audio/ogg': ascii.startsWith('OggS'),
     'audio/webm': webm,
-    'application/pdf': ascii.startsWith('%PDF'),
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ascii.startsWith('PK'),
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ascii.startsWith('PK'),
   };
   return signatures[contentType] === true;
 }
@@ -78,6 +81,7 @@ Deno.serve(async (request) => {
   if (!profile) return json({ error: 'Profile not found.' }, 403);
   const userId = user.id;
   const profileRole = profile.role;
+  const aal = verifiedJwtAal(authHeader);
 
   let payload: Record<string, unknown>;
   try { payload = await request.json(); } catch { return json({ error: 'Invalid request.' }, 400); }
@@ -102,15 +106,17 @@ Deno.serve(async (request) => {
     return data === true;
   }
 
-  async function authorized(row: Record<string, any>, destructive = false, creating = false) {
-    if (profileRole === 'admin') return true;
-    if (destructive && row.owner_id === userId) return true;
+  async function authorized(row: AuthorizationContext, destructive = false, creating = false) {
+    if (profileRole === 'admin') return aal === 'aal2';
+    if (destructive) return row.owner_id === userId;
     if (row.purpose === 'support-attachment') return row.coach_id === userId && profileRole === 'coach';
     if (row.purpose === 'chat-attachment' || row.purpose === 'chat-voice') {
+      if (!row.coach_id || !row.player_id) return false;
       if (!await activeLink(row.coach_id, row.player_id)) return false;
       return row.coach_id === userId || row.player_id === userId || await teamCan('chat', row.coach_id, row.player_id);
     }
     if (row.purpose === 'workout-video') {
+      if (!row.player_id) return false;
       if (row.player_id === userId) return playerHasActiveLink(userId);
       if (profileRole === 'coach') {
         const { data: links } = await admin.from('coach_player_links').select('coach_id').eq('player_id', row.player_id)
@@ -133,23 +139,30 @@ Deno.serve(async (request) => {
       const coachId = payload.coachId ? String(payload.coachId) : null;
       const playerId = payload.playerId ? String(payload.playerId) : null;
       const rule = rules[purpose];
-      const max = purpose === 'chat-attachment' && contentType.startsWith('image/')
+      const max = (purpose === 'chat-attachment' || purpose === 'support-attachment') && contentType.startsWith('image/')
         ? 10 * 1024 * 1024
         : rule?.max ?? 0;
       if (!rule || !rule.types.has(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > max || !originalName) {
         return json({ error: 'File type, name, or size is not allowed.' }, 400);
       }
-      const context = { purpose, owner_id: userId, coach_id: coachId, player_id: playerId };
+      const context: AuthorizationContext = { purpose, owner_id: userId, coach_id: coachId, player_id: playerId };
       if (!await authorized(context, false, true)) return json({ error: 'Access denied.' }, 403);
       const id = crypto.randomUUID();
       const extension = originalName.includes('.') ? originalName.split('.').pop()!.replace(/[^a-z0-9]/gi, '').slice(0, 10) : 'bin';
       const objectKey = `quarantine/${purpose}/${id}.${extension || 'bin'}`;
-      const { error } = await admin.from('private_files').insert({
-        id, object_key: objectKey, owner_id: userId, coach_id: coachId, player_id: playerId,
-        purpose, original_name: originalName, content_type: contentType, byte_size: size,
-        attachment_type: purpose === 'workout-video' ? 'video' : attachmentType(contentType),
+      const { error } = await admin.rpc('register_private_upload', {
+        p_id: id,
+        p_object_key: objectKey,
+        p_owner_id: userId,
+        p_coach_id: coachId,
+        p_player_id: playerId,
+        p_purpose: purpose,
+        p_original_name: originalName,
+        p_content_type: contentType,
+        p_byte_size: size,
+        p_attachment_type: purpose === 'workout-video' ? 'video' : attachmentType(contentType),
       });
-      if (error) throw error;
+      if (error) return json({ error: error.message }, error.message.includes('quota') ? 429 : 400);
       const uploadSeconds = purpose === 'workout-video' || size > 50 * 1024 * 1024 ? 3600 : 900;
       return json({ ref: `r2:${id}`, uploadUrl: await presignR2(objectKey, 'PUT', uploadSeconds) });
     }

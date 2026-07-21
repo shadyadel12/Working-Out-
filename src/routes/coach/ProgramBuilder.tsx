@@ -15,8 +15,8 @@ import PlayerContextDrawer from '../../components/PlayerContextDrawer';
 
 export default function ProgramBuilder() {
   const { playerId } = useParams<{ playerId: string }>();
-  const { session } = useAuth();
-  const coachId = session!.user.id;
+  const { effectiveCoachId } = useAuth();
+  const coachId = effectiveCoachId!;
   const [week, setWeek] = useState(1);
   const [assignOpen, setAssignOpen] = useState(false);
   const [templateId, setTemplateId] = useState('');

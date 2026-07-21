@@ -43,7 +43,7 @@ const objectUri = (config: R2Config, key: string) =>
   `/${encode(config.bucket)}/${key.split('/').map(encode).join('/')}`;
 
 async function sha256(value: string | ArrayBuffer | Uint8Array) {
-  const bytes = typeof value === 'string' ? encoder.encode(value) : ownedBytes(value);
+  const bytes = ownedBytes(typeof value === 'string' ? encoder.encode(value) : value);
   return hex(await crypto.subtle.digest('SHA-256', bytes.buffer));
 }
 

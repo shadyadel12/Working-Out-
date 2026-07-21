@@ -13,8 +13,8 @@ import type { Exercise } from '../../types/database.types';
 
 export default function CoachMessages() {
   const { playerId } = useParams<{ playerId: string }>();
-  const { session } = useAuth();
-  const coachId = session!.user.id;
+  const { effectiveCoachId, coachCapabilities } = useAuth();
+  const coachId = effectiveCoachId!;
   const qc = useQueryClient();
 
   const { data: player } = useQuery({
@@ -88,7 +88,7 @@ export default function CoachMessages() {
         </h1>
       </div>
 
-      <div className="card stack">
+      {coachCapabilities.canChat ? <div className="card stack">
         <strong>Send a message</strong>
         <div className="field" style={{ margin: 0 }}>
           <label>Attach to (optional)</label>
@@ -109,7 +109,7 @@ export default function CoachMessages() {
           </button>
           {send.error && <span className="error">{(send.error as Error).message}</span>}
         </div>
-      </div>
+      </div> : <div className="card"><p>You do not have permission to send player messages.</p></div>}
 
       <div className="stack">
         <strong>Sent messages</strong>

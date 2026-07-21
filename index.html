@@ -8,15 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
     <title>Coach Platform</title>
     <!-- GitHub Pages SPA redirect: restores the path that 404.html captured -->
-    <script>
-      (function () {
-        var l = window.location;
-        if (l.search.startsWith('?/')) {
-          var path = l.search.slice(1);
-          window.history.replaceState(null, '', path + (l.hash || ''));
-        }
-      })();
-    </script>
+    <script src="/spa-redirect.js"></script>
   </head>
   <body>
     <div id="root"></div>
