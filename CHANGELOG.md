@@ -9,6 +9,7 @@
 - Signup now displays actionable authentication and database messages instead of hiding them behind a generic failure.
 - Restored persistent text labels beside or below every web and mobile navigation icon.
 - Expanded Arabic across web and mobile navigation, headings, helper text, placeholders, status labels, accessibility text, validation messages, alerts, confirmations, and other popups, with RTL-aware directional controls.
+- Replaced the compact workout editor’s add, remove, save, edit, and confirm action words with accessible icon-only controls.
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 

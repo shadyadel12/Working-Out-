@@ -499,6 +499,8 @@ Object.assign(ar, {
   "Today’s diet check-in": "متابعة غذاء اليوم", "Tick each meal you followed, then save.": "حدد كل وجبة التزمت بها ثم احفظ.",
   "Select sport level": "اختر المستوى الرياضي", "Select experience": "اختر مستوى الخبرة",
   "Remove this set": "إزالة هذه المجموعة", "Add set": "إضافة مجموعة", "Your comment": "تعليقك",
+  "Save exercise": "حفظ التمرين", "Save exercise changes": "حفظ تعديلات التمرين",
+  "Confirm workout": "تأكيد الحصة", "Confirm changes": "تأكيد التغييرات", "Submitting…": "جارٍ الإرسال…",
   "Workout submitted. Select Edit to change your sets, note, or video.": "تم إرسال الحصة. اختر تعديل لتغيير المجموعات أو الملاحظة أو الفيديو.",
   "Nothing scheduled for": "لا يوجد شيء مجدول ليوم", "Coach's demo:": "عرض المدرب:", Target: "الهدف:",
   "No diet check-ins yet.": "لا توجد متابعات غذائية بعد.", video: "فيديو", week: "أسبوع",

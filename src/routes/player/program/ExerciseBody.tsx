@@ -7,7 +7,7 @@ import { listMessagesForExercise } from '../../../api/messages';
 import type { Exercise } from '../../../types/database.types';
 import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import VideoPlayer from '../../../components/VideoPlayer';
-import ActionButtonContent from '../../../components/ActionButtonContent';
+import { Plus, Save, Trash2 } from 'lucide-react';
 
 export default function ExerciseBody({
   exercise,
@@ -99,6 +99,7 @@ export default function ExerciseBody({
   });
 
   const done = log?.is_completed ?? false;
+  const saveLabel = save.isPending ? 'Saving…' : done ? 'Save exercise changes' : 'Save exercise';
 
   return (
     <div className="stack">
@@ -154,16 +155,16 @@ export default function ExerciseBody({
                 />
               </div>
               {rows.length > 1 && (
-                <button className="secondary" type="button" disabled={locked} onClick={() => removeRow(i)} title="Remove this set">
-                  ✕
+                <button className="secondary compact-icon-action" type="button" disabled={locked} onClick={() => removeRow(i)} title="Remove this set" aria-label="Remove this set">
+                  <Trash2 size={18} aria-hidden="true" />
                 </button>
               )}
             </div>
           ))}
         </div>
 
-        <button className="secondary" type="button" disabled={locked} onClick={addRow} style={{ marginTop: '0.4rem' }}>
-          <ActionButtonContent>Add set</ActionButtonContent>
+        <button className="secondary compact-icon-action" type="button" disabled={locked} onClick={addRow} style={{ marginTop: '0.4rem' }} title="Add set" aria-label="Add set">
+          <Plus size={19} aria-hidden="true" />
         </button>
 
         <div className="field" style={{ margin: '0.7rem 0 0' }}>
@@ -174,8 +175,8 @@ export default function ExerciseBody({
           <VideoInput ownerId={playerId} value={video} onChange={setVideo} disabled={locked} />
         </div>
         <div className="row" style={{ marginTop: '0.7rem' }}>
-          <button onClick={() => save.mutate(true)} disabled={save.isPending || locked}>
-            <ActionButtonContent action="save exercise">{save.isPending ? 'Saving…' : done ? 'Save exercise changes' : 'Save exercise'}</ActionButtonContent>
+          <button className="compact-icon-action" onClick={() => save.mutate(true)} disabled={save.isPending || locked} title={saveLabel} aria-label={saveLabel}>
+            <Save size={19} aria-hidden="true" />
           </button>
           {save.error && <span className="error">{(save.error as Error).message}</span>}
         </div>

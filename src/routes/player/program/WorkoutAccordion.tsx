@@ -6,7 +6,7 @@ import type { Workout } from '../../../types/database.types';
 import { todayISO } from '../../../lib/dates';
 import { useWorkoutCompletion } from '../../../hooks/useWorkoutCompletion';
 import ExerciseAccordion from './ExerciseAccordion';
-import ActionButtonContent from '../../../components/ActionButtonContent';
+import { CheckCircle2, Pencil } from 'lucide-react';
 
 export default function WorkoutAccordion({ workout, playerId }: { workout: Workout; playerId: string }) {
   const [open, setOpen] = useState(false);
@@ -49,7 +49,7 @@ export default function WorkoutAccordion({ workout, playerId }: { workout: Worko
     />)}
     {open && (exercises ?? []).length === 0 && <p className="muted" style={{ fontSize: '0.85rem' }}>No exercises.</p>}
     {open && (exercises ?? []).length > 0 && <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-      {locked ? <><span className="workout-locked-note">Workout submitted. Select Edit to change your sets, note, or video.</span><button type="button" className="secondary" onClick={() => setEditing(true)}><ActionButtonContent>Edit workout</ActionButtonContent></button></> : <><span className="muted">{editing ? 'Editing a submitted workout. Confirm again when finished.' : 'Confirm when you have finished the complete workout.'}</span><button type="button" onClick={() => confirm.mutate()} disabled={confirm.isPending}><ActionButtonContent action="confirm workout">{confirm.isPending ? 'Submitting…' : completion.data?.completed ? 'Confirm changes' : 'Confirm workout'}</ActionButtonContent></button></>}
+      {locked ? <><span className="workout-locked-note">Workout submitted. Select Edit to change your sets, note, or video.</span><button type="button" className="secondary compact-icon-action" onClick={() => setEditing(true)} title="Edit workout" aria-label="Edit workout"><Pencil size={18} aria-hidden="true" /></button></> : <><span className="muted">{editing ? 'Editing a submitted workout. Confirm again when finished.' : 'Confirm when you have finished the complete workout.'}</span><button type="button" className="compact-icon-action" onClick={() => confirm.mutate()} disabled={confirm.isPending} title={confirm.isPending ? 'Submitting…' : completion.data?.completed ? 'Confirm changes' : 'Confirm workout'} aria-label={confirm.isPending ? 'Submitting…' : completion.data?.completed ? 'Confirm changes' : 'Confirm workout'}><CheckCircle2 size={19} aria-hidden="true" /></button></>}
       {confirm.error && <span className="error">{(confirm.error as Error).message}</span>}
     </div>}
   </div>;
