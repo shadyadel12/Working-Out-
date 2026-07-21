@@ -530,7 +530,7 @@ Object.assign(ar, {
   "meals, and": "وجبات، و", "food rows ✓": "صفوف طعام ✓",
   "1 day — Monday": "يوم واحد — الاثنين", "2 days — Monday and Thursday": "يومان — الاثنين والخميس",
   "3 days — Monday, Wednesday and Friday": "3 أيام — الاثنين والأربعاء والجمعة",
-  "1 month": "شهر واحد", "3 months": "3 أشهر", "6 months": "6 أشهر", "1 year": "سنة واحدة",
+  "15 days": "15 يومًا", "1 month": "شهر واحد", "3 months": "3 أشهر", "6 months": "6 أشهر", "1 year": "سنة واحدة",
   "Share this with the new": "شارك هذا مع", rounds: "جولات", blocks: "مجموعات", sections: "أقسام", groups: "مجموعات",
   "% max": "% من الحد الأقصى", "Pulse Coach": "مدرب Pulse", "Preview navigation": "معاينة التنقل",
   "Strength / 04": "القوة / 04", "4 sets · 8 reps": "4 مجموعات · 8 تكرارات", "3 sets · 10 reps": "3 مجموعات · 10 تكرارات",

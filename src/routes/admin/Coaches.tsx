@@ -71,6 +71,9 @@ export default function AdminCoaches() {
           <div className="field" style={{ margin: 0, flex: 1 }}>
             <label htmlFor="new-player-key-expiry">Expires</label>
             <input id="new-player-key-expiry" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            <button className="secondary" type="button" onClick={() => setEndDate(addDays(todayISO(), 15))}>
+              15 days
+            </button>
           </div>
         </div>
         <div className="row">
@@ -132,6 +135,9 @@ function KeyRow({ link, coachName }: { link: CoachPlayerLink; coachName: string 
         <div className="field" style={{ margin: 0 }}>
           <label htmlFor={expiryId}>Expiry</label>
           <input id={expiryId} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <button className="secondary" type="button" onClick={() => setEndDate(addDays(todayISO(), 15))}>
+            15 days
+          </button>
         </div>
         <button onClick={() => renew.mutate()} disabled={renew.isPending}>
           {renew.isPending ? '…' : 'Renew / update'}

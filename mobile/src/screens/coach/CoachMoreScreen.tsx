@@ -261,6 +261,14 @@ function Subscriptions() {
           onChangeText={setEnd}
           placeholder="Expiry YYYY-MM-DD"
         />
+        <View style={styles.row}>
+          <Pressable onPress={() => { const d = new Date(); d.setDate(d.getDate() + 15); setEnd(d.toISOString().slice(0, 10)); }} style={styles.choice}>
+            <Text style={textStyles.body}>15 DAYS</Text>
+          </Pressable>
+          <Pressable onPress={() => { const d = new Date(); d.setMonth(d.getMonth() + 1); setEnd(d.toISOString().slice(0, 10)); }} style={styles.choice}>
+            <Text style={textStyles.body}>1 MONTH</Text>
+          </Pressable>
+        </View>
         <Button secondary={!vip} onPress={() => setVip((x) => !x)}>
           {vip ? "VIP PLAYER ✓" : "STANDARD PLAYER"}
         </Button>

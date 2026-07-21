@@ -514,10 +514,11 @@ export function AdminScreen() {
       void load();
     }
   }
-  async function createPlayerKey(coachId: string) {
+  async function createPlayerKey(coachId: string, duration: "15d" | "1m") {
     const key = await randomKey("KEY-", 16);
     const end = new Date();
-    end.setMonth(end.getMonth() + 1);
+    if (duration === "15d") end.setDate(end.getDate() + 15);
+    else end.setMonth(end.getMonth() + 1);
     const endDate = end.toISOString().slice(0, 10);
     const { error } = await supabase.rpc("admin_create_key", {
       p_coach_id: coachId,
@@ -575,7 +576,10 @@ export function AdminScreen() {
           <Card key={coach.id}>
             <Text style={textStyles.heading}>{coach.name || coach.email}</Text>
             <Text style={textStyles.muted}>{coach.email}</Text>
-            <Button secondary onPress={() => createPlayerKey(coach.id)}>
+            <Button secondary onPress={() => createPlayerKey(coach.id, "15d")}>
+              CREATE 15-DAY PLAYER KEY
+            </Button>
+            <Button secondary onPress={() => createPlayerKey(coach.id, "1m")}>
               CREATE 1-MONTH PLAYER KEY
             </Button>
           </Card>

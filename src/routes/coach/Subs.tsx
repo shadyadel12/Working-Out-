@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { coachCreatePlayerKey, coachCreateUnclaimedKey, listPlayersForCoach } from '../../api/players';
-import { fmtDate, isExpired, monthsFromToday } from './settings/dateUtils';
+import { daysFromToday, fmtDate, isExpired, monthsFromToday } from './settings/dateUtils';
 
 function CopyButton({ text }: { text: string }) { const [copied, setCopied] = useState(false); return <button className="secondary" onClick={() => navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); })}>{copied ? 'Copied ✓' : 'Copy'}</button>; }
 function CheckupFrequency({ value, onChange }: { value: number; onChange: (value: number) => void }) { return <div className="field checkup-frequency"><label>Check-ups each week</label><select value={value} onChange={(event) => onChange(Number(event.target.value))}><option value={1}>1 day — Monday</option><option value={2}>2 days — Monday and Thursday</option><option value={3}>3 days — Monday, Wednesday and Friday</option></select><small>Days are automatically spaced apart.</small></div>; }
@@ -15,7 +15,7 @@ export default function Subs() {
   const pending = players.filter((player) => !player.profile); const claimed = players.filter((player) => player.profile);
   const generate = useMutation({ mutationFn: () => coachCreateUnclaimedKey(newKeyDate, newVip, newCheckupDays), onSuccess: async (link) => { setLastKey(link.subscription_key); await qc.invalidateQueries({ queryKey: ['players', coachId] }); } });
   const renew = useMutation({ mutationFn: ({ playerId, date, isVip, checkupDays }: { playerId: string; date: string; isVip: boolean; checkupDays: number }) => coachCreatePlayerKey(playerId, date, isVip, checkupDays), onSuccess: async () => { setRenewPlayer(null); await qc.invalidateQueries({ queryKey: ['players', coachId] }); } });
-  const duration = (value: string, set: (value: string) => void) => <><select value={value} onChange={(event) => set(event.target.value)}><option value={monthsFromToday(1)}>1 month</option><option value={monthsFromToday(3)}>3 months</option><option value={monthsFromToday(6)}>6 months</option><option value={monthsFromToday(12)}>1 year</option></select><input type="date" min={new Date().toISOString().slice(0, 10)} value={value} onChange={(event) => set(event.target.value)} /></>;
+  const duration = (value: string, set: (value: string) => void) => <><select value={value} onChange={(event) => set(event.target.value)}><option value={daysFromToday(15)}>15 days</option><option value={monthsFromToday(1)}>1 month</option><option value={monthsFromToday(3)}>3 months</option><option value={monthsFromToday(6)}>6 months</option><option value={monthsFromToday(12)}>1 year</option></select><input type="date" min={new Date().toISOString().slice(0, 10)} value={value} onChange={(event) => set(event.target.value)} /></>;
 
   if (!coachCapabilities.canSell) return <div className="card"><p>You do not have permission to manage subscriptions.</p></div>;
   return <div className="subs-page stack">

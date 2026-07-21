@@ -252,6 +252,8 @@ const ar: Record<string, string> = {
 };
 Object.assign(ar, {
   Action: "إجراء", tab: "علامة تبويب", "Client programming": "برمجة العميل", "Diet templates": "قوالب الأنظمة الغذائية",
+  "15 DAYS": "15 يومًا", "15 days": "15 يومًا", "1 MONTH": "شهر واحد",
+  "Player access was extended by 15 days.": "تم تمديد وصول اللاعب لمدة 15 يومًا.",
   Appearance: "المظهر", "Command center": "مركز القيادة", "Coach team": "فريق المدرب",
   "Admin support": "دعم الإدارة", "Coach tools": "أدوات المدرب", Workouts: "الحصص", Programs: "البرامج",
   People: "اللاعبون", Build: "الإنشاء", Alerts: "التنبيهات", Settings: "الإعدادات",
@@ -357,7 +359,7 @@ Object.assign(ar, {
   "Coach invitation keys": "مفاتيح دعوة المدربين", "CREATE COACH KEY": "إنشاء مفتاح مدرب", "Recent player keys": "مفاتيح اللاعبين الحديثة",
   "REVOKE ACCESS": "إلغاء الوصول", "CREATE COACH INVITATION KEY": "إنشاء مفتاح دعوة مدرب",
   "Manage coaches, invitation keys, and player access": "إدارة المدربين ومفاتيح الدعوة ووصول اللاعبين",
-  "CREATE 1-MONTH PLAYER KEY": "إنشاء مفتاح لاعب لشهر", "· ends": "· ينتهي", VIP: "VIP", active: "نشط",
+  "CREATE 15-DAY PLAYER KEY": "إنشاء مفتاح لاعب لمدة 15 يومًا", "CREATE 1-MONTH PLAYER KEY": "إنشاء مفتاح لاعب لشهر", "· ends": "· ينتهي", VIP: "VIP", active: "نشط",
   exercises: "تمارين", "meals ·": "وجبات ·", "sets ·": "مجموعات ·", "Expiry date (YYYY-MM-DD)": "تاريخ الانتهاء (سنة-شهر-يوم)",
   Workout: "الحصة", Exercises: "التمارين", Subscription: "الاشتراك", "reps ·": "تكرارات ·", "EDIT DAY": "تعديل اليوم",
   "Your coach uses this information to create a safe, suitable plan.": "يستخدم مدربك هذه المعلومات لإعداد خطة آمنة ومناسبة.",

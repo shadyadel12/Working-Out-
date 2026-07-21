@@ -128,7 +128,8 @@ function Subscriptions() {
     const today = new Date();
     const currentEnd = new Date(`${row.subscription_end_date}T12:00:00`);
     const endDate = currentEnd > today ? currentEnd : today;
-    endDate.setMonth(endDate.getMonth() + months);
+    if (months === 0.5) endDate.setDate(endDate.getDate() + 15);
+    else endDate.setMonth(endDate.getMonth() + months);
     const { error } = await supabase.rpc("coach_create_player_key", {
       p_player_id: row.player_id,
       p_end_date: endDate.toISOString().slice(0, 10),
@@ -140,7 +141,9 @@ function Subscriptions() {
     else {
       Alert.alert(
         "Renewed",
-        `Player access was extended by ${months} month${months > 1 ? "s" : ""}.`,
+        months === 0.5
+          ? "Player access was extended by 15 days."
+          : `Player access was extended by ${months} month${months > 1 ? "s" : ""}.`,
       );
       void load();
     }
@@ -178,6 +181,14 @@ function Subscriptions() {
           onChangeText={setEnd}
           placeholder="Expiry YYYY-MM-DD"
         />
+        <View style={styles.row}>
+          <Pressable onPress={() => { const d = new Date(); d.setDate(d.getDate() + 15); setEnd(d.toISOString().slice(0, 10)); }} style={styles.choice}>
+            <Text style={textStyles.body}>15 DAYS</Text>
+          </Pressable>
+          <Pressable onPress={() => { const d = new Date(); d.setMonth(d.getMonth() + 1); setEnd(d.toISOString().slice(0, 10)); }} style={styles.choice}>
+            <Text style={textStyles.body}>1 MONTH</Text>
+          </Pressable>
+        </View>
         <Button secondary={!vip} onPress={() => setVip((x) => !x)}>
           {vip ? "VIP PLAYER ✓" : "STANDARD PLAYER"}
         </Button>
@@ -218,7 +229,7 @@ function Subscriptions() {
               <View style={styles.renewBox}>
                 <Text style={styles.monthLabel}>RENEW FOR</Text>
                 <View style={styles.monthRow}>
-                  {[1, 2, 3, 6, 12].map((month) => (
+                  {[0.5, 1, 2, 3, 6, 12].map((month) => (
                     <Pressable
                       key={month}
                       onPress={() =>
@@ -234,8 +245,7 @@ function Subscriptions() {
                       ]}
                     >
                       <Text style={styles.monthText}>
-                        {month}
-                        {month === 1 ? " mo" : " mos"}
+                        {month === 0.5 ? "15 days" : `${month}${month === 1 ? " mo" : " mos"}`}
                       </Text>
                     </Pressable>
                   ))}

@@ -14,3 +14,9 @@ export function monthsFromToday(n: number) {
   d.setMonth(d.getMonth() + n);
   return d.toISOString().slice(0, 10);
 }
+
+export function daysFromToday(n: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
