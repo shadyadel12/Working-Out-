@@ -10,7 +10,7 @@ import {
 import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
 import LoadingSkeleton from './LoadingSkeleton';
 import ChatAttachment from './chat/ChatAttachment';
-import { Mic, Paperclip, Square } from 'lucide-react';
+import { Mic, Plus, Send, Smile, Square } from 'lucide-react';
 
 export default function ChatWindow({
   coachId,
@@ -26,6 +26,7 @@ export default function ChatWindow({
   const [uploading, setUploading] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -215,26 +216,20 @@ export default function ChatWindow({
       <div className="chat-composer-row">
         <button
           type="button"
-          className={recording ? 'chat-tool-button recording mic' : 'chat-tool-button mic'}
-          title={recording ? 'Stop and send recording' : 'Record a voice message'}
-          aria-label={recording ? 'Stop and send voice message' : 'Record voice message'}
-          onClick={toggleRecording}
-          disabled={uploading || send.isPending}
-          style={recording ? { alignSelf: 'flex-end', background: '#c62828', width: 46, height: 42, padding: 0 } : { alignSelf: 'flex-end', width: 46, height: 42, padding: 0 }}
-        >
-          {recording ? <><Square size={17} aria-hidden="true" /><span className="sr-only">Stop {Math.floor(recordingSeconds / 60)}:{String(recordingSeconds % 60).padStart(2, '0')}</span></> : <Mic size={20} aria-hidden="true" />}
-        </button>
-        <button
-          type="button"
           className="chat-tool-button attach"
           title="Send a picture, video, or audio file"
           aria-label="Attach picture, video, or audio file"
           onClick={() => fileRef.current?.click()}
           disabled={uploading || send.isPending || recording}
-          style={{ alignSelf: 'flex-end', width: 46, height: 42, padding: 0 }}
         >
-          {uploading ? <span aria-label="Uploading">…</span> : <Paperclip size={20} aria-hidden="true" />}
+          {uploading ? <span aria-label="Uploading">…</span> : <Plus size={24} aria-hidden="true" />}
         </button>
+        <button type="button" className="chat-tool-button emoji" title="Add emoji" aria-label="Add emoji" onClick={() => setEmojiOpen((open) => !open)} disabled={recording}>
+          <Smile size={22} aria-hidden="true" />
+        </button>
+        {emojiOpen && <div className="chat-emoji-tray" role="group" aria-label="Choose an emoji">
+          {['😊', '💪', '👍', '🔥', '❤️', '😂'].map((emoji) => <button type="button" key={emoji} onClick={() => { setText((value) => value + emoji); setEmojiOpen(false); }}>{emoji}</button>)}
+        </div>}
         <input
           ref={fileRef}
           type="file"
@@ -244,21 +239,22 @@ export default function ChatWindow({
         />
         <textarea
           className="chat-composer-input"
-          rows={2}
+          rows={1}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
-          style={{ flex: 1, resize: 'none' }}
+          placeholder="Type a message"
           disabled={send.isPending || uploading || recording}
         />
         <button
-          className="chat-send-button"
-          onClick={() => send.mutate(text.trim())}
-          disabled={!text.trim() || send.isPending || uploading || recording}
-          style={{ alignSelf: 'flex-end', minWidth: 72 }}
+          type="button"
+          className={recording ? 'chat-tool-button recording mic' : 'chat-tool-button mic'}
+          title={recording ? 'Stop and send recording' : text.trim() ? 'Send message' : 'Record a voice message'}
+          aria-label={recording ? 'Stop and send voice message' : text.trim() ? 'Send message' : 'Record voice message'}
+          onClick={() => text.trim() ? send.mutate(text.trim()) : void toggleRecording()}
+          disabled={uploading || send.isPending}
         >
-          {send.isPending ? '…' : 'Send'}
+          {recording ? <><Square size={17} aria-hidden="true" /><span className="sr-only">Stop {Math.floor(recordingSeconds / 60)}:{String(recordingSeconds % 60).padStart(2, '0')}</span></> : text.trim() ? <Send size={21} aria-hidden="true" /> : <Mic size={21} aria-hidden="true" />}
         </button>
       </div>
       {send.error && <span className="error">{(send.error as Error).message}</span>}

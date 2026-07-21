@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
-import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, closestProgramWeek, currentProgramWeek, todayDayOfWeek } from '../../lib/dates';
+import { DAY_NAMES, DAY_SHORT, WEEK_ORDER_SAT_FIRST, currentProgramWeek, todayDayOfWeek } from '../../lib/dates';
 import { getActivePlayerLink } from '../../api/players';
 import { listDietDays } from '../../api/diet';
 import { saveDietLog } from '../../api/dietProgress';
@@ -24,17 +24,14 @@ export default function PlayerDiet() {
   });
 
   const weekInitialized = useRef(false);
-  const weeks = Array.from(new Set((dietDays ?? []).map((d) => d.week_number))).sort((a, b) => a - b);
-  const automaticWeek = activeLink && weeks.length > 0
-    ? closestProgramWeek(weeks, currentProgramWeek(activeLink.created_at, Math.max(...weeks)))
-    : week;
+  const automaticWeek = activeLink ? currentProgramWeek(activeLink.created_at) : week;
+  const weeks = Array.from(new Set([...(dietDays ?? []).map((d) => d.week_number), automaticWeek])).sort((a, b) => a - b);
   const visibleWeek = weekInitialized.current ? week : automaticWeek;
   useEffect(() => {
-    if (weekInitialized.current || !activeLink || weeks.length === 0) return;
-    const current = currentProgramWeek(activeLink.created_at, Math.max(...weeks));
-    setWeek(closestProgramWeek(weeks, current));
+    if (weekInitialized.current || !activeLink) return;
+    setWeek(currentProgramWeek(activeLink.created_at));
     weekInitialized.current = true;
-  }, [activeLink, weeks]);
+  }, [activeLink]);
   const weekDays = (dietDays ?? []).filter((d) => d.week_number === visibleWeek);
   const byDow = new Map(weekDays.map((d) => [d.day_of_week, d]));
 

@@ -1,3 +1,3 @@
 export const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 export const todayISO=()=>new Date().toISOString().slice(0,10);
-export function currentProgramWeek(startedAt:string,maxWeek=Number.MAX_SAFE_INTEGER){const started=new Date(startedAt).getTime();if(Number.isNaN(started))return 1;return Math.min(Math.max(1,maxWeek),Math.floor(Math.max(0,Date.now()-started)/(7*24*60*60*1000))+1);}
+export function currentProgramWeek(startedAt:string,maxWeek=Number.MAX_SAFE_INTEGER){const started=new Date(startedAt);if(Number.isNaN(started.getTime()))return 1;const today=new Date();const saturdaySerial=(date:Date)=>Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()-((date.getDay()+1)%7));const elapsedWeeks=Math.max(0,Math.floor((saturdaySerial(today)-saturdaySerial(started))/(7*24*60*60*1000)));return Math.min(Math.max(1,maxWeek),elapsedWeeks+1);}

@@ -43,15 +43,16 @@ export function addDays(iso: string, days: number): string {
   return `${y}-${m}-${day}`;
 }
 
-/** One-based week elapsed since a player's subscription began. */
+/** One-based Saturday-to-Friday week since a player's subscription began. */
 export function currentProgramWeek(startedAt: string, maxWeek = Number.MAX_SAFE_INTEGER): number {
   const started = new Date(startedAt);
   if (Number.isNaN(started.getTime())) return 1;
-  const elapsed = Math.max(0, Date.now() - started.getTime());
-  return Math.min(Math.max(1, maxWeek), Math.floor(elapsed / (7 * 24 * 60 * 60 * 1000)) + 1);
-}
-
-export function closestProgramWeek(weeks: number[], target: number): number {
-  if (weeks.length === 0) return target;
-  return weeks.reduce((closest, value) => Math.abs(value - target) < Math.abs(closest - target) ? value : closest);
+  const today = new Date();
+  const saturdaySerial = (date: Date) => Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() - ((date.getDay() + 1) % 7),
+  );
+  const elapsedWeeks = Math.max(0, Math.floor((saturdaySerial(today) - saturdaySerial(started)) / (7 * 24 * 60 * 60 * 1000)));
+  return Math.min(Math.max(1, maxWeek), elapsedWeeks + 1);
 }

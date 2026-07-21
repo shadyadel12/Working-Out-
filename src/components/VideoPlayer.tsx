@@ -17,7 +17,7 @@ export default function VideoPlayer({
 
   useEffect(() => {
     let active = true;
-    if (url && !isExternal) {
+    if (url && !isExternal && !isHttpUrl(url)) {
       getVideoUrl(url)
         .then((u) => active && setSigned(u))
         .catch((e) => active && setErr(e instanceof Error ? e.message : 'Load failed'));
@@ -29,7 +29,7 @@ export default function VideoPlayer({
 
   if (!url) return null;
 
-  if (isExternal) {
+  if (isExternal || isHttpUrl(url)) {
     let safeUrl: string;
     try {
       safeUrl = validateExternalVideoUrl(url);
@@ -47,11 +47,11 @@ export default function VideoPlayer({
         />
       );
     }
-    return (
-      <a href={safeUrl} target="_blank" rel="noopener noreferrer">
-        Open video ↗
-      </a>
-    );
+    const vimeoEmbed = toVimeoEmbed(safeUrl);
+    if (vimeoEmbed) {
+      return <iframe src={vimeoEmbed} title="video" style={{ width: '100%', aspectRatio: '16 / 9', border: 0, borderRadius: 8 }} allowFullScreen />;
+    }
+    return <video src={safeUrl} controls onPlay={onPlay} style={{ width: '100%', borderRadius: 8 }} />;
   }
 
   if (err) return <span className="error">{err}</span>;
@@ -59,6 +59,17 @@ export default function VideoPlayer({
   return (
     <video src={signed} controls onPlay={onPlay} style={{ width: '100%', borderRadius: 8 }} />
   );
+}
+
+function isHttpUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
+function toVimeoEmbed(url: string): string | null {
+  const parsed = new URL(url);
+  const host = parsed.hostname.replace(/^www\./, '');
+  const id = host === 'vimeo.com' ? parsed.pathname.match(/^\/(\d+)/)?.[1] : null;
+  return id ? `https://player.vimeo.com/video/${id}` : null;
 }
 
 function toYouTubeEmbed(url: string): string | null {

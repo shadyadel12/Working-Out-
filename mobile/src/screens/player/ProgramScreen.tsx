@@ -38,8 +38,7 @@ export default function ProgramScreen() {
         getActivePlayerLink(session!.user.id),
       ]);
       setDays(program);
-      const availableWeeks=[...new Set(program.map((day:any)=>Number(day.week_number)))];
-      if(activeLink&&availableWeeks.length)setWeek(currentProgramWeek(activeLink.created_at,Math.max(...availableWeeks)));
+      if(activeLink)setWeek(currentProgramWeek(activeLink.created_at));
       setMessages(guidance.data ?? []);
     } catch (e) {
       setError((e as Error).message);
@@ -48,7 +47,7 @@ export default function ProgramScreen() {
   useEffect(() => {
     void load();
   }, [session]);
-  const weeks = [...new Set((days ?? []).map((d) => d.week_number))];
+  const weeks = [...new Set([...(days ?? []).map((d) => d.week_number), week])].sort((a,b)=>Number(a)-Number(b));
   const shown = (days ?? []).filter((d) => d.week_number === week);
   return (
     <Screen title="My Program">

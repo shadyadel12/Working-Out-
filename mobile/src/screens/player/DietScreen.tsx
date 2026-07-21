@@ -10,8 +10,8 @@ export default function DietScreen(){
   const{session}=useAuth();
   const[days,setDays]=useState<any[]|null>(null);
   const[week,setWeek]=useState(1);
-  useEffect(()=>{Promise.all([getDiet(session!.user.id),getActivePlayerLink(session!.user.id)]).then(([diet,link])=>{setDays(diet);const available=[...new Set(diet.map((day:any)=>Number(day.week_number)))];if(link&&available.length)setWeek(currentProgramWeek(link.created_at,Math.max(...available)));}).catch(e=>Alert.alert('Could not load diet',e.message));},[session]);
-  const weeks=[...new Set((days??[]).map(d=>d.week_number))];
+  useEffect(()=>{Promise.all([getDiet(session!.user.id),getActivePlayerLink(session!.user.id)]).then(([diet,link])=>{setDays(diet);if(link)setWeek(currentProgramWeek(link.created_at));}).catch(e=>Alert.alert('Could not load diet',e.message));},[session]);
+  const weeks=[...new Set([...(days??[]).map(d=>d.week_number),week])].sort((a,b)=>Number(a)-Number(b));
   return <Screen title="My Diet">
     {!days ? <ActivityIndicator/> : <>
       {weeks.length>1 ? <View style={styles.pills}>{weeks.map(w=><Pressable key={w} onPress={()=>setWeek(Number(w))} style={[styles.pill,w===week&&styles.active]}><Text style={textStyles.body}>W{w}</Text></Pressable>)}</View> : null}

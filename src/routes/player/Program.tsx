@@ -8,7 +8,6 @@ import {
   WEEK_ORDER_SAT_FIRST,
   todayDayOfWeek,
   currentProgramWeek,
-  closestProgramWeek,
 } from '../../lib/dates';
 import { listProgramDays } from '../../api/programs';
 import { getActivePlayerLink } from '../../api/players';
@@ -30,17 +29,14 @@ export default function PlayerProgram() {
   });
 
   const weekInitialized = useRef(false);
-  const weeks = Array.from(new Set((days ?? []).map((d) => d.week_number))).sort((a, b) => a - b);
-  const automaticWeek = activeLink && weeks.length > 0
-    ? closestProgramWeek(weeks, currentProgramWeek(activeLink.created_at, Math.max(...weeks)))
-    : week;
+  const automaticWeek = activeLink ? currentProgramWeek(activeLink.created_at) : week;
+  const weeks = Array.from(new Set([...(days ?? []).map((d) => d.week_number), automaticWeek])).sort((a, b) => a - b);
   const visibleWeek = weekInitialized.current ? week : automaticWeek;
   useEffect(() => {
-    if (weekInitialized.current || !activeLink || weeks.length === 0) return;
-    const current = currentProgramWeek(activeLink.created_at, Math.max(...weeks));
-    setWeek(closestProgramWeek(weeks, current));
+    if (weekInitialized.current || !activeLink) return;
+    setWeek(currentProgramWeek(activeLink.created_at));
     weekInitialized.current = true;
-  }, [activeLink, weeks]);
+  }, [activeLink]);
   const weekDays = (days ?? [])
     .filter((d) => d.week_number === visibleWeek)
     .sort((a, b) => a.day_of_week - b.day_of_week);
