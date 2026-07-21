@@ -813,157 +813,403 @@ svg {
 html&gt;body{padding:0}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;div id=&quot;pulsefit-architecture-map&quot;&gt;
-  &lt;div class=&quot;card architecture-selection&quot; aria-live=&quot;polite&quot;&gt;
-    &lt;div&gt;
-      &lt;span class=&quot;text-muted text-small&quot;&gt;Selected module&lt;/span&gt;
+&lt;div id=&quot;pulsefit-project-atlas&quot;&gt;
+  &lt;div class=&quot;card atlas-selection&quot; aria-live=&quot;polite&quot;&gt;
+    &lt;div class=&quot;atlas-selection-heading&quot;&gt;
+      &lt;span class=&quot;text-muted text-small&quot; data-selection-kind&gt;System module&lt;/span&gt;
       &lt;h3 data-selection-title&gt;Web application&lt;/h3&gt;
     &lt;/div&gt;
-    &lt;p data-selection-description&gt;React and Vite client deployed through Vercel for coach, player, and administrator workflows.&lt;/p&gt;
+    &lt;p data-selection-description&gt;React and Vite client for coach, player, team-member, and administrator workflows.&lt;/p&gt;
     &lt;code data-selection-path&gt;src/App.tsx · src/routes/ · src/components/&lt;/code&gt;
   &lt;/div&gt;
 
-  &lt;div class=&quot;architecture-map&quot; role=&quot;group&quot; aria-label=&quot;PulseFit system architecture. Select a module to inspect its responsibility and source location.&quot;&gt;
-    &lt;svg class=&quot;architecture-links&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;
-    &lt;div class=&quot;architecture-grid&quot;&gt;
-      &lt;section class=&quot;architecture-lane&quot; data-lane=&quot;client&quot;&gt;
-        &lt;h3&gt;Clients&lt;/h3&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;true&quot; data-id=&quot;web&quot; data-title=&quot;Web application&quot; data-description=&quot;React and Vite client deployed through Vercel for coach, player, and administrator workflows.&quot; data-path=&quot;src/App.tsx · src/routes/ · src/components/&quot;&gt;Web application&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;mobile&quot; data-title=&quot;Mobile application&quot; data-description=&quot;Expo and React Native application with role-specific player, coach, and admin tab shells.&quot; data-path=&quot;mobile/src/navigation/ · mobile/src/screens/&quot;&gt;Mobile application&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;roles&quot; data-title=&quot;Role experiences&quot; data-description=&quot;Coach, player, team-member, and administrator experiences share the platform while retaining separate authorization boundaries.&quot; data-path=&quot;src/auth/RequireRole.tsx · mobile/src/auth/&quot;&gt;Role experiences&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;vercel&quot; data-title=&quot;Vercel delivery&quot; data-description=&quot;Hosts the production single-page website and applies route rewrites and browser security headers.&quot; data-path=&quot;vercel.json · dist/&quot;&gt;Vercel delivery&lt;/button&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;architecture-lane&quot; data-lane=&quot;application&quot;&gt;
-        &lt;h3&gt;Application layer&lt;/h3&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;routing&quot; data-title=&quot;Routing and guards&quot; data-description=&quot;Maps public and protected routes and enforces role, subscription, player-details, and MFA requirements.&quot; data-path=&quot;src/App.tsx · src/auth/ · mobile/src/navigation/&quot;&gt;Routing and guards&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;features&quot; data-title=&quot;Feature screens&quot; data-description=&quot;Training, diet, progress, libraries, chat, check-ups, subscriptions, teams, settings, and support interfaces.&quot; data-path=&quot;src/routes/ · mobile/src/screens/&quot;&gt;Feature screens&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;state&quot; data-title=&quot;Client state&quot; data-description=&quot;React Query coordinates server state on the website; React Navigation and local React state coordinate mobile flows.&quot; data-path=&quot;@tanstack/react-query · @react-navigation/*&quot;&gt;Client state&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;api&quot; data-title=&quot;API modules&quot; data-description=&quot;Typed modules translate product actions into Supabase table queries, RPC calls, realtime subscriptions, and function invocations.&quot; data-path=&quot;src/api/ · mobile/src/api/&quot;&gt;API modules&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;media&quot; data-title=&quot;Media pipeline client&quot; data-description=&quot;Validates photos, videos, and voice recordings before requesting private upload URLs and recording opaque file references.&quot; data-path=&quot;src/api/privateFiles.ts · src/lib/security.ts · mobile/src/api/privateFiles.ts&quot;&gt;Media pipeline client&lt;/button&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;architecture-lane&quot; data-lane=&quot;platform&quot;&gt;
-        &lt;h3&gt;Supabase platform&lt;/h3&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;auth&quot; data-title=&quot;Supabase Auth&quot; data-description=&quot;Authenticates users and supplies signed sessions used by database policies and Edge Functions.&quot; data-path=&quot;src/lib/supabase.ts · src/auth/AuthContext.tsx&quot;&gt;Supabase Auth&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;rest&quot; data-title=&quot;PostgREST and RPC&quot; data-description=&quot;Provides table CRUD plus transactional functions for imports, assignment, progress, keys, and team permissions.&quot; data-path=&quot;supabase/migrations/0005_helper_functions.sql and later migrations&quot;&gt;PostgREST and RPC&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;realtime&quot; data-title=&quot;Realtime channels&quot; data-description=&quot;Streams new chat and support messages plus workout completion changes to connected clients.&quot; data-path=&quot;src/api/chat.ts · supabase/migrations/0030_chat_realtime.sql · 0052_workout_completion_realtime.sql&quot;&gt;Realtime channels&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;r2fn&quot; data-title=&quot;R2 storage function&quot; data-description=&quot;Authorizes private uploads and downloads, validates purpose, type, size, and signature, and manages the private file registry.&quot; data-path=&quot;supabase/functions/r2-storage/index.ts&quot;&gt;R2 storage function&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;scanfn&quot; data-title=&quot;Video scan function&quot; data-description=&quot;Retrieves quarantined workout videos, submits them for safety scanning, and promotes verified objects for playback.&quot; data-path=&quot;supabase/functions/scan-video/index.ts&quot;&gt;Video scan function&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;cleanupfn&quot; data-title=&quot;Retention cleanup&quot; data-description=&quot;Removes expired or viewed player videos according to the configured retention policy.&quot; data-path=&quot;supabase/functions/cleanup-player-videos/index.ts&quot;&gt;Retention cleanup&lt;/button&gt;
-      &lt;/section&gt;
-
-      &lt;section class=&quot;architecture-lane&quot; data-lane=&quot;data&quot;&gt;
-        &lt;h3&gt;Data and storage&lt;/h3&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;postgres&quot; data-title=&quot;PostgreSQL and RLS&quot; data-description=&quot;The source of truth for profiles, relationships, plans, logs, chat metadata, team roles, and authorization policies.&quot; data-path=&quot;supabase/migrations/0001–0053&quot;&gt;PostgreSQL and RLS&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;coaching&quot; data-title=&quot;Coaching domain&quot; data-description=&quot;Programs, workouts, exercises, diets, reusable libraries, assignments, check-ups, and player coaching profiles.&quot; data-path=&quot;program_days · workouts · exercises · diet_days · *_library · *_templates&quot;&gt;Coaching domain&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;progress&quot; data-title=&quot;Progress domain&quot; data-description=&quot;Exercise logs, per-set results, workout completion, diet adherence, measurements, and paginated progress views.&quot; data-path=&quot;exercise_logs · set_logs · workout_completions · diet_logs · measurements&quot;&gt;Progress domain&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;messaging&quot; data-title=&quot;Messaging domain&quot; data-description=&quot;Coach-player chat, exercise notes, support conversations, and realtime unread indicators.&quot; data-path=&quot;chat_messages · messages · admin_messages&quot;&gt;Messaging domain&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;registry&quot; data-title=&quot;Private file registry&quot; data-description=&quot;Stores ownership, relationship context, MIME type, byte size, purpose, verification state, and opaque R2 object keys.&quot; data-path=&quot;public.private_files · migration 0050–0053&quot;&gt;Private file registry&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;r2&quot; data-title=&quot;Cloudflare R2&quot; data-description=&quot;Private object storage for workout videos, chat photos and videos, voice messages, and support attachments.&quot; data-path=&quot;coach-platform-private bucket · supabase/functions/_shared/r2.ts&quot;&gt;Cloudflare R2&lt;/button&gt;
-        &lt;button class=&quot;btn btn-block architecture-node&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; data-id=&quot;scanner&quot; data-title=&quot;Safety scanner&quot; data-description=&quot;External malware analysis used only for quarantined workout video evidence before files become available.&quot; data-path=&quot;VirusTotal API via scan-video&quot;&gt;Safety scanner&lt;/button&gt;
-      &lt;/section&gt;
-    &lt;/div&gt;
+  &lt;div class=&quot;viz-controls atlas-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Project atlas sections&quot;&gt;
+    &lt;button class=&quot;btn btn-primary&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;true&quot; data-view=&quot;architecture&quot;&gt;&lt;i data-lucide=&quot;network&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Architecture&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; data-view=&quot;features&quot;&gt;&lt;i data-lucide=&quot;layout-grid&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Features&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; data-view=&quot;web&quot;&gt;&lt;i data-lucide=&quot;monitor&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Web&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; data-view=&quot;mobile&quot;&gt;&lt;i data-lucide=&quot;smartphone&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Mobile&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; data-view=&quot;database&quot;&gt;&lt;i data-lucide=&quot;database&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Database&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; data-view=&quot;media&quot;&gt;&lt;i data-lucide=&quot;shield-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Media &amp; security&lt;/button&gt;
   &lt;/div&gt;
+
+  &lt;section data-panel=&quot;architecture&quot; role=&quot;tabpanel&quot;&gt;
+    &lt;div class=&quot;architecture-map&quot; role=&quot;group&quot; aria-label=&quot;System architecture. Select a module to inspect its responsibility and source location.&quot;&gt;
+      &lt;svg class=&quot;architecture-links&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;
+      &lt;div class=&quot;architecture-grid&quot; data-architecture-grid&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;viz-row atlas-legend text-small text-muted&quot; aria-label=&quot;Architecture legend&quot;&gt;
+      &lt;span&gt;&lt;span class=&quot;legend-mark&quot; data-series=&quot;1&quot;&gt;&lt;/span&gt;Client&lt;/span&gt;
+      &lt;span&gt;&lt;span class=&quot;legend-mark&quot; data-series=&quot;2&quot;&gt;&lt;/span&gt;Application&lt;/span&gt;
+      &lt;span&gt;&lt;span class=&quot;legend-mark&quot; data-series=&quot;3&quot;&gt;&lt;/span&gt;Supabase&lt;/span&gt;
+      &lt;span&gt;&lt;span class=&quot;legend-mark&quot; data-series=&quot;4&quot;&gt;&lt;/span&gt;Data &amp; storage&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section data-panel=&quot;catalog&quot; role=&quot;tabpanel&quot; hidden&gt;
+    &lt;div class=&quot;viz-controls atlas-filters&quot;&gt;
+      &lt;label class=&quot;form-label&quot;&gt;Search
+        &lt;input class=&quot;form-control&quot; type=&quot;search&quot; placeholder=&quot;Function, screen, table, or capability&quot; data-search&gt;
+      &lt;/label&gt;
+      &lt;label class=&quot;form-label&quot;&gt;Category
+        &lt;select class=&quot;form-select&quot; data-category&gt;&lt;option value=&quot;all&quot;&gt;All categories&lt;/option&gt;&lt;/select&gt;
+      &lt;/label&gt;
+      &lt;span class=&quot;text-muted text-small&quot; data-result-count aria-live=&quot;polite&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;atlas-groups&quot; data-atlas-groups&gt;&lt;/div&gt;
+    &lt;p class=&quot;text-muted atlas-empty&quot; data-empty hidden&gt;No matching project items.&lt;/p&gt;
+  &lt;/section&gt;
 &lt;/div&gt;
 
 &lt;style&gt;
-  #pulsefit-architecture-map { display: grid; gap: 1rem; color: var(--foreground); }
-  #pulsefit-architecture-map .architecture-selection { display: grid; grid-template-columns: minmax(9rem, .7fr) minmax(14rem, 1.4fr) minmax(12rem, 1fr); align-items: center; gap: 1rem; }
-  #pulsefit-architecture-map .architecture-selection h3,
-  #pulsefit-architecture-map .architecture-selection p { margin: 0; }
-  #pulsefit-architecture-map .architecture-selection code { overflow-wrap: anywhere; }
-  #pulsefit-architecture-map .architecture-map { position: relative; min-height: 36rem; }
-  #pulsefit-architecture-map .architecture-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
-  #pulsefit-architecture-map .architecture-lane { display: grid; align-content: start; gap: .55rem; min-width: 0; }
-  #pulsefit-architecture-map .architecture-lane h3 { margin: 0 0 .25rem; text-align: center; color: var(--muted-foreground); }
-  #pulsefit-architecture-map .architecture-node { position: relative; z-index: 2; min-width: 0; white-space: normal; }
-  #pulsefit-architecture-map .architecture-links { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-  #pulsefit-architecture-map .architecture-link { fill: none; stroke: var(--border); stroke-width: 1.2; vector-effect: non-scaling-stroke; transition: stroke .18s ease, opacity .18s ease; }
-  #pulsefit-architecture-map .architecture-link.is-related { stroke: var(--viz-series-1); stroke-width: 2; }
-  #pulsefit-architecture-map .architecture-link.is-muted { opacity: .18; }
-  @media (max-width: 620px) {
-    #pulsefit-architecture-map .architecture-selection { grid-template-columns: 1fr; }
-    #pulsefit-architecture-map .architecture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #pulsefit-project-atlas { display: grid; gap: 1rem; color: var(--foreground); }
+  #pulsefit-project-atlas .atlas-selection { display: grid; grid-template-columns: minmax(10rem,.75fr) minmax(15rem,1.5fr) minmax(12rem,1fr); align-items: center; gap: 1rem; }
+  #pulsefit-project-atlas .atlas-selection h3,
+  #pulsefit-project-atlas .atlas-selection p { margin: 0; }
+  #pulsefit-project-atlas .atlas-selection code { overflow-wrap: anywhere; }
+  #pulsefit-project-atlas .atlas-tabs { align-items: stretch; }
+  #pulsefit-project-atlas .atlas-tabs .btn { display: inline-flex; align-items: center; gap: .4rem; }
+  #pulsefit-project-atlas .architecture-map { position: relative; min-height: 36rem; }
+  #pulsefit-project-atlas .architecture-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1.25rem; }
+  #pulsefit-project-atlas .architecture-lane { display: grid; align-content: start; gap: .55rem; min-width: 0; }
+  #pulsefit-project-atlas .architecture-lane h3 { margin: 0 0 .25rem; text-align: center; color: var(--muted-foreground); }
+  #pulsefit-project-atlas .architecture-node { position: relative; z-index: 2; min-width: 0; white-space: normal; }
+  #pulsefit-project-atlas .architecture-node[data-lane=&quot;client&quot;] { background: color-mix(in srgb,var(--viz-series-1) 12%,transparent); }
+  #pulsefit-project-atlas .architecture-node[data-lane=&quot;application&quot;] { background: color-mix(in srgb,var(--viz-series-2) 12%,transparent); }
+  #pulsefit-project-atlas .architecture-node[data-lane=&quot;platform&quot;] { background: color-mix(in srgb,var(--viz-series-3) 12%,transparent); }
+  #pulsefit-project-atlas .architecture-node[data-lane=&quot;data&quot;] { background: color-mix(in srgb,var(--viz-series-4) 12%,transparent); }
+  #pulsefit-project-atlas .architecture-links { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  #pulsefit-project-atlas .architecture-link { fill: none; stroke: var(--border); stroke-width: 1.2; vector-effect: non-scaling-stroke; transition: stroke .18s ease,opacity .18s ease; }
+  #pulsefit-project-atlas .architecture-link.is-related { stroke: var(--viz-series-1); stroke-width: 2; }
+  #pulsefit-project-atlas .architecture-link.is-muted { opacity: .16; }
+  #pulsefit-project-atlas .atlas-legend { justify-content: center; }
+  #pulsefit-project-atlas .atlas-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+  #pulsefit-project-atlas .legend-mark { width: .7rem; height: .7rem; border-radius: 50%; background: var(--viz-series-1); }
+  #pulsefit-project-atlas .legend-mark[data-series=&quot;2&quot;] { background: var(--viz-series-2); }
+  #pulsefit-project-atlas .legend-mark[data-series=&quot;3&quot;] { background: var(--viz-series-3); }
+  #pulsefit-project-atlas .legend-mark[data-series=&quot;4&quot;] { background: var(--viz-series-4); }
+  #pulsefit-project-atlas .atlas-filters { align-items: end; }
+  #pulsefit-project-atlas .atlas-filters .form-label { flex: 1 1 15rem; }
+  #pulsefit-project-atlas [data-result-count] { margin-left: auto; padding-bottom: .55rem; }
+  #pulsefit-project-atlas .atlas-groups { display: grid; gap: 1.15rem; }
+  #pulsefit-project-atlas .atlas-group { display: grid; gap: .55rem; }
+  #pulsefit-project-atlas .atlas-group-header { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
+  #pulsefit-project-atlas .atlas-group-header h3 { margin: 0; }
+  #pulsefit-project-atlas .atlas-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(9.5rem,1fr)); gap: .5rem; }
+  #pulsefit-project-atlas .atlas-item { min-width: 0; overflow-wrap: anywhere; white-space: normal; }
+  #pulsefit-project-atlas .atlas-empty { text-align: center; }
+  @media (max-width:620px) {
+    #pulsefit-project-atlas .atlas-selection { grid-template-columns: 1fr; }
+    #pulsefit-project-atlas .architecture-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    #pulsefit-project-atlas [data-result-count] { margin-left: 0; }
   }
-  @media (max-width: 390px) {
-    #pulsefit-architecture-map .architecture-grid { grid-template-columns: 1fr; }
+  @media (max-width:390px) {
+    #pulsefit-project-atlas .architecture-grid { grid-template-columns: 1fr; }
+    #pulsefit-project-atlas .atlas-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   }
 &lt;/style&gt;
 
 &lt;script&gt;
 (() =&gt; {
-  const root = document.getElementById(&#x27;pulsefit-architecture-map&#x27;);
+  const root = document.getElementById(&#x27;pulsefit-project-atlas&#x27;);
   if (!root) return;
+
+  const architecture = [
+    {lane:&#x27;client&#x27;,name:&#x27;Clients&#x27;,items:[
+      [&#x27;web&#x27;,&#x27;Web application&#x27;,&#x27;React and Vite client for coach, player, team-member, and administrator workflows.&#x27;,&#x27;src/App.tsx · src/routes/ · src/components/&#x27;],
+      [&#x27;mobile-app&#x27;,&#x27;Mobile application&#x27;,&#x27;Expo and React Native application with shared accounts, role-specific navigation, offline preferences, and native media tools.&#x27;,&#x27;mobile/src/navigation/ · mobile/src/screens/&#x27;],
+      [&#x27;roles&#x27;,&#x27;Role experiences&#x27;,&#x27;Coach, player, administrator, viewer, chat, head-coach, and sales experiences with separate permissions.&#x27;,&#x27;src/auth/RequireRole.tsx · mobile/src/auth/&#x27;],
+      [&#x27;vercel&#x27;,&#x27;Vercel delivery&#x27;,&#x27;Hosts the production SPA, rewrites client routes, and applies browser security headers.&#x27;,&#x27;vercel.json · dist/&#x27;]
+    ]},
+    {lane:&#x27;application&#x27;,name:&#x27;Application layer&#x27;,items:[
+      [&#x27;routing&#x27;,&#x27;Routing &amp; guards&#x27;,&#x27;Role-aware routing enforces authentication, subscription, player-profile, team, and administrator MFA requirements.&#x27;,&#x27;src/App.tsx · src/auth/ · mobile/src/navigation/&#x27;],
+      [&#x27;features-node&#x27;,&#x27;Feature screens&#x27;,&#x27;Training, nutrition, progress, libraries, chat, check-ups, subscriptions, teams, settings, support, and administration.&#x27;,&#x27;src/routes/ · mobile/src/screens/&#x27;],
+      [&#x27;state&#x27;,&#x27;Client state&#x27;,&#x27;React Query manages web server state; React Navigation, contexts, and local state coordinate mobile flows.&#x27;,&#x27;@tanstack/react-query · @react-navigation/*&#x27;],
+      [&#x27;api&#x27;,&#x27;API modules&#x27;,&#x27;Typed services translate product actions into table queries, RPC calls, realtime subscriptions, and Edge Function requests.&#x27;,&#x27;src/api/ · mobile/src/api/&#x27;],
+      [&#x27;media-client&#x27;,&#x27;Media client&#x27;,&#x27;Validates photos, videos, and voice recordings before signed uploads and stores only opaque private-file references.&#x27;,&#x27;src/api/privateFiles.ts · mobile/src/api/privateFiles.ts · */mediaSecurity.ts&#x27;]
+    ]},
+    {lane:&#x27;platform&#x27;,name:&#x27;Supabase platform&#x27;,items:[
+      [&#x27;auth-node&#x27;,&#x27;Supabase Auth&#x27;,&#x27;Email/password identity, JWT sessions, secure mobile persistence, and administrator AAL2/TOTP MFA.&#x27;,&#x27;src/lib/supabase.ts · src/auth/AuthContext.tsx · mobile/src/auth/&#x27;],
+      [&#x27;rest&#x27;,&#x27;PostgREST &amp; RPC&#x27;,&#x27;Table CRUD plus transactional database functions for plans, imports, subscriptions, permissions, libraries, and progress.&#x27;,&#x27;supabase/migrations/&#x27;],
+      [&#x27;realtime&#x27;,&#x27;Realtime&#x27;,&#x27;Streams coach/player chat, administrator support, and workout completion changes.&#x27;,&#x27;src/api/chat.ts · src/api/adminChat.ts · migrations 0030 and 0052&#x27;],
+      [&#x27;r2fn&#x27;,&#x27;R2 storage function&#x27;,&#x27;Authorizes upload, finalize, download, and delete operations; validates purpose, type, size, signature, and ownership.&#x27;,&#x27;supabase/functions/r2-storage/index.ts&#x27;],
+      [&#x27;scanfn&#x27;,&#x27;Video scan function&#x27;,&#x27;Submits quarantined workout evidence for malware analysis and promotes only clean files.&#x27;,&#x27;supabase/functions/scan-video/index.ts&#x27;],
+      [&#x27;cleanupfn&#x27;,&#x27;Retention cleanup&#x27;,&#x27;Deletes expired legacy Supabase videos and R2 workout evidence according to retention policy.&#x27;,&#x27;supabase/functions/cleanup-player-videos/index.ts&#x27;]
+    ]},
+    {lane:&#x27;data&#x27;,name:&#x27;Data &amp; storage&#x27;,items:[
+      [&#x27;postgres&#x27;,&#x27;PostgreSQL &amp; RLS&#x27;,&#x27;Source of truth for identity, relationships, plans, logs, messages, libraries, permissions, and audit history.&#x27;,&#x27;supabase/migrations/0001–0053&#x27;],
+      [&#x27;coaching&#x27;,&#x27;Coaching data&#x27;,&#x27;Programs, workouts, exercises, diets, reusable content, delivery snapshots, check-ups, and player coaching profiles.&#x27;,&#x27;program_days · workouts · exercises · diet_days · catalog tables&#x27;],
+      [&#x27;progress&#x27;,&#x27;Progress data&#x27;,&#x27;Exercise and set logs, workout confirmation, diet adherence, measurements, and paginated analysis.&#x27;,&#x27;exercise_logs · set_logs · diet_logs · measurement_observations&#x27;],
+      [&#x27;messaging&#x27;,&#x27;Messaging data&#x27;,&#x27;Coach/player chat, exercise guidance, administrator support, attachments, voice, and unread state.&#x27;,&#x27;chat_messages · messages · admin_messages&#x27;],
+      [&#x27;registry&#x27;,&#x27;Private-file registry&#x27;,&#x27;Records opaque R2 references, ownership, relationship context, purpose, MIME type, bytes, verification, and deletion state.&#x27;,&#x27;public.private_files · migrations 0050–0053&#x27;],
+      [&#x27;r2&#x27;,&#x27;Cloudflare R2&#x27;,&#x27;Private object storage for workout videos, chat photos/videos/voice, and support attachments.&#x27;,&#x27;Private R2 bucket · supabase/functions/_shared/r2.ts&#x27;],
+      [&#x27;scanner&#x27;,&#x27;VirusTotal&#x27;,&#x27;External malware analysis for quarantined workout videos before playback.&#x27;,&#x27;VirusTotal API via scan-video&#x27;]
+    ]}
+  ];
+
+  const edges = [
+    [&#x27;web&#x27;,&#x27;routing&#x27;],[&#x27;mobile-app&#x27;,&#x27;routing&#x27;],[&#x27;roles&#x27;,&#x27;routing&#x27;],[&#x27;vercel&#x27;,&#x27;web&#x27;],[&#x27;routing&#x27;,&#x27;features-node&#x27;],[&#x27;features-node&#x27;,&#x27;state&#x27;],[&#x27;features-node&#x27;,&#x27;api&#x27;],[&#x27;state&#x27;,&#x27;api&#x27;],[&#x27;features-node&#x27;,&#x27;media-client&#x27;],[&#x27;api&#x27;,&#x27;auth-node&#x27;],[&#x27;api&#x27;,&#x27;rest&#x27;],[&#x27;api&#x27;,&#x27;realtime&#x27;],[&#x27;api&#x27;,&#x27;r2fn&#x27;],[&#x27;media-client&#x27;,&#x27;r2fn&#x27;],[&#x27;auth-node&#x27;,&#x27;postgres&#x27;],[&#x27;rest&#x27;,&#x27;postgres&#x27;],[&#x27;realtime&#x27;,&#x27;messaging&#x27;],[&#x27;realtime&#x27;,&#x27;progress&#x27;],[&#x27;r2fn&#x27;,&#x27;registry&#x27;],[&#x27;r2fn&#x27;,&#x27;r2&#x27;],[&#x27;scanfn&#x27;,&#x27;registry&#x27;],[&#x27;scanfn&#x27;,&#x27;r2&#x27;],[&#x27;scanfn&#x27;,&#x27;scanner&#x27;],[&#x27;cleanupfn&#x27;,&#x27;registry&#x27;],[&#x27;cleanupfn&#x27;,&#x27;r2&#x27;],[&#x27;postgres&#x27;,&#x27;coaching&#x27;],[&#x27;postgres&#x27;,&#x27;progress&#x27;],[&#x27;postgres&#x27;,&#x27;messaging&#x27;],[&#x27;postgres&#x27;,&#x27;registry&#x27;],[&#x27;coaching&#x27;,&#x27;progress&#x27;],[&#x27;messaging&#x27;,&#x27;registry&#x27;],[&#x27;progress&#x27;,&#x27;registry&#x27;]
+  ];
+
+  const catalogs = {
+    features: [
+      [&#x27;Authentication &amp; onboarding&#x27;,&#x27;src/auth/ · mobile/src/auth/&#x27;,&#x27;Email/password sign-in and registration; coach keys; player subscription keys; team invitations; persistent sessions; role routing; MFA; subscription and required-profile guards.&#x27;,&#x27;Sign in|Sign up|Coach key validation|Coach key claiming|Subscription key validation|Subscription key claiming|Team invitation claiming|Session persistence|Administrator TOTP MFA|Role-aware routing|Active-subscription guard|Player-profile onboarding&#x27;],
+      [&#x27;Coach attention center&#x27;,&#x27;src/routes/coach/Dashboard.tsx · mobile/src/screens/coach/CoachDashboardScreen.tsx&#x27;,&#x27;Prioritizes players and actions needing coach attention.&#x27;,&#x27;VIP players|Unread conversations|Check-ups due|Missing programming|Low activity|Last activity|Quick actions&#x27;],
+      [&#x27;Players &amp; subscriptions&#x27;,&#x27;src/api/players.ts · src/routes/coach/Subs.tsx&#x27;,&#x27;Roster, identity, subscriptions, status, VIP access, check-up schedules, and private coaching context.&#x27;,&#x27;Player roster|Player search|Player profile|Subscription creation|Subscription renewal|Access revoke/restore|VIP status|Check-up frequency|Private coach notes|Goals|Injuries &amp; limitations|Available equipment&#x27;],
+      [&#x27;Training builder&#x27;,&#x27;src/routes/coach/ProgramBuilder.tsx · src/api/programs.ts&#x27;,&#x27;Creates and delivers complete multi-week player programming.&#x27;,&#x27;Multi-week programs|Seven-day schedules|Training/rest days|Workout creation|Exercise prescriptions|Sets &amp; repetitions|Timed targets|Rest &amp; tempo|Load targets|Linked exercise groups|Reordering|Day duplication|Workout duplication|Exercise duplication|Week duplication|CSV import|Excel import|Template assignment|Delivery revisions|Workout confirmation&#x27;],
+      [&#x27;Coach libraries&#x27;,&#x27;src/routes/coach/*Library.tsx · src/api/*Templates.ts&#x27;,&#x27;Reusable, publishable, auditable coaching content.&#x27;,&#x27;Exercise catalog|Workout templates|Workout sections|Program templates|Tasks|Forms|Measurement groups|Ingredients|Recipes|Recipe books|Meal-plan templates|Draft lifecycle|Publish revisions|Duplicate items|Workspace sharing|Archive &amp; soft delete|Audit events&#x27;],
+      [&#x27;Nutrition&#x27;,&#x27;src/routes/coach/Diet.tsx · src/routes/player/Diet.tsx&#x27;,&#x27;Coach diet planning and player adherence flows.&#x27;,&#x27;Coach food list|Ingredient library|Daily meal plans|Meals &amp; snacks|Quantities &amp; notes|Duplicate diet day|Duplicate diet week|Diet Excel import|Diet Excel export|Diet templates|Calendar assignment|Meal completion|Daily comment|Adherence history&#x27;],
+      [&#x27;Workout &amp; progress&#x27;,&#x27;src/api/logs.ts · src/api/setLogs.ts · src/api/analysis.ts&#x27;,&#x27;Captures athlete performance and turns it into coach/player analysis.&#x27;,&#x27;Set-by-set logging|Repetition tracking|Weight tracking|Set completion|Player comments|Video evidence|Exercise summaries|Workout confirmation|Realtime completion|Workout filters|Exercise filters|Date filters|Paginated history|Coach analysis|Player analysis|Measurements&#x27;],
+      [&#x27;Check-ups &amp; scheduled work&#x27;,&#x27;src/api/checkups.ts · src/api/coachLibrary.ts&#x27;,&#x27;Schedules and records recurring coaching actions.&#x27;,&#x27;Daily check-up list|VIP priority|Scheduled weekdays|Check-up completion|General tasks|Progress-photo tasks|Body-metric tasks|Forms|Questions|Responses|Measurements|Measurement groups|Calendar scheduling&#x27;],
+      [&#x27;Messaging &amp; support&#x27;,&#x27;src/api/chat.ts · src/api/adminChat.ts&#x27;,&#x27;Realtime communication with relationship-aware private attachments.&#x27;,&#x27;Coach-player chat|Coach inbox|Unread state|VIP prioritization|Text messages|Emoji|Images|Videos|Voice messages|Team chat permissions|Coach-admin support|Admin support inbox|Realtime subscriptions&#x27;],
+      [&#x27;Internationalization &amp; access&#x27;,&#x27;src/i18n/ · mobile/src/i18n/ · src/design-system/&#x27;,&#x27;Cross-platform visual, language, and accessibility support.&#x27;,&#x27;English|Arabic|Right-to-left layout|Light theme|Dark theme|Responsive web|Keyboard focus|Accessible labels|Reduced motion|Touch targets|Lucide icons&#x27;]
+    ],
+    web: [
+      [&#x27;Public &amp; authentication screens&#x27;,&#x27;src/routes/&#x27;,&#x27;Website route components.&#x27;,&#x27;Landing|Terms|Changelog|CoachLogin|PlayerLogin|AdminLogin|CoachSignup|PlayerSignup|DesignPreview&#x27;],
+      [&#x27;Coach screens&#x27;,&#x27;src/routes/coach/&#x27;,&#x27;Coach and authorized team-member workspaces.&#x27;,&#x27;Dashboard|PlayerProfile|ProgramBuilder|Diet|PlayerAnalysis|DietProgress|Messages|Chat|ChatInbox|Checkups|Subs|Team|Settings|Support|ExerciseLibrary|WorkoutLibrary|ProgramLibrary|LibraryCatalog&#x27;],
+      [&#x27;Player screens&#x27;,&#x27;src/routes/player/&#x27;,&#x27;Player plan, tracking, communication, and account pages.&#x27;,&#x27;Program|Diet|Analysis|DietProgress|Chat|Profile|Blocked&#x27;],
+      [&#x27;Administrator screens&#x27;,&#x27;src/routes/admin/&#x27;,&#x27;Platform operations and support pages.&#x27;,&#x27;Coaches|Support&#x27;],
+      [&#x27;Authentication functions&#x27;,&#x27;src/api/auth.ts&#x27;,&#x27;Supabase authentication, key claiming, session, and subscription helpers.&#x27;,&#x27;signIn|signUp|claimCoachKey|checkCoachKey|checkSubscriptionKey|claimSubscriptionKey|signOut|getSession|validateSubscriptionKey|getMySubscription|isSubscriptionActive&#x27;],
+      [&#x27;Administrator functions&#x27;,&#x27;src/api/admin.ts&#x27;,&#x27;Administrator user and key operations.&#x27;,&#x27;listCoaches|listAllKeys|generateKey|generateCoachKey|listCoachKeys|adminCreateCoachKey|adminRevokeCoachKey|adminCreateKey|adminUpdateKey&#x27;],
+      [&#x27;Administrator support functions&#x27;,&#x27;src/api/adminChat.ts&#x27;,&#x27;Support thread queries, messages, attachments, and realtime listeners.&#x27;,&#x27;listAdminMessages|listCoachThreadSummaries|sendAdminMessage|uploadSupportAttachment|getSupportAttachmentUrl|subscribeToAdminMessages|subscribeToAllAdminMessages&#x27;],
+      [&#x27;Player functions&#x27;,&#x27;src/api/players.ts&#x27;,&#x27;Coach roster, player activity, subscription, and key operations.&#x27;,&#x27;listPlayerActivitySummaries|listPlayersForCoach|getPlayerForCoach|getLastActivity|getActivePlayerLink|coachCreatePlayerKey|coachCreateUnclaimedKey&#x27;],
+      [&#x27;Profile functions&#x27;,&#x27;src/api/playerDetails.ts · playerCoachingProfile.ts · profiles.ts&#x27;,&#x27;Player personal/sport details, coaching notes, and application profiles.&#x27;,&#x27;getPlayerDetails|savePlayerDetails|getPlayerCoachingProfile|savePlayerCoachingProfile|getMyProfile&#x27;],
+      [&#x27;Program functions&#x27;,&#x27;src/api/programs.ts&#x27;,&#x27;Program-day CRUD, duplication, templates, and validated imports.&#x27;,&#x27;listProgramDays|getProgramDay|upsertProgramDay|deleteProgramDay|createFullDay|duplicateWeek|duplicateDayToWeeks|duplicateExerciseToWeeks|duplicateWorkoutToWeeks|generateCsvTemplate|generateXlsxTemplate|importFromXlsx|importProgramFromCsv&#x27;],
+      [&#x27;Workout functions&#x27;,&#x27;src/api/workouts.ts&#x27;,&#x27;Workout CRUD within scheduled program days.&#x27;,&#x27;listWorkouts|createWorkout|updateWorkout|deleteWorkout&#x27;],
+      [&#x27;Exercise functions&#x27;,&#x27;src/api/exercises.ts&#x27;,&#x27;Scheduled exercise CRUD and bulk creation.&#x27;,&#x27;listExercises|createExercise|createExercises|updateExercise|deleteExercise&#x27;],
+      [&#x27;Workout log functions&#x27;,&#x27;src/api/logs.ts&#x27;,&#x27;Workout evidence, summaries, retention, and confirmation.&#x27;,&#x27;listLogsForPlayer|getLog|upsertLog|markPlayerVideoViewed|getWorkoutCompletion|confirmWorkout&#x27;],
+      [&#x27;Set log functions&#x27;,&#x27;src/api/setLogs.ts&#x27;,&#x27;Detailed exercise set persistence.&#x27;,&#x27;listSetLogs|replaceSetLogs&#x27;],
+      [&#x27;Guidance functions&#x27;,&#x27;src/api/messages.ts&#x27;,&#x27;Exercise-specific coach guidance.&#x27;,&#x27;listMessagesForPlayer|listMessagesForExercise|sendMessage|deleteMessage&#x27;],
+      [&#x27;Analysis functions&#x27;,&#x27;src/api/analysis.ts&#x27;,&#x27;Filtered and paginated performance reporting.&#x27;,&#x27;getProgressOptions|getProgressPage&#x27;],
+      [&#x27;Diet functions&#x27;,&#x27;src/api/diet.ts&#x27;,&#x27;Foods, diet days, duplication, workbook generation, and import.&#x27;,&#x27;listCoachFoods|addCoachFood|listDietDays|upsertDietDay|deleteDietDay|duplicateDietDayToWeeks|duplicateDietWeek|generateDietXlsxTemplate|importDietFromXlsx&#x27;],
+      [&#x27;Diet progress functions&#x27;,&#x27;src/api/dietProgress.ts&#x27;,&#x27;Player adherence reads and check-ins.&#x27;,&#x27;listDietLogs|saveDietLog&#x27;],
+      [&#x27;Exercise library functions&#x27;,&#x27;src/api/exerciseLibrary.ts&#x27;,&#x27;Reusable exercise catalog operations.&#x27;,&#x27;listLibraryExercises|createLibraryExercise|updateLibraryExercise|deleteLibraryExercise&#x27;],
+      [&#x27;Workout library functions&#x27;,&#x27;src/api/workoutTemplates.ts&#x27;,&#x27;Workout/section blueprints, lifecycle, and assignment.&#x27;,&#x27;listWorkoutTemplates|listWorkoutSections|getWorkoutTemplate|saveWorkoutBlueprint|duplicateWorkoutTemplate|publishWorkoutTemplate|deleteWorkoutTemplate|saveWorkoutAsTemplate|assignWorkoutTemplate&#x27;],
+      [&#x27;Program library functions&#x27;,&#x27;src/api/programTemplates.ts&#x27;,&#x27;Reusable schedules, delivery snapshots, and player assignment.&#x27;,&#x27;listProgramTemplates|getProgramSchedule|saveProgramTemplate|duplicateProgramTemplate|deleteProgramTemplate|assignProgramTemplateToPlayer|createProgramDelivery&#x27;],
+      [&#x27;Diet library functions&#x27;,&#x27;src/api/dietTemplates.ts&#x27;,&#x27;Reusable diet day templates and assignment.&#x27;,&#x27;listDietTemplates|saveDietAsTemplate|assignDietTemplate&#x27;],
+      [&#x27;Extended library functions&#x27;,&#x27;src/api/coachLibrary.ts&#x27;,&#x27;Tasks, forms, nutrition, measurements, relations, publishing, and archive operations.&#x27;,&#x27;listCoachLibraryItems|saveCoachLibraryItem|archiveCoachLibraryItem|publishCoachLibraryItem|duplicateCoachLibraryItem|listLibraryRelations|addLibraryRelation|removeLibraryRelation|createMeasurementForGroup&#x27;],
+      [&#x27;Check-up functions&#x27;,&#x27;src/api/checkups.ts&#x27;,&#x27;Daily check-up queries and completion.&#x27;,&#x27;listCheckupsForDate|setCheckup&#x27;],
+      [&#x27;Chat functions&#x27;,&#x27;src/api/chat.ts&#x27;,&#x27;Coach/player threads, text/media/voice, URLs, and realtime.&#x27;,&#x27;listCoachChatThreads|markCoachThreadRead|listChatMessages|sendChatMessage|uploadChatAttachment|uploadChatVoice|getChatAttachmentUrl|subscribeToChatMessages&#x27;],
+      [&#x27;Team functions&#x27;,&#x27;src/api/team.ts&#x27;,&#x27;Team invitations, roles, assignments, and revocation.&#x27;,&#x27;listTeamInvites|createTeamInvite|listTeamMembers|assignTeamClient|revokeTeamMember|checkTeamInvite|claimTeamInvite&#x27;],
+      [&#x27;Private-file functions&#x27;,&#x27;src/api/privateFiles.ts&#x27;,&#x27;R2-backed private upload, URL, delete, and reference helpers.&#x27;,&#x27;uploadPrivateFile|getPrivateFileUrl|deletePrivateFile|isPrivateFileRef&#x27;],
+      [&#x27;Legacy storage functions&#x27;,&#x27;src/api/storage.ts&#x27;,&#x27;Compatibility access for existing Supabase Storage videos.&#x27;,&#x27;uploadVideo|uploadVideoToSupabase|getVideoUrl&#x27;],
+      [&#x27;Auth &amp; realtime hooks&#x27;,&#x27;src/auth/ · src/hooks/&#x27;,&#x27;Application session providers, route helpers, unread state, and workout completion state.&#x27;,&#x27;AuthProvider|useAuth|homeFor|getLastRead|markRead|useUnreadCounts|useMarkReadOnMount|useWorkoutCompletion&#x27;]
+    ],
+    mobile: [
+      [&#x27;Player screens&#x27;,&#x27;mobile/src/screens/player/&#x27;,&#x27;Native player experience.&#x27;,&#x27;PlayerHomeScreen|ProgramScreen|DietScreen|PlayerProgressScreen|Coach chat&#x27;],
+      [&#x27;Coach screens&#x27;,&#x27;mobile/src/screens/coach/&#x27;,&#x27;Native coach and team workspace.&#x27;,&#x27;CoachDashboardScreen|PlayersScreen|CoachPlanScreen|CoachLibraries|ProgramLibrary|CoachCheckupsScreen|CoachTeam|CoachAlertsScreen|CoachSupportScreen|CoachSettingsScreen|AppearanceSettingsScreen|CoachMoreScreen|CoachMoreActiveScreen&#x27;],
+      [&#x27;Administrator screens&#x27;,&#x27;mobile/src/screens/admin/&#x27;,&#x27;Native platform administration.&#x27;,&#x27;AdminOverviewScreen|AdminManagementScreen|AdminSupportScreen&#x27;],
+      [&#x27;Shared &amp; access screens&#x27;,&#x27;mobile/src/screens/&#x27;,&#x27;Authentication, legal, account, and shared role screens.&#x27;,&#x27;LoginScreen|MfaScreen|RenewSubscriptionScreen|LegalUpdatesScreen|SharedScreens&#x27;],
+      [&#x27;Player service functions&#x27;,&#x27;mobile/src/api/player.ts&#x27;,&#x27;Native player plan, workout log, and diet data flow.&#x27;,&#x27;getActivePlayerLink|getProgram|getTodayLog|saveTodayLog|getDiet|saveDietCheckin&#x27;],
+      [&#x27;Private-file functions&#x27;,&#x27;mobile/src/api/privateFiles.ts&#x27;,&#x27;Streamed device uploads and authorized private file access.&#x27;,&#x27;uploadPrivateBytes|uploadPrivateUri|getPrivateFileUrl|deletePrivateFile|isPrivateFileRef&#x27;],
+      [&#x27;Media validation&#x27;,&#x27;mobile/src/lib/mediaSecurity.ts&#x27;,&#x27;Magic-byte, MIME type, purpose, and size validation before upload.&#x27;,&#x27;validateMedia&#x27;],
+      [&#x27;Workbook functions&#x27;,&#x27;mobile/src/lib/workbookImport.ts&#x27;,&#x27;Native program/diet import and blank template sharing.&#x27;,&#x27;importProgramWorkbook|importDietWorkbook|shareProgramTemplate|shareDietTemplate&#x27;],
+      [&#x27;Date helpers&#x27;,&#x27;mobile/src/lib/dates.ts&#x27;,&#x27;Program-week and ISO date calculations.&#x27;,&#x27;dayNames|todayISO|currentProgramWeek&#x27;],
+      [&#x27;Mobile platform integrations&#x27;,&#x27;mobile package modules&#x27;,&#x27;Native device capabilities used throughout the app.&#x27;,&#x27;Secure Store|File System|Image Picker|Document Picker|Audio|Clipboard|Sharing|Crypto|Fonts|Assets|AsyncStorage|React Navigation&#x27;],
+      [&#x27;Language &amp; appearance&#x27;,&#x27;mobile/src/i18n/ · mobile/src/theme/&#x27;,&#x27;Persistent native localization and theming.&#x27;,&#x27;English|Arabic|RTL layouts|Light theme|Dark theme|Theme persistence|Navigation persistence&#x27;]
+    ],
+    database: [
+      [&#x27;Identity &amp; access tables&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Identity, invitations, relationships, subscription access, and coaching context.&#x27;,&#x27;profiles|coach_keys|coach_player_links|app_config|player_details|player_coaching_profiles&#x27;],
+      [&#x27;Team tables&#x27;,&#x27;supabase/migrations/0043–0047&#x27;,&#x27;Coach staff membership, roles, invitations, and client assignments.&#x27;,&#x27;coach_team_invites|coach_team_members|coach_team_assignments&#x27;],
+      [&#x27;Training tables&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Delivered plans and athlete logging.&#x27;,&#x27;program_days|workouts|exercises|exercise_logs|set_logs|messages|checkups&#x27;],
+      [&#x27;Nutrition tables&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Assigned diets, adherence, and coach food records.&#x27;,&#x27;coach_foods|diet_days|diet_logs|diet_templates&#x27;],
+      [&#x27;Messaging tables&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Coach/player and administrator support communication.&#x27;,&#x27;chat_messages|admin_messages&#x27;],
+      [&#x27;Core library tables&#x27;,&#x27;supabase/migrations/0032–0049&#x27;,&#x27;Reusable workouts, sections, programs, revisions, deliveries, and audit history.&#x27;,&#x27;exercise_library|workout_templates|workout_template_exercises|workout_sections|workout_section_exercises|workout_template_sections|program_templates|program_template_days|program_template_day_workouts|catalog_revisions|program_deliveries|library_audit_events&#x27;],
+      [&#x27;Tasks, forms &amp; measurements&#x27;,&#x27;supabase/migrations/0048&#x27;,&#x27;Reusable scheduled coaching content and player submissions.&#x27;,&#x27;coaching_tasks|coach_forms|form_questions|form_responses|form_answers|measurements|measurement_groups|measurement_group_items|measurement_observations|scheduled_coaching_items&#x27;],
+      [&#x27;Nutrition library tables&#x27;,&#x27;supabase/migrations/0048&#x27;,&#x27;Normalized ingredients, recipes, collections, and multi-week menus.&#x27;,&#x27;food_items|dishes|dish_components|dish_collections|collection_dishes|menu_templates|menu_entries&#x27;],
+      [&#x27;Private-file table&#x27;,&#x27;supabase/migrations/0050–0053&#x27;,&#x27;Opaque R2 object metadata and verification lifecycle.&#x27;,&#x27;private_files&#x27;],
+      [&#x27;Identity &amp; role RPCs&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Database identity and relationship authorization.&#x27;,&#x27;handle_new_user|auth_role|has_active_subscription|is_my_player&#x27;],
+      [&#x27;Coach onboarding RPCs&#x27;,&#x27;supabase/migrations/0008–0009&#x27;,&#x27;Coach key validation and claiming.&#x27;,&#x27;check_coach_key|claim_coach_key|signup_as_coach&#x27;],
+      [&#x27;Subscription RPCs&#x27;,&#x27;supabase/migrations/0008–0047&#x27;,&#x27;Player key validation, claiming, creation, and renewal workflows.&#x27;,&#x27;check_subscription_key|claim_subscription_key|coach_create_player_key|coach_create_unclaimed_key&#x27;],
+      [&#x27;Administrator RPCs&#x27;,&#x27;supabase/migrations/0008–0009&#x27;,&#x27;Privileged key management.&#x27;,&#x27;admin_create_coach_key|admin_revoke_coach_key|admin_create_key|admin_update_key&#x27;],
+      [&#x27;Team permission RPCs&#x27;,&#x27;supabase/migrations/0043–0047&#x27;,&#x27;Atomic invitations and role/assignment authorization checks.&#x27;,&#x27;create_team_invite|check_team_invite|claim_team_invite|team_owner_for_member|team_role_for_member|team_has_assignment|team_can_view_player|team_can_chat_player|team_can_manage_player|team_can_sell_player|team_can_sell_for_owner&#x27;],
+      [&#x27;Check-up RPCs&#x27;,&#x27;supabase/migrations/0045–0046&#x27;,&#x27;Validated weekly check-up schedule calculation.&#x27;,&#x27;checkup_weekdays_for_count|valid_checkup_weekdays&#x27;],
+      [&#x27;Import RPCs&#x27;,&#x27;supabase/migrations/0025&#x27;,&#x27;Atomic validated replacement of player program and diet data.&#x27;,&#x27;replace_program_import|replace_diet_import&#x27;],
+      [&#x27;Template &amp; delivery RPCs&#x27;,&#x27;supabase/migrations/0032–0049&#x27;,&#x27;Reusable templates, assignment, and immutable delivery snapshots.&#x27;,&#x27;save_workout_as_template|assign_workout_template|save_diet_as_template|assign_diet_template|assign_program_template_to_player|create_program_delivery&#x27;],
+      [&#x27;Blueprint RPCs&#x27;,&#x27;supabase/migrations/0049&#x27;,&#x27;Atomic workout blueprint save and duplication.&#x27;,&#x27;save_workout_blueprint|duplicate_workout_blueprint&#x27;],
+      [&#x27;Library lifecycle RPCs&#x27;,&#x27;supabase/migrations/0048&#x27;,&#x27;Read authorization, publication, soft deletion, and audit recording.&#x27;,&#x27;can_read_coach_library|publish_library_item|soft_delete_library_item|record_library_change&#x27;],
+      [&#x27;Progress RPCs&#x27;,&#x27;supabase/migrations/0013–0032&#x27;,&#x27;Paginated reporting, video retention, and exercise summary synchronization.&#x27;,&#x27;get_progress_options|get_progress_page|mark_player_video_viewed|reset_player_video_retention|resync_exercise_log_summary|set_logs_touch_parent&#x27;],
+      [&#x27;Maintenance trigger&#x27;,&#x27;supabase/migrations/0003&#x27;,&#x27;Shared updated-at timestamp trigger.&#x27;,&#x27;touch_updated_at&#x27;]
+    ],
+    media: [
+      [&#x27;R2 upload actions&#x27;,&#x27;supabase/functions/r2-storage/index.ts&#x27;,&#x27;Private object operations authorized against PostgreSQL relationships and stored in Cloudflare R2.&#x27;,&#x27;Create upload URL|Finalize upload|Create download URL|Delete private file&#x27;],
+      [&#x27;Upload validation&#x27;,&#x27;supabase/functions/r2-storage/index.ts · */mediaSecurity.ts&#x27;,&#x27;Defense-in-depth rules on both clients and the Edge Function.&#x27;,&#x27;Purpose allowlist|MIME allowlist|500 MB video maximum|Photo-only image inputs|Video-only video inputs|Voice MIME validation|Filename validation|Byte-length verification|Magic-byte signature check|Relationship authorization&#x27;],
+      [&#x27;Video quarantine&#x27;,&#x27;supabase/functions/scan-video/index.ts&#x27;,&#x27;Workout evidence stays unavailable until scanning succeeds.&#x27;,&#x27;Quarantine object|Submit scan|Poll analysis|Promote clean video|Reject unsafe video|Update registry status&#x27;],
+      [&#x27;Retention cleanup&#x27;,&#x27;supabase/functions/cleanup-player-videos/index.ts&#x27;,&#x27;Scheduled deletion across both storage systems.&#x27;,&#x27;Find expired videos|Delete legacy Supabase objects|Delete R2 objects|Mark registry deleted|Reset retention after update&#x27;],
+      [&#x27;Cloudflare R2&#x27;,&#x27;supabase/functions/_shared/r2.ts&#x27;,&#x27;Private storage connected to Supabase through the private_files registry and Edge Functions.&#x27;,&#x27;Signed PUT|Signed GET|Head object verification|Copy object|Delete object|Private bucket|CORS policy&#x27;],
+      [&#x27;Legacy Supabase Storage&#x27;,&#x27;supabase/migrations/&#x27;,&#x27;Compatibility buckets and RLS policies for older objects.&#x27;,&#x27;videos|video-quarantine|chat-attachments|support&#x27;],
+      [&#x27;File purposes&#x27;,&#x27;src/api/privateFiles.ts · mobile/src/api/privateFiles.ts&#x27;,&#x27;Only product-approved photos, videos, and chat voice are accepted; arbitrary documents are rejected.&#x27;,&#x27;Workout video|Chat image|Chat video|Chat voice|Support image|Support video&#x27;],
+      [&#x27;Security boundaries&#x27;,&#x27;supabase/migrations/ · vercel.json&#x27;,&#x27;Authentication, authorization, secret isolation, and browser protections.&#x27;,&#x27;Supabase JWT|PostgreSQL RLS|SECURITY DEFINER validation|Team-role permissions|No client service key|No client R2 secret|No client scanner secret|Short-lived signed URLs|Administrator MFA|Auth rate limits|CSP|HSTS|Clickjacking protection|MIME-sniffing protection&#x27;],
+      [&#x27;Import security&#x27;,&#x27;src/api/programs.ts · src/api/diet.ts&#x27;,&#x27;Spreadsheet files are accepted only by dedicated plan import flows, not as chat attachments.&#x27;,&#x27;ZIP structure validation|Expected worksheet validation|Column validation|Row limits|Formula-like cell rejection|Atomic RPC import&#x27;],
+      [&#x27;Realtime channels&#x27;,&#x27;src/api/chat.ts · src/api/adminChat.ts · src/hooks/&#x27;,&#x27;Scoped live updates.&#x27;,&#x27;Coach-player messages|Administrator support|Workout completion|Unread counts&#x27;],
+      [&#x27;Deployment&#x27;,&#x27;vercel.json · mobile/app.json · supabase/config.toml&#x27;,&#x27;Independent delivery targets sharing one Supabase backend.&#x27;,&#x27;Vercel web SPA|Expo Android|Expo iOS|Supabase Auth|PostgREST|Realtime|Edge Functions|PostgreSQL 15|Cloudflare R2|VirusTotal|Supabase Cron &amp; Vault&#x27;],
+      [&#x27;Client environment&#x27;,&#x27;VITE_SUPABASE_URL · VITE_SUPABASE_PUBLISHABLE_KEY&#x27;,&#x27;Only public Supabase connection values are shipped to the clients.&#x27;,&#x27;Supabase URL|Publishable key&#x27;],
+      [&#x27;Server secrets&#x27;,&#x27;Supabase Edge Function secrets&#x27;,&#x27;Credentials remain in hosted server-side secret storage.&#x27;,&#x27;Service-role credential|R2 account identifier|R2 access key|R2 secret key|R2 bucket|VirusTotal API key&#x27;]
+    ]
+  };
+
+  const titleCase = (value) =&gt; value
+    .replace(/([a-z0-9])([A-Z])/g,&#x27;$1 $2&#x27;)
+    .replace(/[_-]+/g,&#x27; &#x27;)
+    .replace(/\b\w/g,(letter) =&gt; letter.toUpperCase());
+
+  const normalizedCatalogs = Object.fromEntries(Object.entries(catalogs).map(([view,groups]) =&gt; [view,groups.map(([name,path,description,items]) =&gt; ({
+    name,path,description,items:items.split(&#x27;|&#x27;).map((item) =&gt; ({name:item}))
+  }))]));
+
+  const architectureGrid = root.querySelector(&#x27;[data-architecture-grid]&#x27;);
+  architecture.forEach((group) =&gt; {
+    const section = document.createElement(&#x27;section&#x27;);
+    section.className = &#x27;architecture-lane&#x27;;
+    section.dataset.lane = group.lane;
+    const heading = document.createElement(&#x27;h3&#x27;);
+    heading.textContent = group.name;
+    section.appendChild(heading);
+    group.items.forEach(([id,title,description,path]) =&gt; {
+      const button = document.createElement(&#x27;button&#x27;);
+      button.className = &#x27;btn btn-block architecture-node&#x27;;
+      button.type = &#x27;button&#x27;;
+      button.dataset.id = id;
+      button.dataset.lane = group.lane;
+      button.dataset.title = title;
+      button.dataset.description = description;
+      button.dataset.path = path;
+      button.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
+      button.textContent = title;
+      section.appendChild(button);
+    });
+    architectureGrid.appendChild(section);
+  });
+
   const map = root.querySelector(&#x27;.architecture-map&#x27;);
   const svg = root.querySelector(&#x27;.architecture-links&#x27;);
-  const nodes = new Map([...root.querySelectorAll(&#x27;.architecture-node&#x27;)].map((node) =&gt; [node.dataset.id, node]));
-  const edges = [
-    [&#x27;web&#x27;,&#x27;routing&#x27;], [&#x27;mobile&#x27;,&#x27;routing&#x27;], [&#x27;roles&#x27;,&#x27;routing&#x27;], [&#x27;vercel&#x27;,&#x27;web&#x27;],
-    [&#x27;routing&#x27;,&#x27;features&#x27;], [&#x27;features&#x27;,&#x27;state&#x27;], [&#x27;features&#x27;,&#x27;api&#x27;], [&#x27;state&#x27;,&#x27;api&#x27;], [&#x27;api&#x27;,&#x27;auth&#x27;],
-    [&#x27;api&#x27;,&#x27;rest&#x27;], [&#x27;api&#x27;,&#x27;realtime&#x27;], [&#x27;api&#x27;,&#x27;r2fn&#x27;], [&#x27;media&#x27;,&#x27;r2fn&#x27;], [&#x27;features&#x27;,&#x27;media&#x27;],
-    [&#x27;auth&#x27;,&#x27;postgres&#x27;], [&#x27;rest&#x27;,&#x27;postgres&#x27;], [&#x27;realtime&#x27;,&#x27;messaging&#x27;], [&#x27;realtime&#x27;,&#x27;progress&#x27;],
-    [&#x27;r2fn&#x27;,&#x27;registry&#x27;], [&#x27;r2fn&#x27;,&#x27;r2&#x27;], [&#x27;scanfn&#x27;,&#x27;registry&#x27;], [&#x27;scanfn&#x27;,&#x27;r2&#x27;], [&#x27;scanfn&#x27;,&#x27;scanner&#x27;],
-    [&#x27;cleanupfn&#x27;,&#x27;registry&#x27;], [&#x27;cleanupfn&#x27;,&#x27;r2&#x27;], [&#x27;postgres&#x27;,&#x27;coaching&#x27;], [&#x27;postgres&#x27;,&#x27;progress&#x27;],
-    [&#x27;postgres&#x27;,&#x27;messaging&#x27;], [&#x27;postgres&#x27;,&#x27;registry&#x27;], [&#x27;coaching&#x27;,&#x27;progress&#x27;], [&#x27;messaging&#x27;,&#x27;registry&#x27;],
-    [&#x27;progress&#x27;,&#x27;registry&#x27;]
-  ];
+  const nodes = new Map([...root.querySelectorAll(&#x27;.architecture-node&#x27;)].map((node) =&gt; [node.dataset.id,node]));
   const paths = [];
-
-  function point(node, side) {
+  const select = (kind,title,description,path,control) =&gt; {
+    root.querySelector(&#x27;[data-selection-kind]&#x27;).textContent = kind;
+    root.querySelector(&#x27;[data-selection-title]&#x27;).textContent = title;
+    root.querySelector(&#x27;[data-selection-description]&#x27;).textContent = description;
+    root.querySelector(&#x27;[data-selection-path]&#x27;).textContent = path;
+    root.querySelectorAll(&#x27;.architecture-node,.atlas-item&#x27;).forEach((candidate) =&gt; candidate.setAttribute(&#x27;aria-pressed&#x27;,String(candidate === control)));
+  };
+  const point = (node,side) =&gt; {
     const nodeBox = node.getBoundingClientRect();
     const mapBox = map.getBoundingClientRect();
-    return {
-      x: side === &#x27;left&#x27; ? nodeBox.left - mapBox.left : side === &#x27;right&#x27; ? nodeBox.right - mapBox.left : nodeBox.left + nodeBox.width / 2 - mapBox.left,
-      y: nodeBox.top + nodeBox.height / 2 - mapBox.top,
-    };
-  }
-
-  function draw() {
+    return {x:side === &#x27;left&#x27; ? nodeBox.left-mapBox.left : side === &#x27;right&#x27; ? nodeBox.right-mapBox.left : nodeBox.left+nodeBox.width/2-mapBox.left,y:nodeBox.top+nodeBox.height/2-mapBox.top};
+  };
+  const draw = () =&gt; {
+    if (root.querySelector(&#x27;[data-panel=&quot;architecture&quot;]&#x27;).hidden) return;
     const box = map.getBoundingClientRect();
-    svg.setAttribute(&#x27;viewBox&#x27;, `0 0 ${Math.max(1, box.width)} ${Math.max(1, box.height)}`);
-    edges.forEach(([fromId, toId], index) =&gt; {
-      const from = nodes.get(fromId);
-      const to = nodes.get(toId);
+    svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${Math.max(1,box.width)} ${Math.max(1,box.height)}`);
+    edges.forEach(([fromId,toId],index) =&gt; {
+      const from = nodes.get(fromId), to = nodes.get(toId);
       if (!from || !to) return;
-      const fromBox = from.getBoundingClientRect();
-      const toBox = to.getBoundingClientRect();
-      const horizontal = Math.abs(fromBox.left - toBox.left) &gt; Math.abs(fromBox.top - toBox.top);
-      const start = point(from, horizontal &amp;&amp; fromBox.left &lt; toBox.left ? &#x27;right&#x27; : horizontal ? &#x27;left&#x27; : &#x27;center&#x27;);
-      const end = point(to, horizontal &amp;&amp; fromBox.left &lt; toBox.left ? &#x27;left&#x27; : horizontal ? &#x27;right&#x27; : &#x27;center&#x27;);
-      const bend = horizontal ? Math.max(24, Math.abs(end.x - start.x) * .45) : 0;
-      const d = horizontal
-        ? `M ${start.x} ${start.y} C ${start.x + (end.x &gt; start.x ? bend : -bend)} ${start.y}, ${end.x - (end.x &gt; start.x ? bend : -bend)} ${end.y}, ${end.x} ${end.y}`
-        : `M ${start.x} ${start.y} C ${start.x} ${(start.y + end.y) / 2}, ${end.x} ${(start.y + end.y) / 2}, ${end.x} ${end.y}`;
+      const fromBox = from.getBoundingClientRect(), toBox = to.getBoundingClientRect();
+      const horizontal = Math.abs(fromBox.left-toBox.left) &gt; Math.abs(fromBox.top-toBox.top);
+      const start = point(from,horizontal &amp;&amp; fromBox.left &lt; toBox.left ? &#x27;right&#x27; : horizontal ? &#x27;left&#x27; : &#x27;center&#x27;);
+      const end = point(to,horizontal &amp;&amp; fromBox.left &lt; toBox.left ? &#x27;left&#x27; : horizontal ? &#x27;right&#x27; : &#x27;center&#x27;);
+      const bend = horizontal ? Math.max(24,Math.abs(end.x-start.x)*.45) : 0;
+      const d = horizontal ? `M ${start.x} ${start.y} C ${start.x+(end.x&gt;start.x?bend:-bend)} ${start.y}, ${end.x-(end.x&gt;start.x?bend:-bend)} ${end.y}, ${end.x} ${end.y}` : `M ${start.x} ${start.y} C ${start.x} ${(start.y+end.y)/2}, ${end.x} ${(start.y+end.y)/2}, ${end.x} ${end.y}`;
       let path = paths[index];
       if (!path) {
-        path = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;, &#x27;path&#x27;);
-        path.setAttribute(&#x27;class&#x27;, &#x27;architecture-link&#x27;);
+        path = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;path&#x27;);
+        path.setAttribute(&#x27;class&#x27;,&#x27;architecture-link&#x27;);
         path.dataset.from = fromId;
         path.dataset.to = toId;
         svg.appendChild(path);
         paths[index] = path;
       }
-      path.setAttribute(&#x27;d&#x27;, d);
+      path.setAttribute(&#x27;d&#x27;,d);
     });
-  }
-
-  function select(node) {
-    nodes.forEach((candidate) =&gt; candidate.setAttribute(&#x27;aria-pressed&#x27;, String(candidate === node)));
-    root.querySelector(&#x27;[data-selection-title]&#x27;).textContent = node.dataset.title;
-    root.querySelector(&#x27;[data-selection-description]&#x27;).textContent = node.dataset.description;
-    root.querySelector(&#x27;[data-selection-path]&#x27;).textContent = node.dataset.path;
+  };
+  nodes.forEach((node) =&gt; node.addEventListener(&#x27;click&#x27;,() =&gt; {
+    select(&#x27;System module&#x27;,node.dataset.title,node.dataset.description,node.dataset.path,node);
     paths.forEach((path) =&gt; {
       const related = path.dataset.from === node.dataset.id || path.dataset.to === node.dataset.id;
-      path.classList.toggle(&#x27;is-related&#x27;, related);
-      path.classList.toggle(&#x27;is-muted&#x27;, !related);
+      path.classList.toggle(&#x27;is-related&#x27;,related);
+      path.classList.toggle(&#x27;is-muted&#x27;,!related);
     });
-  }
+  }));
 
-  nodes.forEach((node) =&gt; node.addEventListener(&#x27;click&#x27;, () =&gt; select(node)));
+  const catalogPanel = root.querySelector(&#x27;[data-panel=&quot;catalog&quot;]&#x27;);
+  const architecturePanel = root.querySelector(&#x27;[data-panel=&quot;architecture&quot;]&#x27;);
+  const groupHost = root.querySelector(&#x27;[data-atlas-groups]&#x27;);
+  const search = root.querySelector(&#x27;[data-search]&#x27;);
+  const category = root.querySelector(&#x27;[data-category]&#x27;);
+  const count = root.querySelector(&#x27;[data-result-count]&#x27;);
+  const empty = root.querySelector(&#x27;[data-empty]&#x27;);
+  let currentView = &#x27;architecture&#x27;;
+
+  const renderCatalog = () =&gt; {
+    const groups = normalizedCatalogs[currentView] || [];
+    const query = search.value.trim().toLowerCase();
+    const selectedCategory = category.value;
+    groupHost.replaceChildren();
+    let visible = 0;
+    groups.forEach((group) =&gt; {
+      if (selectedCategory !== &#x27;all&#x27; &amp;&amp; group.name !== selectedCategory) return;
+      const matches = group.items.filter((item) =&gt; `${item.name} ${group.name} ${group.description} ${group.path}`.toLowerCase().includes(query));
+      if (!matches.length) return;
+      visible += matches.length;
+      const section = document.createElement(&#x27;section&#x27;);
+      section.className = &#x27;atlas-group&#x27;;
+      const header = document.createElement(&#x27;div&#x27;);
+      header.className = &#x27;atlas-group-header&#x27;;
+      const heading = document.createElement(&#x27;h3&#x27;);
+      heading.textContent = group.name;
+      const badge = document.createElement(&#x27;span&#x27;);
+      badge.className = &#x27;viz-badge&#x27;;
+      badge.textContent = `${matches.length}`;
+      header.append(heading,badge);
+      const grid = document.createElement(&#x27;div&#x27;);
+      grid.className = &#x27;atlas-grid&#x27;;
+      matches.forEach((item) =&gt; {
+        const button = document.createElement(&#x27;button&#x27;);
+        button.type = &#x27;button&#x27;;
+        button.className = &#x27;btn viz-tile atlas-item&#x27;;
+        button.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
+        button.textContent = item.name;
+        button.setAttribute(&#x27;aria-label&#x27;,`${item.name}. ${group.description} Source: ${group.path}`);
+        button.addEventListener(&#x27;click&#x27;,() =&gt; select(group.name,item.name,group.description,group.path,button));
+        grid.appendChild(button);
+      });
+      section.append(header,grid);
+      groupHost.appendChild(section);
+    });
+    count.textContent = `${visible} ${visible === 1 ? &#x27;item&#x27; : &#x27;items&#x27;}`;
+    empty.hidden = visible !== 0;
+  };
+
+  const populateCategories = () =&gt; {
+    category.replaceChildren(new Option(&#x27;All categories&#x27;,&#x27;all&#x27;));
+    (normalizedCatalogs[currentView] || []).forEach((group) =&gt; category.add(new Option(group.name,group.name)));
+  };
+
+  root.querySelectorAll(&#x27;[data-view]&#x27;).forEach((tab) =&gt; tab.addEventListener(&#x27;click&#x27;,() =&gt; {
+    currentView = tab.dataset.view;
+    root.querySelectorAll(&#x27;[data-view]&#x27;).forEach((candidate) =&gt; {
+      const active = candidate === tab;
+      candidate.setAttribute(&#x27;aria-selected&#x27;,String(active));
+      candidate.classList.toggle(&#x27;btn-primary&#x27;,active);
+    });
+    const showArchitecture = currentView === &#x27;architecture&#x27;;
+    architecturePanel.hidden = !showArchitecture;
+    catalogPanel.hidden = showArchitecture;
+    if (showArchitecture) requestAnimationFrame(draw);
+    else {
+      search.value = &#x27;&#x27;;
+      populateCategories();
+      renderCatalog();
+    }
+  }));
+  search.addEventListener(&#x27;input&#x27;,renderCatalog);
+  category.addEventListener(&#x27;change&#x27;,renderCatalog);
   const resizeObserver = new ResizeObserver(draw);
   resizeObserver.observe(map);
-  requestAnimationFrame(() =&gt; { draw(); select(nodes.get(&#x27;web&#x27;)); });
+  requestAnimationFrame(() =&gt; {
+    draw();
+    nodes.get(&#x27;web&#x27;).click();
+    if (window.lucide) window.lucide.createIcons({attrs:{width:16,height:16}});
+  });
 })();
 &lt;/script&gt;
 
