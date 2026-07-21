@@ -4,6 +4,7 @@ import {
   listChatMessages,
   sendChatMessage,
   uploadChatAttachment,
+  uploadChatVoice,
   subscribeToChatMessages,
   type ChatMessage,
 } from '../api/chat';
@@ -92,7 +93,7 @@ export default function ChatWindow({
   async function sendRecordedAudio(file: File) {
     setUploading(true);
     try {
-      const attachment = await uploadChatAttachment(coachId, playerId, currentUserId, file);
+      const attachment = await uploadChatVoice(coachId, playerId, currentUserId, file);
       const msg = await sendChatMessage(coachId, playerId, currentUserId, '', attachment.path, attachment.type);
       qc.setQueryData<ChatMessage[]>(key, (prev = []) => prev.some((item) => item.id === msg.id) ? prev : [...prev, msg]);
     } catch (error) {
@@ -217,8 +218,8 @@ export default function ChatWindow({
         <button
           type="button"
           className="chat-tool-button attach"
-          title="Send a picture, video, or audio file"
-          aria-label="Attach picture, video, or audio file"
+          title="Send a picture or video (videos up to 500 MB)"
+          aria-label="Attach picture or video"
           onClick={() => fileRef.current?.click()}
           disabled={uploading || send.isPending || recording}
         >
@@ -233,7 +234,7 @@ export default function ChatWindow({
         <input
           ref={fileRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/mp4,audio/wav,audio/ogg,audio/webm"
+          accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
           onChange={handleFile}
           style={{ display: 'none' }}
         />

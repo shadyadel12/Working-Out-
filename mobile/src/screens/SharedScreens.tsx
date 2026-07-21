@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Crypto from "expo-crypto";
 import { AudioModule, RecordingPresets, useAudioRecorder } from "expo-audio";
 import { Card, Screen, textStyles } from "../components/Screen";
@@ -19,7 +19,7 @@ import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
 import { validateMedia } from "../lib/mediaSecurity";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateBytes } from "../api/privateFiles";
+import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateUri } from "../api/privateFiles";
 
 export function ProgressScreen() {
   const { session, profile } = useAuth();
@@ -283,18 +283,25 @@ export function ChatScreen() {
     type: "image" | "video" | "audio",
   ) {
     if (!selected) return;
-    const max = type === "image" ? 10 : type === "video" ? 50 : 25;
-    if (!size || size > max * 1024 * 1024) {
+    const info = size ? null : await FileSystem.getInfoAsync(uri);
+    const actualSize = size ?? (info?.exists ? info.size : undefined);
+    const max = type === "image" ? 10 : type === "video" ? 500 : 25;
+    if (!actualSize || actualSize > max * 1024 * 1024) {
       Alert.alert(
         "File not allowed",
-        `${type} must be smaller than ${max} MB.`,
+        `${type} must be no larger than ${max} MB.`,
       );
       return;
     }
     setUploading(true);
     try {
-      const bytes = await fetch(uri).then((r) => r.arrayBuffer());
-      validateMedia(bytes, mime, size, type);
+      const encodedHeader = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+        position: 0,
+        length: 16,
+      });
+      const header = Uint8Array.from(globalThis.atob(encodedHeader), (character) => character.charCodeAt(0)).buffer;
+      validateMedia(header, mime, actualSize, type, max);
       const ext =
         mime === "image/jpeg"
           ? "jpg"
@@ -305,8 +312,8 @@ export function ChatScreen() {
               : mime === "audio/mp4"
                 ? "m4a"
                 : mime.split("/")[1]?.split(";")[0] || "bin";
-      const path = await uploadPrivateBytes(bytes, `${Date.now()}-${Crypto.randomUUID()}.${ext}`, mime, {
-        purpose: "chat-attachment",
+      const path = await uploadPrivateUri(uri, actualSize, `${Date.now()}-${Crypto.randomUUID()}.${ext}`, mime, {
+        purpose: type === "audio" ? "chat-voice" : "chat-attachment",
         coachId: selected.coachId,
         playerId: selected.playerId,
       });
@@ -338,16 +345,6 @@ export function ChatScreen() {
         a.fileSize,
         a.type === "video" ? "video" : "image",
       );
-    }
-  }
-  async function pickAudio() {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "audio/*",
-      copyToCacheDirectory: true,
-    });
-    if (!result.canceled) {
-      const a = result.assets[0];
-      await upload(a.uri, a.mimeType || "audio/mpeg", a.size, "audio");
     }
   }
   async function toggleRecord() {
@@ -447,18 +444,9 @@ export function ChatScreen() {
           <Button onPress={send} disabled={!body.trim() || uploading}>
             SEND
           </Button>
-          <View style={styles.actionRow}>
-            <View style={styles.action}>
-              <Button secondary onPress={pickMedia} disabled={uploading}>
-                PHOTO / VIDEO
-              </Button>
-            </View>
-            <View style={styles.action}>
-              <Button secondary onPress={pickAudio} disabled={uploading}>
-                AUDIO FILE
-              </Button>
-            </View>
-          </View>
+          <Button secondary onPress={pickMedia} disabled={uploading}>
+            PHOTO / VIDEO (VIDEO MAX 500 MB)
+          </Button>
           <Button onPress={toggleRecord} disabled={uploading}>
             {recording ? "STOP & SEND" : "RECORD VOICE"}
           </Button>

@@ -6,6 +6,7 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Fixes
 
+- Chat attachments now accept only photos and videos, chat videos can be up to 500 MB, and microphone voice messages remain available separately.
 - Video uploads automatically recover from brief connection interruptions, can be retried with the same file on the website, and handle device video details more reliably in the mobile app.
 - Pictures, videos, attachments, and voice messages now connect correctly between the private database registry and cloud file storage.
 

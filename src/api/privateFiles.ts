@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-export type PrivateFilePurpose = 'workout-video' | 'chat-attachment' | 'support-attachment';
+export type PrivateFilePurpose = 'workout-video' | 'chat-attachment' | 'chat-voice' | 'support-attachment';
 
 type UploadContext = {
   purpose: PrivateFilePurpose;

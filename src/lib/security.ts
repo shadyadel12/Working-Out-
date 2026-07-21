@@ -64,27 +64,30 @@ export async function validateVideoFile(file: File, maxBytes: number): Promise<v
 
 export type ChatAttachmentType = 'image' | 'video' | 'audio';
 
-const CHAT_ATTACHMENT_TYPES: Record<string, { extension: string; type: ChatAttachmentType; maxBytes: number }> = {
+const CHAT_ATTACHMENT_TYPES: Record<string, { extension: string; type: 'image' | 'video'; maxBytes: number }> = {
   'image/jpeg': { extension: 'jpg', type: 'image', maxBytes: 10 * 1024 * 1024 },
   'image/png': { extension: 'png', type: 'image', maxBytes: 10 * 1024 * 1024 },
   'image/webp': { extension: 'webp', type: 'image', maxBytes: 10 * 1024 * 1024 },
   'image/gif': { extension: 'gif', type: 'image', maxBytes: 10 * 1024 * 1024 },
-  'video/mp4': { extension: 'mp4', type: 'video', maxBytes: 50 * 1024 * 1024 },
-  'video/webm': { extension: 'webm', type: 'video', maxBytes: 50 * 1024 * 1024 },
-  'video/quicktime': { extension: 'mov', type: 'video', maxBytes: 50 * 1024 * 1024 },
-  'audio/mpeg': { extension: 'mp3', type: 'audio', maxBytes: 25 * 1024 * 1024 },
-  'audio/mp4': { extension: 'm4a', type: 'audio', maxBytes: 25 * 1024 * 1024 },
-  'audio/wav': { extension: 'wav', type: 'audio', maxBytes: 25 * 1024 * 1024 },
-  'audio/ogg': { extension: 'ogg', type: 'audio', maxBytes: 25 * 1024 * 1024 },
-  'audio/webm': { extension: 'webm', type: 'audio', maxBytes: 25 * 1024 * 1024 },
+  'video/mp4': { extension: 'mp4', type: 'video', maxBytes: 500 * 1024 * 1024 },
+  'video/webm': { extension: 'webm', type: 'video', maxBytes: 500 * 1024 * 1024 },
+  'video/quicktime': { extension: 'mov', type: 'video', maxBytes: 500 * 1024 * 1024 },
+};
+
+const CHAT_VOICE_TYPES: Record<string, { extension: string; maxBytes: number }> = {
+  'audio/mpeg': { extension: 'mp3', maxBytes: 25 * 1024 * 1024 },
+  'audio/mp4': { extension: 'm4a', maxBytes: 25 * 1024 * 1024 },
+  'audio/wav': { extension: 'wav', maxBytes: 25 * 1024 * 1024 },
+  'audio/ogg': { extension: 'ogg', maxBytes: 25 * 1024 * 1024 },
+  'audio/webm': { extension: 'webm', maxBytes: 25 * 1024 * 1024 },
 };
 
 /** Validate chat media using MIME, extension, size, and the file's actual signature. */
 export async function validateChatAttachment(file: File): Promise<{ type: ChatAttachmentType; extension: string }> {
   const rule = CHAT_ATTACHMENT_TYPES[file.type];
-  if (!rule) throw new Error('Only pictures, videos, and audio files are allowed.');
+  if (!rule) throw new Error('Chat attachments can only be pictures or videos.');
   if (file.size <= 0 || file.size > rule.maxBytes) {
-    throw new Error(`${rule.type[0].toUpperCase()}${rule.type.slice(1)} must be smaller than ${rule.maxBytes / 1024 / 1024} MB.`);
+    throw new Error(`${rule.type[0].toUpperCase()}${rule.type.slice(1)} must be no larger than ${rule.maxBytes / 1024 / 1024} MB.`);
   }
   if (file.name.includes('\0') || /[\\/]/.test(file.name)) throw new Error('Invalid attachment filename.');
   const actualExtension = file.name.split('.').pop()?.toLowerCase();
@@ -104,14 +107,29 @@ export async function validateChatAttachment(file: File): Promise<{ type: ChatAt
     'image/png': bytes[0] === 0x89 && ascii.slice(1, 4) === 'PNG',
     'image/gif': ascii.startsWith('GIF87a') || ascii.startsWith('GIF89a'),
     'image/webp': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WEBP',
+  };
+  if (!signatures[file.type]) throw new Error('The file content does not match its reported type.');
+  return { type: rule.type, extension: rule.extension };
+}
+
+/** Validate audio created by the dedicated chat microphone recorder. */
+export async function validateChatVoice(file: File): Promise<void> {
+  const rule = CHAT_VOICE_TYPES[file.type];
+  if (!rule) throw new Error('The recorded voice format is not supported.');
+  if (file.size <= 0 || file.size > rule.maxBytes) throw new Error('Voice message must be no larger than 25 MB.');
+  if (file.name.includes('\0') || /[\\/]/.test(file.name)) throw new Error('Invalid voice message filename.');
+  const actualExtension = file.name.split('.').pop()?.toLowerCase();
+  if (actualExtension !== rule.extension) throw new Error('The voice message extension does not match its type.');
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const ascii = String.fromCharCode(...bytes);
+  const signatures: Record<string, boolean> = {
     'audio/mpeg': ascii.startsWith('ID3') || (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0),
     'audio/mp4': ascii.slice(4, 8) === 'ftyp',
     'audio/wav': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WAVE',
     'audio/ogg': ascii.startsWith('OggS'),
     'audio/webm': bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3,
   };
-  if (!signatures[file.type]) throw new Error('The file content does not match its reported type.');
-  return { type: rule.type, extension: rule.extension };
+  if (!signatures[file.type]) throw new Error('The recorded voice content does not match its format.');
 }
 
 /** Reject encrypted, malformed, or highly compressed ZIP containers before XLSX parsing. */

@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase';
 import * as FileSystem from 'expo-file-system/legacy';
 
 type UploadContext = {
-  purpose: 'chat-attachment' | 'workout-video';
+  purpose: 'chat-attachment' | 'chat-voice' | 'workout-video';
   coachId?: string;
   playerId: string;
 };

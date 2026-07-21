@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { validateChatAttachment, type ChatAttachmentType } from '../lib/security';
+import { validateChatAttachment, validateChatVoice, type ChatAttachmentType } from '../lib/security';
 import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateFile } from './privateFiles';
 
 export interface ChatMessage {
@@ -76,6 +76,18 @@ export async function uploadChatAttachment(
   if (!senderId) throw new Error('Authentication is required.');
   const path = await uploadPrivateFile(file, { purpose: 'chat-attachment', coachId, playerId });
   return { path, type };
+}
+
+export async function uploadChatVoice(
+  coachId: string,
+  playerId: string,
+  senderId: string,
+  file: File
+): Promise<{ path: string; type: 'audio' }> {
+  await validateChatVoice(file);
+  if (!senderId) throw new Error('Authentication is required.');
+  const path = await uploadPrivateFile(file, { purpose: 'chat-voice', coachId, playerId });
+  return { path, type: 'audio' };
 }
 
 export async function getChatAttachmentUrl(path: string): Promise<string> {

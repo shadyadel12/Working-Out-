@@ -11,8 +11,10 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 
 const rules: Record<string, { max: number; types: Set<string> }> = {
   'workout-video': { max: 500 * 1024 * 1024, types: new Set(['video/mp4', 'video/webm', 'video/quicktime']) },
-  'chat-attachment': { max: 50 * 1024 * 1024, types: new Set([
+  'chat-attachment': { max: 500 * 1024 * 1024, types: new Set([
     'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime',
+  ]) },
+  'chat-voice': { max: 25 * 1024 * 1024, types: new Set([
     'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/ogg', 'audio/webm',
   ]) },
   'support-attachment': { max: 25 * 1024 * 1024, types: new Set([
@@ -27,6 +29,36 @@ function attachmentType(contentType: string) {
   if (contentType.startsWith('video/')) return 'video';
   if (contentType.startsWith('audio/')) return 'audio';
   return 'file';
+}
+
+async function storedContentMatches(objectKey: string, contentType: string) {
+  const response = await fetch(await presignR2(objectKey, 'GET', 60), {
+    headers: { Range: 'bytes=0-15' },
+  });
+  if (response.status !== 206) return false;
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.length < 4 || bytes.length > 16) return false;
+  const ascii = String.fromCharCode(...bytes);
+  const ftyp = ascii.slice(4, 8) === 'ftyp';
+  const webm = bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3;
+  const signatures: Record<string, boolean> = {
+    'image/jpeg': bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff,
+    'image/png': bytes[0] === 0x89 && ascii.slice(1, 4) === 'PNG',
+    'image/gif': ascii.startsWith('GIF87a') || ascii.startsWith('GIF89a'),
+    'image/webp': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WEBP',
+    'video/mp4': ftyp && ascii.slice(8, 12) !== 'qt  ',
+    'video/quicktime': ftyp && ascii.slice(8, 12) === 'qt  ',
+    'video/webm': webm,
+    'audio/mpeg': ascii.startsWith('ID3') || (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0),
+    'audio/mp4': ftyp,
+    'audio/wav': ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WAVE',
+    'audio/ogg': ascii.startsWith('OggS'),
+    'audio/webm': webm,
+    'application/pdf': ascii.startsWith('%PDF'),
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ascii.startsWith('PK'),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ascii.startsWith('PK'),
+  };
+  return signatures[contentType] === true;
 }
 
 Deno.serve(async (request) => {
@@ -74,7 +106,7 @@ Deno.serve(async (request) => {
     if (profileRole === 'admin') return true;
     if (destructive && row.owner_id === userId) return true;
     if (row.purpose === 'support-attachment') return row.coach_id === userId && profileRole === 'coach';
-    if (row.purpose === 'chat-attachment') {
+    if (row.purpose === 'chat-attachment' || row.purpose === 'chat-voice') {
       if (!await activeLink(row.coach_id, row.player_id)) return false;
       return row.coach_id === userId || row.player_id === userId || await teamCan('chat', row.coach_id, row.player_id);
     }
@@ -101,7 +133,10 @@ Deno.serve(async (request) => {
       const coachId = payload.coachId ? String(payload.coachId) : null;
       const playerId = payload.playerId ? String(payload.playerId) : null;
       const rule = rules[purpose];
-      if (!rule || !rule.types.has(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > rule.max || !originalName) {
+      const max = purpose === 'chat-attachment' && contentType.startsWith('image/')
+        ? 10 * 1024 * 1024
+        : rule?.max ?? 0;
+      if (!rule || !rule.types.has(contentType) || !Number.isSafeInteger(size) || size <= 0 || size > max || !originalName) {
         return json({ error: 'File type, name, or size is not allowed.' }, 400);
       }
       const context = { purpose, owner_id: userId, coach_id: coachId, player_id: playerId };
@@ -115,7 +150,8 @@ Deno.serve(async (request) => {
         attachment_type: purpose === 'workout-video' ? 'video' : attachmentType(contentType),
       });
       if (error) throw error;
-      return json({ ref: `r2:${id}`, uploadUrl: await presignR2(objectKey, 'PUT', purpose === 'workout-video' ? 3600 : 900) });
+      const uploadSeconds = purpose === 'workout-video' || size > 50 * 1024 * 1024 ? 3600 : 900;
+      return json({ ref: `r2:${id}`, uploadUrl: await presignR2(objectKey, 'PUT', uploadSeconds) });
     }
 
     const ref = String(payload.ref ?? '');
@@ -129,7 +165,8 @@ Deno.serve(async (request) => {
       const head = await r2Request(row.object_key, 'HEAD');
       const length = Number(head.headers.get('content-length') ?? -1);
       const storedType = (head.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase();
-      if (!head.ok || length !== Number(row.byte_size) || storedType !== row.content_type) {
+      if (!head.ok || length !== Number(row.byte_size) || storedType !== row.content_type
+        || !await storedContentMatches(row.object_key, row.content_type)) {
         await r2Request(row.object_key, 'DELETE').catch(() => {});
         await admin.from('private_files').update({ status: 'rejected', deleted_at: new Date().toISOString() }).eq('id', id);
         return json({ error: 'Uploaded file could not be verified.' }, 400);
