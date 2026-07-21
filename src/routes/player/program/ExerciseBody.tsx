@@ -7,6 +7,7 @@ import { listMessagesForExercise } from '../../../api/messages';
 import type { Exercise } from '../../../types/database.types';
 import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import VideoPlayer from '../../../components/VideoPlayer';
+import ActionButtonContent from '../../../components/ActionButtonContent';
 
 export default function ExerciseBody({
   exercise,
@@ -162,7 +163,7 @@ export default function ExerciseBody({
         </div>
 
         <button className="secondary" type="button" disabled={locked} onClick={addRow} style={{ marginTop: '0.4rem' }}>
-          + Add set
+          <ActionButtonContent>Add set</ActionButtonContent>
         </button>
 
         <div className="field" style={{ margin: '0.7rem 0 0' }}>
@@ -174,7 +175,7 @@ export default function ExerciseBody({
         </div>
         <div className="row" style={{ marginTop: '0.7rem' }}>
           <button onClick={() => save.mutate(true)} disabled={save.isPending || locked}>
-            {save.isPending ? 'Saving…' : done ? 'Save exercise changes' : 'Save exercise ✓'}
+            <ActionButtonContent action="save exercise">{save.isPending ? 'Saving…' : done ? 'Save exercise changes' : 'Save exercise'}</ActionButtonContent>
           </button>
           {save.error && <span className="error">{(save.error as Error).message}</span>}
         </div>

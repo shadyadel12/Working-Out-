@@ -4,6 +4,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { createLibraryExercise, deleteLibraryExercise, listLibraryExercises, updateLibraryExercise, type LibraryExercise } from '../../api/exerciseLibrary';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import MultiSelectDropdown from '../../components/MultiSelectDropdown';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 const equipmentOptions = ['None', 'Barbell', 'Dumbbell', 'Kettlebell', 'Machine', 'Cable', 'Resistance Band', 'Bodyweight', 'Bench', 'Other'];
 const categoryOptions = ['Strength', 'Cardio', 'Mobility', 'Flexibility', 'Balance', 'Warm-up', 'Recovery', 'Other'];
@@ -32,6 +33,6 @@ export default function ExerciseLibrary() {
       <div className="field"><label>Muscle Groups</label><MultiSelectDropdown options={muscleOptions} value={muscles} onChange={setMuscles} placeholder="Select Muscle Groups" /></div><div className="field"><label>Default Note</label><textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Default Note" /></div>
       <div className="field"><label>Movement Pattern</label><MultiSelectDropdown options={patternOptions} value={patterns} onChange={setPatterns} placeholder="Select Movement Pattern" /></div><div className="field"><label>Video</label><input type="url" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="Video Link" /></div>
       <div className="field"><label>Tracking Fields (Up to 3) *</label><MultiSelectDropdown options={trackingOptions} value={tracking} onChange={setTracking} placeholder="Select Tracking Fields" max={3} /></div>{save.error && <p className="error">{(save.error as Error).message}</p>}
-    </div><footer><button className="secondary" onClick={close}>Cancel</button><button disabled={save.isPending} onClick={() => save.mutate()}>{save.isPending ? 'Saving…' : 'Save'}</button></footer></section></div>}
+    </div><footer><button className="secondary" onClick={close}><ActionButtonContent>Cancel</ActionButtonContent></button><button disabled={save.isPending} onClick={() => save.mutate()}><ActionButtonContent action="save">{save.isPending ? 'Saving…' : 'Save'}</ActionButtonContent></button></footer></section></div>}
   </div>;
 }

@@ -4,6 +4,10 @@ This page explains what the app can do and what has changed in everyday language
 
 ## July 21, 2026
 
+### Improvements
+
+- Navigation now keeps inactive destinations icon-only and reveals the active destination label responsively. Action buttons now pair clear icons with their labels across the website and mobile app.
+
 ### Fixes
 
 - Chat attachments now accept only photos and videos, chat videos can be up to 500 MB, and microphone voice messages remain available separately.

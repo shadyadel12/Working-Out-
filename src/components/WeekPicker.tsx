@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ActionButtonContent from './ActionButtonContent';
 
 /**
  * Dropdown that lets the coach pick how many consecutive weeks to copy into,
@@ -29,7 +30,7 @@ export default function WeekPicker({
         <span className="muted" style={{ fontSize: '0.85rem' }}>
           No weeks after Week {excludeWeek} to copy into.
         </span>
-        <button type="button" className="secondary" onClick={onCancel}>Cancel</button>
+        <button type="button" className="secondary" onClick={onCancel}><ActionButtonContent>Cancel</ActionButtonContent></button>
       </div>
     );
   }
@@ -66,10 +67,10 @@ export default function WeekPicker({
           onClick={() => onDuplicate(targetWeeks)}
           disabled={busy}
         >
-          {busy ? 'Duplicating…' : `Duplicate to ${n} week${n === 1 ? '' : 's'}`}
+          <ActionButtonContent action="duplicate">{busy ? 'Duplicating…' : `Duplicate to ${n} week${n === 1 ? '' : 's'}`}</ActionButtonContent>
         </button>
         <button type="button" className="secondary" onClick={onCancel} disabled={busy}>
-          Cancel
+          <ActionButtonContent>Cancel</ActionButtonContent>
         </button>
       </div>
     </div>

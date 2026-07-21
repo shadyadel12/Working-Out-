@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signIn, signOut } from '../../api/auth';
 import { getMyProfile } from '../../api/profiles';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 /**
  * Player login: email + password only. The subscription key was entered once at
@@ -51,7 +52,7 @@ export default function PlayerLogin() {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>
-          {busy ? 'Signing in…' : 'Sign in'}
+          <ActionButtonContent action="sign in">{busy ? 'Signing in…' : 'Sign in'}</ActionButtonContent>
         </button>
         <div className="row" style={{ justifyContent: 'space-between', fontSize: '0.85rem' }}>
           <Link to="/signup/player" className="muted">Create player account</Link>

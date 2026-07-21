@@ -1148,3 +1148,57 @@ html[data-theme="light"] .page-loader{background:linear-gradient(145deg,#fff,#f2
     padding-inline: 0.65rem;
   }
 }
+
+/* Adaptive icon-first navigation and consistent icon + label actions. */
+button:has(.action-button-icon),
+.topbar-account > button,
+.coach-profile-signout,
+.mobile-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.action-button-icon { flex: 0 0 auto; }
+.adaptive-nav { align-items: stretch; }
+.adaptive-nav-item,
+.library-nav-group > button {
+  position: relative;
+  min-width: 44px;
+  min-height: 48px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px !important;
+  text-align: center;
+}
+.adaptive-nav-label {
+  display: none;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.66rem;
+  line-height: 1;
+  font-weight: 750;
+}
+.adaptive-nav-item.active .adaptive-nav-label,
+.library-nav-group > button.active .adaptive-nav-label { display: block; }
+.adaptive-nav-item .coach-nav-icon,
+.library-nav-group > button .coach-nav-icon {
+  display: inline-grid !important;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+}
+.adaptive-nav-item .nav-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  margin: 0;
+}
+.library-nav-group > button:not(.active) .library-chevron { display: none; }
+@media (max-width: 720px) {
+  .adaptive-nav-item.active,
+  .library-nav-group > button.active { flex-direction: column-reverse; }
+}

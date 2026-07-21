@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { signUp, signIn, claimCoachKey, checkCoachKey, signOut } from '../../api/auth';
 import { checkTeamInvite, claimTeamInvite } from '../../api/team';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 /** Coach self-serve signup: name + email + password + single-use coach key. */
 export default function CoachSignup() {
@@ -62,7 +63,7 @@ export default function CoachSignup() {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>
-          {busy ? 'Creating account…' : 'Sign up'}
+          <ActionButtonContent action="create account">{busy ? 'Creating account…' : 'Sign up'}</ActionButtonContent>
         </button>
         <div className="row" style={{ justifyContent: 'space-between', fontSize: '0.85rem' }}>
           <Link to="/login/coach" className="muted">Already have an account?</Link>

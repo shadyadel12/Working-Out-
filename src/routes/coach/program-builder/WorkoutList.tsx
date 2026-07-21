@@ -7,6 +7,7 @@ import { assignWorkoutTemplate, listWorkoutTemplates, saveWorkoutAsTemplate } fr
 import type { DraftExerciseData } from '../../../api/programs';
 import VideoInput from '../../../components/VideoInput';
 import WorkoutCard from './WorkoutCard';
+import ActionButtonContent from '../../../components/ActionButtonContent';
 
 const blankExercise = (): DraftExerciseData => ({ name: '', target_sets: 3, target_reps: '10', target_weight: null, coach_comment: null, coach_video_url: null, coach_video_is_external: false });
 
@@ -52,7 +53,7 @@ export default function WorkoutList({ programDayId, playerId, coachId, currentWe
           </div>
           {(saveNew.error || useTemplate.error) && <p className="error">{((saveNew.error || useTemplate.error) as Error).message}</p>}
         </div>
-        <footer><span className="muted">{exercises.filter((item) => item.name.trim()).length}/{exercises.length} exercises ready</span><div><button type="button" className="secondary" onClick={close}>Cancel</button><button type="button" onClick={() => saveNew.mutate()} disabled={saveNew.isPending || !name.trim() || exercises.some((item) => !item.name.trim())}>{saveNew.isPending ? 'Saving…' : 'Save workout'}</button></div></footer>
+        <footer><span className="muted">{exercises.filter((item) => item.name.trim()).length}/{exercises.length} exercises ready</span><div><button type="button" className="secondary" onClick={close}><ActionButtonContent>Cancel</ActionButtonContent></button><button type="button" onClick={() => saveNew.mutate()} disabled={saveNew.isPending || !name.trim() || exercises.some((item) => !item.name.trim())}><ActionButtonContent action="save workout">{saveNew.isPending ? 'Saving…' : 'Save workout'}</ActionButtonContent></button></div></footer>
       </section>
     </div>}
   </div>;

@@ -4,6 +4,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { listPlayersForCoach } from '../../api/players';
 import { generateXlsxTemplate, importFromXlsx } from '../../api/programs';
 import { generateDietXlsxTemplate, importDietFromXlsx } from '../../api/diet';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 export default function CoachSettings() {
   const { session } = useAuth();
@@ -66,7 +67,7 @@ export default function CoachSettings() {
         </p>
         <div>
           <button className="secondary" type="button" onClick={() => generateXlsxTemplate()}>
-            Download template (.xlsx)
+            <ActionButtonContent action="download">Download template (.xlsx)</ActionButtonContent>
           </button>
         </div>
       </div>
@@ -116,7 +117,7 @@ export default function CoachSettings() {
       <div className="card stack">
         <strong>Diet template</strong>
         <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>Download the blank diet workbook, fill in its weeks and days, then import it for a selected player.</p>
-        <div><button className="secondary" type="button" onClick={generateDietXlsxTemplate}>Download diet template (.xlsx)</button></div>
+        <div><button className="secondary" type="button" onClick={generateDietXlsxTemplate}><ActionButtonContent action="download">Download diet template (.xlsx)</ActionButtonContent></button></div>
       </div>
 
       <div className="card stack">

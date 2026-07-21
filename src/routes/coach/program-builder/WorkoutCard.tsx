@@ -9,6 +9,7 @@ import type { Workout } from '../../../types/database.types';
 import VideoInput, { type VideoValue } from '../../../components/VideoInput';
 import ExerciseEditor from './ExerciseEditor';
 import WeekPicker from '../../../components/WeekPicker';
+import ActionButtonContent from '../../../components/ActionButtonContent';
 import { listLibraryExercises } from '../../../api/exerciseLibrary';
 import { useWorkoutCompletion } from '../../../hooks/useWorkoutCompletion';
 
@@ -76,7 +77,7 @@ export default function WorkoutCard({ workout, programDayId, playerId, coachId, 
           <VideoInput ownerId={playerId} value={video} onChange={setVideo} />
           {addExercise.error && <p className="error">{(addExercise.error as Error).message}</p>}
         </div>
-        <footer><button type="button" className="secondary" onClick={closeExercise}>Cancel</button><button type="button" onClick={() => addExercise.mutate()} disabled={addExercise.isPending}>{addExercise.isPending ? 'Saving…' : 'Save exercise'}</button></footer>
+        <footer><button type="button" className="secondary" onClick={closeExercise}><ActionButtonContent>Cancel</ActionButtonContent></button><button type="button" onClick={() => addExercise.mutate()} disabled={addExercise.isPending}><ActionButtonContent action="save exercise">{addExercise.isPending ? 'Saving…' : 'Save exercise'}</ActionButtonContent></button></footer>
       </section>
     </div>}
     {duplicateOpen && <div className="workout-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && !duplicate.isPending && setDuplicateOpen(false)}><section className="workout-modal workout-action-modal" role="dialog" aria-modal="true"><header><div><h2>Duplicate Workout</h2><small>{workout.name} and all its exercises</small></div><button type="button" className="modal-close" onClick={() => setDuplicateOpen(false)}>×</button></header><div className="workout-modal-body"><WeekPicker excludeWeek={currentWeek} totalWeeks={totalWeeks} busy={duplicate.isPending} onDuplicate={(weeks) => duplicate.mutate(weeks)} onCancel={() => setDuplicateOpen(false)} label="Choose where to copy this workout" />{duplicate.error && <p className="error">{(duplicate.error as Error).message}</p>}</div></section></div>}

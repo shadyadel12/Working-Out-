@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { signUp, signIn, claimSubscriptionKey, checkSubscriptionKey, signOut } from '../../api/auth';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 /** Player self-serve signup: name + email + password + subscription key. */
 export default function PlayerSignup() {
@@ -60,7 +61,7 @@ export default function PlayerSignup() {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>
-          {busy ? 'Creating account…' : 'Sign up'}
+          <ActionButtonContent action="create account">{busy ? 'Creating account…' : 'Sign up'}</ActionButtonContent>
         </button>
         <div className="row" style={{ justifyContent: 'space-between', fontSize: '0.85rem' }}>
           <Link to="/login/player" className="muted">Already have an account?</Link>

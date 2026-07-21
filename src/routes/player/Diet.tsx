@@ -8,6 +8,7 @@ import { listDietDays } from '../../api/diet';
 import { saveDietLog } from '../../api/dietProgress';
 import type { DietDay } from '../../types/database.types';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
+import ActionButtonContent from '../../components/ActionButtonContent';
 
 export default function PlayerDiet() {
   const { session, profile } = useAuth();
@@ -144,7 +145,7 @@ function DietCheckIn({ day }: { day: DietDay }) {
       {day.meals.map((meal, index) => <label key={index} className="diet-checkin-meal"><input type="checkbox" checked={done[index]} onChange={(e) => setDone((current) => current.map((value, i) => i === index ? e.target.checked : value))} /><span>{meal.label}</span></label>)}
     </div>
     <textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={5000} placeholder="Optional note for your coach" rows={2} />
-    <button type="button" onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save today’s progress'}</button>
+    <button type="button" onClick={() => save.mutate()} disabled={save.isPending}><ActionButtonContent action="save diet progress">{save.isPending ? 'Saving…' : 'Save today’s progress'}</ActionButtonContent></button>
     {save.isSuccess && <span style={{ color: 'var(--success)' }}>Diet progress saved.</span>}
     {save.error && <span className="error">{(save.error as Error).message}</span>}
   </div>;

@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator, type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { Bell, BookOpen, ClipboardCheck, Dumbbell, LibraryBig, MessageCircle, Moon, Settings, ShieldQuestion, UsersRound, Utensils, type LucideIcon } from 'lucide-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ComponentType } from 'react';
 import PlayersScreen from '../screens/coach/PlayersScreen';
@@ -57,8 +57,9 @@ function MenuHub({ title, subtitle, items }: { title: string; subtitle: string; 
 
 export default function CoachTabShell() {
   const theme = useMobileTheme();
+  const { width } = useWindowDimensions();
   const components: Record<keyof TabsParamList, ComponentType<any>> = { People: PeopleStack, Build: BuildStack, Messages: MessagesStack, Alerts: AlertsStack, Settings: SettingsStack };
-  return <Tab.Navigator initialRouteName="People" backBehavior="history" screenOptions={{ headerShown: false, lazy: true, animation: 'fade', tabBarActiveTintColor: theme.colors.brand600, tabBarInactiveTintColor: theme.colors.ink500, tabBarHideOnKeyboard: true, tabBarStyle: { minHeight: 68, paddingTop: 6, paddingBottom: 8, backgroundColor: theme.colors.tabBar, borderTopColor: theme.colors.line }, tabBarLabelStyle: { fontSize: 11, lineHeight: 15, fontWeight: '600' }, tabBarItemStyle: { minHeight: theme.sizes.minimumTarget } }}>{(Object.keys(tabs) as Array<keyof TabsParamList>).map((name) => <Tab.Screen key={name} name={name} component={components[name]} options={{ tabBarAccessibilityLabel: `${name} tab`, tabBarIcon: tabIcon(tabs[name]) }} />)}</Tab.Navigator>;
+  return <Tab.Navigator initialRouteName="People" backBehavior="history" screenOptions={{ headerShown: false, lazy: true, animation: 'fade', tabBarActiveTintColor: theme.colors.brand600, tabBarInactiveTintColor: theme.colors.ink500, tabBarHideOnKeyboard: true, tabBarLabelPosition: width >= 600 ? 'beside-icon' : 'below-icon', tabBarStyle: { minHeight: 68, paddingTop: 6, paddingBottom: 8, backgroundColor: theme.colors.tabBar, borderTopColor: theme.colors.line }, tabBarLabelStyle: { fontSize: 11, lineHeight: 15, fontWeight: '600' }, tabBarItemStyle: { minHeight: theme.sizes.minimumTarget } }}>{(Object.keys(tabs) as Array<keyof TabsParamList>).map((name) => <Tab.Screen key={name} name={name} component={components[name]} options={{ tabBarAccessibilityLabel: `${name} tab`, tabBarLabel: ({ focused, color }) => focused ? <AppText variant="metadata" color={color}>{name}</AppText> : null, tabBarIcon: tabIcon(tabs[name]) }} />)}</Tab.Navigator>;
 }
 
 const styles = StyleSheet.create({ safe: { flex: 1 }, hub: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: 16 }, row: { minHeight: 72, flexDirection: 'row', alignItems: 'center' }, icon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, grow: { flex: 1, minWidth: 0 }, });
