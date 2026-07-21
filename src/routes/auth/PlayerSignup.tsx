@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { signUp, signIn, claimSubscriptionKey, checkSubscriptionKey, signOut } from '../../api/auth';
+import { signUpAndEnsureSession, claimSubscriptionKey, checkSubscriptionKey, signOut, getErrorMessage } from '../../api/auth';
 import ActionButtonContent from '../../components/ActionButtonContent';
 
 /** Player self-serve signup: name + email + password + subscription key. */
@@ -23,15 +23,13 @@ export default function PlayerSignup() {
         throw new Error('Invalid or already-used subscription key.');
       }
       // 2) Create the account, then claim the key.
-      await signUp(email, password, name);
-      // With email confirmation off, signUp returns a session; if not, sign in.
-      await signIn(email, password).catch(() => {});
+      await signUpAndEnsureSession(email, password, name);
       await claimSubscriptionKey(key);
       // Full reload so AuthContext loads the fresh subscription.
       window.location.assign('/player/program');
     } catch (err) {
       await signOut().catch(() => {});
-      setError(err instanceof Error ? err.message : 'Signup failed.');
+      setError(getErrorMessage(err));
       setBusy(false);
     }
   }
@@ -53,7 +51,7 @@ export default function PlayerSignup() {
         </div>
         <div className="field">
           <label htmlFor="player-signup-password">Password</label>
-          <input id="player-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <input id="player-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" title="Use at least 8 characters with uppercase, lowercase, a number, and a symbol." autoComplete="new-password" />
         </div>
         <div className="field">
           <label htmlFor="player-signup-key">Subscription key</label>

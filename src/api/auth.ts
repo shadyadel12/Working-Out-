@@ -24,6 +24,30 @@ export async function signUp(email: string, password: string, name: string) {
   return data;
 }
 
+/**
+ * Create an account and guarantee that the caller is authenticated before it
+ * attempts an invitation/key claim. Hosted Auth projects may require email
+ * confirmation, in which case signUp intentionally returns no session.
+ */
+export async function signUpAndEnsureSession(email: string, password: string, name: string) {
+  const signUpData = await signUp(email, password, name);
+  if (signUpData.session) return signUpData;
+
+  // Do not hide this error: it explains an email-confirmation/configuration
+  // problem and prevents the following key claim from running anonymously.
+  return signIn(email, password);
+}
+
+/** Supabase PostgREST failures are plain objects rather than Error instances. */
+export function getErrorMessage(error: unknown, fallback = 'Signup failed.'): string {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message.trim()) return message;
+  }
+  return fallback;
+}
+
 /** Promote the current user to coach by consuming a single-use coach key (RPC). */
 export async function claimCoachKey(coachKey: string) {
   const { error } = await supabase.rpc('claim_coach_key', { p_key: coachKey });

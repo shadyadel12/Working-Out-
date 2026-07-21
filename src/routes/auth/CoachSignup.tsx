@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { signUp, signIn, claimCoachKey, checkCoachKey, signOut } from '../../api/auth';
+import { signUpAndEnsureSession, claimCoachKey, checkCoachKey, signOut, getErrorMessage } from '../../api/auth';
 import { checkTeamInvite, claimTeamInvite } from '../../api/team';
 import ActionButtonContent from '../../components/ActionButtonContent';
 
@@ -25,14 +25,13 @@ export default function CoachSignup() {
         throw new Error('Invalid or already-used coach key.');
       }
       // 2) Create the account, then consume the key to become a coach.
-      await signUp(email, password, name);
-      await signIn(email, password).catch(() => {});
+      await signUpAndEnsureSession(email, password, name);
       if (signupType === 'team') await claimTeamInvite(coachKey); else await claimCoachKey(coachKey);
       // Full reload so AuthContext re-fetches the profile with the new role.
       window.location.assign('/coach/dashboard');
     } catch (err) {
       await signOut().catch(() => {});
-      setError(err instanceof Error ? err.message : 'Signup failed.');
+      setError(getErrorMessage(err));
       setBusy(false);
     }
   }
@@ -55,7 +54,7 @@ export default function CoachSignup() {
         </div>
         <div className="field">
           <label htmlFor="coach-signup-password">Password</label>
-          <input id="coach-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <input id="coach-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" title="Use at least 8 characters with uppercase, lowercase, a number, and a symbol." autoComplete="new-password" />
         </div>
         <div className="field">
           <label htmlFor="coach-signup-key">{signupType === 'team' ? 'Team invitation key' : 'Coach key'}</label>

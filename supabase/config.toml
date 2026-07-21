@@ -4,7 +4,7 @@ project_id = "workout-program"
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "storage", "graphql_public"]
+schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
@@ -19,14 +19,19 @@ port = 54323
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173"]
+site_url = "https://working-out-rho.vercel.app"
+additional_redirect_urls = ["http://localhost:5173", "https://working-out-rho.vercel.app"]
 jwt_expiry = 3600
 enable_signup = true
+minimum_password_length = 8
+password_requirements = "lower_upper_letters_digits_symbols"
 
 [auth.email]
 enable_signup = true
 enable_confirmations = false
+secure_password_change = true
+max_frequency = "1m0s"
+otp_length = 8
 
 [auth.mfa]
 max_enrolled_factors = 10
@@ -39,11 +44,11 @@ verify_enabled = true
 # Supabase dashboard; hosted projects do not read this repository file.
 [auth.rate_limit]
 email_sent = 2
-sms_sent = 2
-anonymous_users = 5
-token_refresh = 30
-sign_in_sign_ups = 5
-token_verifications = 10
+sms_sent = 30
+anonymous_users = 30
+token_refresh = 150
+sign_in_sign_ups = 3
+token_verifications = 3
 
 [storage]
 enabled = true
