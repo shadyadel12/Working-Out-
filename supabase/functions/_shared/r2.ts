@@ -16,12 +16,18 @@ export type R2Config = {
 };
 
 export function getR2Config(): R2Config {
-  const accountId = Deno.env.get('R2_ACCOUNT_ID');
+  const accountId = Deno.env.get('R2_ACCOUNT_ID')?.trim().toLowerCase();
   const bucket = Deno.env.get('R2_BUCKET_NAME') ?? 'coach-platform-private';
   const accessKeyId = Deno.env.get('R2_ACCESS_KEY_ID');
   const secretAccessKey = Deno.env.get('R2_SECRET_ACCESS_KEY');
   if (!accountId || !bucket || !accessKeyId || !secretAccessKey) {
     throw new Error('R2 storage is not configured.');
+  }
+  // Cloudflare Account IDs are exactly 32 hexadecimal characters. Rejecting
+  // malformed values here prevents every upload from receiving an invalid R2
+  // hostname and makes configuration mistakes fail with a useful diagnosis.
+  if (!/^[0-9a-f]{32}$/.test(accountId)) {
+    throw new Error('R2_ACCOUNT_ID is invalid. Copy the Account ID shown by `wrangler whoami`.');
   }
   return { accountId, bucket, accessKeyId, secretAccessKey, host: `${accountId}.r2.cloudflarestorage.com` };
 }

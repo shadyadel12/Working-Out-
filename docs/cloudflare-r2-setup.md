@@ -44,6 +44,14 @@ Access Key in a password manager. Do not paste them into source files or chat.
 
 ## 3. Configure Supabase secrets
 
+Confirm the account ID before setting the secrets. It must be the 32-character
+hexadecimal **Account ID** shown by this command, without a token prefix or any
+extra character:
+
+```sh
+npx wrangler whoami
+```
+
 From a terminal already linked to the hosted Supabase project, run this locally
 with the real values:
 
@@ -55,6 +63,10 @@ npx supabase secrets set R2_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY
 ```
 
 The existing `VIRUSTOTAL_API_KEY` secret must remain configured.
+
+The shared R2 connector rejects malformed account IDs before generating upload
+URLs. After changing any R2 secret, verify one small chat image before testing a
+large workout video.
 
 ## 4. Apply and deploy
 

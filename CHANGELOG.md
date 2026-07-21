@@ -7,6 +7,7 @@ This page explains what the app can do and what has changed in everyday language
 ### Fixes
 
 - Video uploads automatically recover from brief connection interruptions, can be retried with the same file on the website, and handle device video details more reliably in the mobile app.
+- Pictures, videos, attachments, and voice messages now connect correctly between the private database registry and cloud file storage.
 
 ## July 20, 2026
 
