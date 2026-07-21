@@ -7,6 +7,7 @@
 - Repaired coach and player signup so access keys are claimed only after Supabase establishes an authenticated session.
 - Aligned hosted email-confirmation behavior and web password validation with the app signup flow while preserving the hosted security policy.
 - Signup now displays actionable authentication and database messages instead of hiding them behind a generic failure.
+- Restored persistent text labels beside or below every web and mobile navigation icon.
 
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 

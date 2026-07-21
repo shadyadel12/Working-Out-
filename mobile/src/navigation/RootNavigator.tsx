@@ -48,9 +48,8 @@ const tabOptions = {
   tabBarLabelStyle: { fontSize: 11, fontWeight: "700" as const },
 };
 const tabIcon = (Icon: LucideIcon) => ({ color, size }: { color: string; size: number }) => <Icon color={color} size={size} strokeWidth={1.9} />;
-const tabLabel = (label: string) => ({ focused, color }: { focused: boolean; color: string }) => focused
-  ? <Text numberOfLines={1} style={{ color, fontSize: 11, fontWeight: "700" }}>{label}</Text>
-  : null;
+const tabLabel = (label: string) => ({ color }: { focused: boolean; color: string }) =>
+  <Text numberOfLines={1} style={{ color, fontSize: 11, fontWeight: "700" }}>{label}</Text>;
 function useTabOptions() {
   const { width } = useWindowDimensions();
   return { ...tabOptions, tabBarLabelPosition: width >= 600 ? "beside-icon" as const : "below-icon" as const };

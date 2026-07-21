@@ -1172,7 +1172,7 @@ button:has(.action-button-icon),
   text-align: center;
 }
 .adaptive-nav-label {
-  display: none;
+  display: block;
   max-width: 8rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1181,8 +1181,6 @@ button:has(.action-button-icon),
   line-height: 1;
   font-weight: 750;
 }
-.adaptive-nav-item.active .adaptive-nav-label,
-.library-nav-group > button.active .adaptive-nav-label { display: block; }
 .adaptive-nav-item .coach-nav-icon,
 .library-nav-group > button .coach-nav-icon {
   display: inline-grid !important;
