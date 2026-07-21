@@ -16,6 +16,7 @@ This page explains what the app can do and what has changed in everyday language
 - Chat attachment and voice-recording actions now use clear paperclip and microphone icons.
 - Chat media icons now sit inside the message box, and completing an exercise automatically opens the next exercise.
 - Chat now uses a compact rounded composer with attachment, emoji, and voice actions. Player weeks now follow the Saturday-to-Friday training calendar, and coach video previews stay inside the app.
+- Workout videos can now connect to private cloud storage from the live website, with a clearer message if the connection is interrupted.
 - Workout video uploads can now be up to 500 MB on the website and mobile app.
 - The landing page now lets visitors choose Sign in or Sign up, then continue as an athlete or coach.
 - The website now fits phone screens throughout the coach, player, and admin areas, with compact menus, readable forms, finger-friendly controls, and safely scrollable wide tables.

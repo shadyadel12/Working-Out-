@@ -35,6 +35,9 @@ export async function uploadPrivateFile(file: File, context: UploadContext): Pro
     return created.ref;
   } catch (error) {
     await storageAction({ action: 'delete', ref: created.ref }).catch(() => {});
+    if (error instanceof TypeError && /fetch|load|network/i.test(error.message)) {
+      throw new Error('The video could not reach cloud storage. Refresh the page and try again.');
+    }
     throw error;
   }
 }
