@@ -43,12 +43,12 @@ export default function PlayerLogin() {
       <form className="card stack" style={{ width: '100%', maxWidth: 380 }} onSubmit={handleSubmit}>
         <h2>Player sign in</h2>
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          <label htmlFor="player-login-email">Email</label>
+          <input id="player-login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </div>
         <div className="field">
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+          <label htmlFor="player-login-password">Password</label>
+          <input id="player-login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>

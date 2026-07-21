@@ -48,8 +48,8 @@ export default function AdminCoaches() {
           Create a key for a coach, then give it to the player to sign up with.
         </p>
         <div className="field" style={{ margin: 0 }}>
-          <label>Coach</label>
-          <select value={coachId} onChange={(e) => setCoachId(e.target.value)}>
+          <label htmlFor="player-key-coach">Coach</label>
+          <select id="player-key-coach" value={coachId} onChange={(e) => setCoachId(e.target.value)}>
             <option value="">Select a coach…</option>
             {(coaches ?? []).map((c) => (
               <option key={c.id} value={c.id}>
@@ -60,17 +60,17 @@ export default function AdminCoaches() {
         </div>
         <div className="row">
           <div className="field" style={{ margin: 0, flex: 2 }}>
-            <label>Key</label>
+            <label htmlFor="new-player-key">Key</label>
             <div className="row">
-              <input value={key} onChange={(e) => setKey(e.target.value)} />
+              <input id="new-player-key" value={key} onChange={(e) => setKey(e.target.value)} />
               <button className="secondary" type="button" onClick={() => setKey(generateKey())}>
                 ↻
               </button>
             </div>
           </div>
           <div className="field" style={{ margin: 0, flex: 1 }}>
-            <label>Expires</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            <label htmlFor="new-player-key-expiry">Expires</label>
+            <input id="new-player-key-expiry" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
         </div>
         <div className="row">
@@ -104,6 +104,7 @@ export default function AdminCoaches() {
 function KeyRow({ link, coachName }: { link: CoachPlayerLink; coachName: string }) {
   const qc = useQueryClient();
   const [endDate, setEndDate] = useState(link.subscription_end_date);
+  const expiryId = `player-key-expiry-${link.id}`;
 
   const renew = useMutation({
     mutationFn: () => adminUpdateKey(link.id, endDate, 'active'),
@@ -129,8 +130,8 @@ function KeyRow({ link, coachName }: { link: CoachPlayerLink; coachName: string 
       </div>
       <div className="row">
         <div className="field" style={{ margin: 0 }}>
-          <label>Expiry</label>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <label htmlFor={expiryId}>Expiry</label>
+          <input id={expiryId} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
         <button onClick={() => renew.mutate()} disabled={renew.isPending}>
           {renew.isPending ? '…' : 'Renew / update'}
@@ -173,9 +174,9 @@ function CoachKeysSection() {
       </p>
       <div className="row">
         <div className="field" style={{ margin: 0, flex: 2 }}>
-          <label>New coach key</label>
+          <label htmlFor="new-coach-key">New coach key</label>
           <div className="row">
-            <input value={key} onChange={(e) => setKey(e.target.value)} />
+            <input id="new-coach-key" value={key} onChange={(e) => setKey(e.target.value)} />
             <button className="secondary" type="button" onClick={() => setKey(generateCoachKey())}>
               ↻
             </button>

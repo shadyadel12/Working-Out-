@@ -192,8 +192,8 @@ export default function SupportChatWindow({
         <button
           type="button"
           className="secondary"
-          title="Attach image, video, or file"
-          aria-label="Attach image, video, or file"
+          title="Attach a photo or video (videos up to 500 MB)"
+          aria-label="Attach a photo or video"
           disabled={uploading || send.isPending}
           onClick={() => fileRef.current?.click()}
           style={{ padding: '0.55em 0.75em', alignSelf: 'flex-end', flexShrink: 0 }}
@@ -203,7 +203,7 @@ export default function SupportChatWindow({
         <input
           ref={fileRef}
           type="file"
-          accept="image/*,video/*,.pdf,.doc,.docx,.xlsx"
+          accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
           onChange={handleFile}
           style={{ display: 'none' }}
         />

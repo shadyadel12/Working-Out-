@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { validateVideoFile } from '../lib/security';
+import { validateChatAttachment } from '../lib/security';
 import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateFile } from './privateFiles';
 
 export interface AdminMessage {
@@ -102,24 +102,9 @@ export async function sendAdminMessage(opts: {
 export async function uploadSupportAttachment(
   coachId: string,
   file: File
-): Promise<{ path: string; type: 'image' | 'video' | 'file' }> {
-  const allowedTypes = new Map<string, string>([
-    ['image/jpeg', 'jpg'], ['image/png', 'png'], ['image/webp', 'webp'], ['image/gif', 'gif'],
-    ['video/mp4', 'mp4'], ['video/webm', 'webm'], ['video/quicktime', 'mov'],
-    ['application/pdf', 'pdf'],
-    ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx'],
-    ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx'],
-  ]);
-  const ext = allowedTypes.get(file.type);
-  if (!ext) throw new Error('This file type is not allowed.');
-  if (file.size <= 0 || file.size > 25 * 1024 * 1024) throw new Error('Attachment must be smaller than 25 MB.');
-  if (file.type.startsWith('video/')) await validateVideoFile(file, 25 * 1024 * 1024);
+): Promise<{ path: string; type: 'image' | 'video' }> {
+  const { type } = await validateChatAttachment(file);
   const path = await uploadPrivateFile(file, { purpose: 'support-attachment', coachId });
-  const type = file.type.startsWith('image/')
-    ? 'image'
-    : file.type.startsWith('video/')
-    ? 'video'
-    : 'file';
   return { path, type };
 }
 

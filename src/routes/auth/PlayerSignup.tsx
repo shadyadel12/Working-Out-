@@ -44,20 +44,20 @@ export default function PlayerSignup() {
           Enter the subscription key your coach gave you.
         </p>
         <div className="field">
-          <label>Name</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <label htmlFor="player-signup-name">Name</label>
+          <input id="player-signup-name" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          <label htmlFor="player-signup-email">Email</label>
+          <input id="player-signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </div>
         <div className="field">
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <label htmlFor="player-signup-password">Password</label>
+          <input id="player-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
         </div>
         <div className="field">
-          <label>Subscription key</label>
-          <input value={key} onChange={(e) => setKey(e.target.value)} required placeholder="KEY-XXXX-XXXX" />
+          <label htmlFor="player-signup-key">Subscription key</label>
+          <input id="player-signup-key" value={key} onChange={(e) => setKey(e.target.value)} required placeholder="KEY-XXXX-XXXX" />
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>

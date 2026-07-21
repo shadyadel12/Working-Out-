@@ -46,20 +46,20 @@ export default function CoachSignup() {
         </p>
         <div className="auth-choice"><button type="button" className={signupType === 'owner' ? '' : 'secondary'} onClick={() => setSignupType('owner')}>Coach Owner</button><button type="button" className={signupType === 'team' ? '' : 'secondary'} onClick={() => setSignupType('team')}>Team Member</button></div>
         <div className="field">
-          <label>Name</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <label htmlFor="coach-signup-name">Name</label>
+          <input id="coach-signup-name" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          <label htmlFor="coach-signup-email">Email</label>
+          <input id="coach-signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
         </div>
         <div className="field">
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <label htmlFor="coach-signup-password">Password</label>
+          <input id="coach-signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
         </div>
         <div className="field">
-          <label>{signupType === 'team' ? 'Team invitation key' : 'Coach key'}</label>
-          <input value={coachKey} onChange={(e) => setCoachKey(e.target.value)} required placeholder={signupType === 'team' ? 'TEAM-XXXXXXXXXXXX' : 'KEY-COACH-XXXX'} />
+          <label htmlFor="coach-signup-key">{signupType === 'team' ? 'Team invitation key' : 'Coach key'}</label>
+          <input id="coach-signup-key" value={coachKey} onChange={(e) => setCoachKey(e.target.value)} required placeholder={signupType === 'team' ? 'TEAM-XXXXXXXXXXXX' : 'KEY-COACH-XXXX'} />
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={busy}>

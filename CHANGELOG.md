@@ -7,12 +7,18 @@ This page explains what the app can do and what has changed in everyday language
 ### Improvements
 
 - Navigation now keeps inactive destinations icon-only and reveals the active destination label responsively. Action buttons now pair clear icons with their labels across the website and mobile app.
+- Login, signup, and administrator key forms now expose clear field names to screen readers and other accessibility tools.
 
 ### Fixes
 
 - Chat attachments now accept only photos and videos, chat videos can be up to 500 MB, and microphone voice messages remain available separately.
+- Administrator support attachments now follow the same photo/video-only policy and 500 MB video limit as direct chat.
 - Video uploads automatically recover from brief connection interruptions, can be retried with the same file on the website, and handle device video details more reliably in the mobile app.
 - Pictures, videos, attachments, and voice messages now connect correctly between the private database registry and cloud file storage.
+
+### Security
+
+- Administrator pages now require both an administrator account and authenticator verification before any management controls or protected data are shown.
 
 ## July 20, 2026
 
@@ -65,7 +71,6 @@ This page explains what the app can do and what has changed in everyday language
 - The dashboard's Invite a player shortcut now opens subscriptions directly so coaches can generate a player key.
 - Coach utility actions now live in a compact profile menu with the coach name, Team, subscriptions, Settings, Support notifications, and Sign out. The appearance switch is now icon-only.
 - Arabic mode now translates newly added Library, Training, Diet, admin, player, dialog, status, loading, and builder text, including content that updates after the page opens.
-- The admin interface can temporarily be opened without completing the sign-in or verification screens; protected admin data remains enforced by the server.
 - Reusable sections expand into their prescribed exercises when a workout is delivered, while remaining one manageable block in the workout editor.
 - Library pages now use responsive cards, lifecycle filters, clear empty states, labeled fields, keyboard focus indicators, and accessible editors.
 - Coach teams can see only Library content explicitly shared with their workspace, while private content remains owner-only.

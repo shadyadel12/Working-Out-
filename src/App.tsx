@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import RequireRole from './auth/RequireRole';
+import RequireAdminMfa from './auth/RequireAdminMfa';
 import RequireActiveSubscription from './auth/RequireActiveSubscription';
 import RequirePlayerDetails from './auth/RequirePlayerDetails';
 import AppLayout from './layouts/AppLayout';
@@ -157,7 +158,13 @@ export default function App() {
           {/* Admin */}
           <Route
             path="/admin"
-            element={<AppLayout links={adminLinks} />}
+            element={
+              <RequireRole role="admin">
+                <RequireAdminMfa>
+                  <AppLayout links={adminLinks} />
+                </RequireAdminMfa>
+              </RequireRole>
+            }
           >
             <Route index element={<Navigate to="coaches" replace />} />
             <Route path="coaches" element={<AdminCoaches />} />

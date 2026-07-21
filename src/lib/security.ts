@@ -83,7 +83,7 @@ const CHAT_VOICE_TYPES: Record<string, { extension: string; maxBytes: number }> 
 };
 
 /** Validate chat media using MIME, extension, size, and the file's actual signature. */
-export async function validateChatAttachment(file: File): Promise<{ type: ChatAttachmentType; extension: string }> {
+export async function validateChatAttachment(file: File): Promise<{ type: 'image' | 'video'; extension: string }> {
   const rule = CHAT_ATTACHMENT_TYPES[file.type];
   if (!rule) throw new Error('Chat attachments can only be pictures or videos.');
   if (file.size <= 0 || file.size > rule.maxBytes) {
