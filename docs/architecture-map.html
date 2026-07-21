@@ -855,7 +855,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;/label&gt;
       &lt;span class=&quot;text-muted text-small&quot; data-result-count aria-live=&quot;polite&quot;&gt;&lt;/span&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;atlas-groups&quot; data-atlas-groups&gt;&lt;/div&gt;
+    &lt;div class=&quot;catalog-map&quot; role=&quot;group&quot; aria-label=&quot;Project dependency map. Select a node to highlight its incoming and outgoing connections.&quot;&gt;
+      &lt;svg class=&quot;catalog-links&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;
+      &lt;div class=&quot;atlas-groups&quot; data-atlas-groups&gt;&lt;/div&gt;
+    &lt;/div&gt;
     &lt;p class=&quot;text-muted atlas-empty&quot; data-empty hidden&gt;No matching project items.&lt;/p&gt;
   &lt;/section&gt;
 &lt;/div&gt;
@@ -890,10 +893,15 @@ html&gt;body{padding:0}&lt;/style&gt;
   #pulsefit-project-atlas .atlas-filters { align-items: end; }
   #pulsefit-project-atlas .atlas-filters .form-label { flex: 1 1 15rem; }
   #pulsefit-project-atlas [data-result-count] { margin-left: auto; padding-bottom: .55rem; }
-  #pulsefit-project-atlas .atlas-groups { display: grid; gap: 1.15rem; }
-  #pulsefit-project-atlas .atlas-group { display: grid; gap: .55rem; }
-  #pulsefit-project-atlas .atlas-group-header { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
-  #pulsefit-project-atlas .atlas-group-header h3 { margin: 0; }
+  #pulsefit-project-atlas .catalog-map { position: relative; }
+  #pulsefit-project-atlas .catalog-links { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  #pulsefit-project-atlas .catalog-link { fill: none; stroke: var(--border); stroke-width: 1.15; vector-effect: non-scaling-stroke; transition: stroke .18s ease,opacity .18s ease; }
+  #pulsefit-project-atlas .catalog-link.is-group-link { stroke-dasharray: 4 3; }
+  #pulsefit-project-atlas .catalog-link.is-related { stroke: var(--viz-series-1); stroke-width: 2; stroke-dasharray: none; }
+  #pulsefit-project-atlas .catalog-link.is-muted { opacity: .1; }
+  #pulsefit-project-atlas .atlas-groups { position: relative; z-index: 2; display: grid; gap: 1rem; }
+  #pulsefit-project-atlas .atlas-group { display: grid; grid-template-columns: minmax(10rem,.28fr) minmax(0,1fr); align-items: center; gap: 1.25rem; min-width: 0; }
+  #pulsefit-project-atlas .atlas-group-hub { min-width: 0; white-space: normal; }
   #pulsefit-project-atlas .atlas-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(9.5rem,1fr)); gap: .5rem; }
   #pulsefit-project-atlas .atlas-item { min-width: 0; overflow-wrap: anywhere; white-space: normal; }
   #pulsefit-project-atlas .atlas-empty { text-align: center; }
@@ -901,6 +909,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     #pulsefit-project-atlas .atlas-selection { grid-template-columns: 1fr; }
     #pulsefit-project-atlas .architecture-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     #pulsefit-project-atlas [data-result-count] { margin-left: 0; }
+    #pulsefit-project-atlas .atlas-group { grid-template-columns: 1fr; gap: .55rem; }
   }
   @media (max-width:390px) {
     #pulsefit-project-atlas .architecture-grid { grid-template-columns: 1fr; }
@@ -1047,14 +1056,50 @@ html&gt;body{padding:0}&lt;/style&gt;
     ]
   };
 
+  const catalogRelations = {
+    features: [
+      [&#x27;Authentication &amp; onboarding&#x27;,&#x27;Players &amp; subscriptions&#x27;],[&#x27;Authentication &amp; onboarding&#x27;,&#x27;Coach attention center&#x27;],[&#x27;Players &amp; subscriptions&#x27;,&#x27;Coach attention center&#x27;],[&#x27;Players &amp; subscriptions&#x27;,&#x27;Training builder&#x27;],[&#x27;Players &amp; subscriptions&#x27;,&#x27;Nutrition&#x27;],[&#x27;Training builder&#x27;,&#x27;Coach libraries&#x27;],[&#x27;Training builder&#x27;,&#x27;Workout &amp; progress&#x27;],[&#x27;Coach libraries&#x27;,&#x27;Check-ups &amp; scheduled work&#x27;],[&#x27;Nutrition&#x27;,&#x27;Workout &amp; progress&#x27;],[&#x27;Workout &amp; progress&#x27;,&#x27;Messaging &amp; support&#x27;],[&#x27;Check-ups &amp; scheduled work&#x27;,&#x27;Coach attention center&#x27;],[&#x27;Messaging &amp; support&#x27;,&#x27;Coach attention center&#x27;],[&#x27;Internationalization &amp; access&#x27;,&#x27;Authentication &amp; onboarding&#x27;]
+    ],
+    web: [
+      [&#x27;Public &amp; authentication screens&#x27;,&#x27;Authentication functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Player functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Program functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Diet functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Chat functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Team functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Check-up functions&#x27;],[&#x27;Player screens&#x27;,&#x27;Program functions&#x27;],[&#x27;Player screens&#x27;,&#x27;Diet functions&#x27;],[&#x27;Player screens&#x27;,&#x27;Workout log functions&#x27;],[&#x27;Player screens&#x27;,&#x27;Chat functions&#x27;],[&#x27;Administrator screens&#x27;,&#x27;Administrator functions&#x27;],[&#x27;Administrator screens&#x27;,&#x27;Administrator support functions&#x27;],[&#x27;Authentication functions&#x27;,&#x27;Profile functions&#x27;],[&#x27;Player functions&#x27;,&#x27;Profile functions&#x27;],[&#x27;Program functions&#x27;,&#x27;Workout functions&#x27;],[&#x27;Workout functions&#x27;,&#x27;Exercise functions&#x27;],[&#x27;Exercise functions&#x27;,&#x27;Workout log functions&#x27;],[&#x27;Workout log functions&#x27;,&#x27;Set log functions&#x27;],[&#x27;Workout log functions&#x27;,&#x27;Analysis functions&#x27;],[&#x27;Workout log functions&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Guidance functions&#x27;,&#x27;Exercise functions&#x27;],[&#x27;Diet functions&#x27;,&#x27;Diet progress functions&#x27;],[&#x27;Workout library functions&#x27;,&#x27;Exercise library functions&#x27;],[&#x27;Program library functions&#x27;,&#x27;Workout library functions&#x27;],[&#x27;Diet library functions&#x27;,&#x27;Diet functions&#x27;],[&#x27;Extended library functions&#x27;,&#x27;Program library functions&#x27;],[&#x27;Chat functions&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Administrator support functions&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Private-file functions&#x27;,&#x27;Legacy storage functions&#x27;],[&#x27;Auth &amp; realtime hooks&#x27;,&#x27;Authentication functions&#x27;],[&#x27;Auth &amp; realtime hooks&#x27;,&#x27;Chat functions&#x27;]
+    ],
+    mobile: [
+      [&#x27;Shared &amp; access screens&#x27;,&#x27;Player screens&#x27;],[&#x27;Shared &amp; access screens&#x27;,&#x27;Coach screens&#x27;],[&#x27;Shared &amp; access screens&#x27;,&#x27;Administrator screens&#x27;],[&#x27;Player screens&#x27;,&#x27;Player service functions&#x27;],[&#x27;Player screens&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Workbook functions&#x27;],[&#x27;Coach screens&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Administrator screens&#x27;,&#x27;Private-file functions&#x27;],[&#x27;Private-file functions&#x27;,&#x27;Media validation&#x27;],[&#x27;Workbook functions&#x27;,&#x27;Mobile platform integrations&#x27;],[&#x27;Private-file functions&#x27;,&#x27;Mobile platform integrations&#x27;],[&#x27;Date helpers&#x27;,&#x27;Player service functions&#x27;],[&#x27;Language &amp; appearance&#x27;,&#x27;Player screens&#x27;],[&#x27;Language &amp; appearance&#x27;,&#x27;Coach screens&#x27;],[&#x27;Language &amp; appearance&#x27;,&#x27;Administrator screens&#x27;]
+    ],
+    database: [
+      [&#x27;Identity &amp; role RPCs&#x27;,&#x27;Identity &amp; access tables&#x27;],[&#x27;Coach onboarding RPCs&#x27;,&#x27;Identity &amp; access tables&#x27;],[&#x27;Subscription RPCs&#x27;,&#x27;Identity &amp; access tables&#x27;],[&#x27;Administrator RPCs&#x27;,&#x27;Identity &amp; access tables&#x27;],[&#x27;Team permission RPCs&#x27;,&#x27;Team tables&#x27;],[&#x27;Team permission RPCs&#x27;,&#x27;Identity &amp; access tables&#x27;],[&#x27;Check-up RPCs&#x27;,&#x27;Training tables&#x27;],[&#x27;Import RPCs&#x27;,&#x27;Training tables&#x27;],[&#x27;Import RPCs&#x27;,&#x27;Nutrition tables&#x27;],[&#x27;Template &amp; delivery RPCs&#x27;,&#x27;Core library tables&#x27;],[&#x27;Template &amp; delivery RPCs&#x27;,&#x27;Training tables&#x27;],[&#x27;Template &amp; delivery RPCs&#x27;,&#x27;Nutrition tables&#x27;],[&#x27;Blueprint RPCs&#x27;,&#x27;Core library tables&#x27;],[&#x27;Library lifecycle RPCs&#x27;,&#x27;Core library tables&#x27;],[&#x27;Library lifecycle RPCs&#x27;,&#x27;Tasks, forms &amp; measurements&#x27;],[&#x27;Library lifecycle RPCs&#x27;,&#x27;Nutrition library tables&#x27;],[&#x27;Progress RPCs&#x27;,&#x27;Training tables&#x27;],[&#x27;Progress RPCs&#x27;,&#x27;Private-file table&#x27;],[&#x27;Messaging tables&#x27;,&#x27;Private-file table&#x27;],[&#x27;Maintenance trigger&#x27;,&#x27;Training tables&#x27;],[&#x27;Maintenance trigger&#x27;,&#x27;Nutrition tables&#x27;]
+    ],
+    media: [
+      [&#x27;Client environment&#x27;,&#x27;Deployment&#x27;],[&#x27;Server secrets&#x27;,&#x27;Deployment&#x27;],[&#x27;Deployment&#x27;,&#x27;R2 upload actions&#x27;],[&#x27;Deployment&#x27;,&#x27;Video quarantine&#x27;],[&#x27;Deployment&#x27;,&#x27;Retention cleanup&#x27;],[&#x27;R2 upload actions&#x27;,&#x27;Upload validation&#x27;],[&#x27;Upload validation&#x27;,&#x27;File purposes&#x27;],[&#x27;R2 upload actions&#x27;,&#x27;Cloudflare R2&#x27;],[&#x27;R2 upload actions&#x27;,&#x27;Security boundaries&#x27;],[&#x27;Video quarantine&#x27;,&#x27;Cloudflare R2&#x27;],[&#x27;Video quarantine&#x27;,&#x27;Security boundaries&#x27;],[&#x27;Retention cleanup&#x27;,&#x27;Cloudflare R2&#x27;],[&#x27;Retention cleanup&#x27;,&#x27;Legacy Supabase Storage&#x27;],[&#x27;Legacy Supabase Storage&#x27;,&#x27;File purposes&#x27;],[&#x27;Realtime channels&#x27;,&#x27;Security boundaries&#x27;],[&#x27;Import security&#x27;,&#x27;Security boundaries&#x27;]
+    ]
+  };
+
   const titleCase = (value) =&gt; value
     .replace(/([a-z0-9])([A-Z])/g,&#x27;$1 $2&#x27;)
     .replace(/[_-]+/g,&#x27; &#x27;)
     .replace(/\b\w/g,(letter) =&gt; letter.toUpperCase());
 
-  const normalizedCatalogs = Object.fromEntries(Object.entries(catalogs).map(([view,groups]) =&gt; [view,groups.map(([name,path,description,items]) =&gt; ({
-    name,path,description,items:items.split(&#x27;|&#x27;).map((item) =&gt; ({name:item}))
+  const normalizedCatalogs = Object.fromEntries(Object.entries(catalogs).map(([view,groups]) =&gt; [view,groups.map(([name,path,description,items],groupIndex) =&gt; ({
+    id:`${view}-group-${groupIndex}`,name,path,description,items:items.split(&#x27;|&#x27;).map((item,itemIndex) =&gt; ({id:`${view}-item-${groupIndex}-${itemIndex}`,name:item}))
   }))]));
+
+  const addArrowMarker = (targetSvg,id) =&gt; {
+    const defs = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;defs&#x27;);
+    const marker = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;marker&#x27;);
+    marker.setAttribute(&#x27;id&#x27;,id);
+    marker.setAttribute(&#x27;viewBox&#x27;,&#x27;0 0 10 10&#x27;);
+    marker.setAttribute(&#x27;refX&#x27;,&#x27;9&#x27;);
+    marker.setAttribute(&#x27;refY&#x27;,&#x27;5&#x27;);
+    marker.setAttribute(&#x27;markerWidth&#x27;,&#x27;6&#x27;);
+    marker.setAttribute(&#x27;markerHeight&#x27;,&#x27;6&#x27;);
+    marker.setAttribute(&#x27;orient&#x27;,&#x27;auto-start-reverse&#x27;);
+    const arrow = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;path&#x27;);
+    arrow.setAttribute(&#x27;d&#x27;,&#x27;M 0 0 L 10 5 L 0 10 z&#x27;);
+    arrow.setAttribute(&#x27;fill&#x27;,&#x27;context-stroke&#x27;);
+    marker.appendChild(arrow);
+    defs.appendChild(marker);
+    targetSvg.appendChild(defs);
+  };
 
   const architectureGrid = root.querySelector(&#x27;[data-architecture-grid]&#x27;);
   architecture.forEach((group) =&gt; {
@@ -1082,6 +1127,7 @@ html&gt;body{padding:0}&lt;/style&gt;
 
   const map = root.querySelector(&#x27;.architecture-map&#x27;);
   const svg = root.querySelector(&#x27;.architecture-links&#x27;);
+  addArrowMarker(svg,&#x27;architecture-arrow&#x27;);
   const nodes = new Map([...root.querySelectorAll(&#x27;.architecture-node&#x27;)].map((node) =&gt; [node.dataset.id,node]));
   const paths = [];
   const select = (kind,title,description,path,control) =&gt; {
@@ -1089,7 +1135,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     root.querySelector(&#x27;[data-selection-title]&#x27;).textContent = title;
     root.querySelector(&#x27;[data-selection-description]&#x27;).textContent = description;
     root.querySelector(&#x27;[data-selection-path]&#x27;).textContent = path;
-    root.querySelectorAll(&#x27;.architecture-node,.atlas-item&#x27;).forEach((candidate) =&gt; candidate.setAttribute(&#x27;aria-pressed&#x27;,String(candidate === control)));
+    root.querySelectorAll(&#x27;.architecture-node,.atlas-item,.atlas-group-hub&#x27;).forEach((candidate) =&gt; candidate.setAttribute(&#x27;aria-pressed&#x27;,String(candidate === control)));
   };
   const point = (node,side) =&gt; {
     const nodeBox = node.getBoundingClientRect();
@@ -1113,6 +1159,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       if (!path) {
         path = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;path&#x27;);
         path.setAttribute(&#x27;class&#x27;,&#x27;architecture-link&#x27;);
+        path.setAttribute(&#x27;marker-end&#x27;,&#x27;url(#architecture-arrow)&#x27;);
         path.dataset.from = fromId;
         path.dataset.to = toId;
         svg.appendChild(path);
@@ -1132,18 +1179,67 @@ html&gt;body{padding:0}&lt;/style&gt;
 
   const catalogPanel = root.querySelector(&#x27;[data-panel=&quot;catalog&quot;]&#x27;);
   const architecturePanel = root.querySelector(&#x27;[data-panel=&quot;architecture&quot;]&#x27;);
+  const catalogMap = root.querySelector(&#x27;.catalog-map&#x27;);
+  const catalogSvg = root.querySelector(&#x27;.catalog-links&#x27;);
+  addArrowMarker(catalogSvg,&#x27;catalog-arrow&#x27;);
   const groupHost = root.querySelector(&#x27;[data-atlas-groups]&#x27;);
   const search = root.querySelector(&#x27;[data-search]&#x27;);
   const category = root.querySelector(&#x27;[data-category]&#x27;);
   const count = root.querySelector(&#x27;[data-result-count]&#x27;);
   const empty = root.querySelector(&#x27;[data-empty]&#x27;);
+  const catalogNodes = new Map();
+  let catalogPaths = [];
   let currentView = &#x27;architecture&#x27;;
+
+  const catalogPoint = (node,side) =&gt; {
+    const nodeBox = node.getBoundingClientRect();
+    const mapBox = catalogMap.getBoundingClientRect();
+    const x = side === &#x27;left&#x27; ? nodeBox.left-mapBox.left : side === &#x27;right&#x27; ? nodeBox.right-mapBox.left : nodeBox.left+nodeBox.width/2-mapBox.left;
+    const y = side === &#x27;top&#x27; ? nodeBox.top-mapBox.top : side === &#x27;bottom&#x27; ? nodeBox.bottom-mapBox.top : nodeBox.top+nodeBox.height/2-mapBox.top;
+    return {x,y};
+  };
+
+  const drawCatalog = () =&gt; {
+    if (catalogPanel.hidden) return;
+    const box = catalogMap.getBoundingClientRect();
+    catalogSvg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${Math.max(1,box.width)} ${Math.max(1,box.height)}`);
+    catalogPaths.forEach(({path,from,to,kind,index}) =&gt; {
+      const source = catalogNodes.get(from), target = catalogNodes.get(to);
+      if (!source || !target) return;
+      const sourceBox = source.getBoundingClientRect(), targetBox = target.getBoundingClientRect();
+      let start, end, d;
+      if (kind === &#x27;member&#x27;) {
+        start = catalogPoint(source,&#x27;right&#x27;);
+        end = catalogPoint(target,&#x27;left&#x27;);
+        const bend = Math.max(20,Math.abs(end.x-start.x)*.42);
+        d = `M ${start.x} ${start.y} C ${start.x+bend} ${start.y}, ${end.x-bend} ${end.y}, ${end.x} ${end.y}`;
+      } else {
+        const downward = sourceBox.top &lt; targetBox.top;
+        start = catalogPoint(source,downward ? &#x27;bottom&#x27; : &#x27;top&#x27;);
+        end = catalogPoint(target,downward ? &#x27;top&#x27; : &#x27;bottom&#x27;);
+        const offset = 8+(index%4)*6;
+        d = `M ${start.x-offset} ${start.y} C ${start.x-offset*2} ${(start.y+end.y)/2}, ${end.x-offset*2} ${(start.y+end.y)/2}, ${end.x-offset} ${end.y}`;
+      }
+      path.setAttribute(&#x27;d&#x27;,d);
+    });
+  };
+
+  const highlightCatalog = (id) =&gt; {
+    catalogPaths.forEach(({path,from,to}) =&gt; {
+      const related = from === id || to === id;
+      path.classList.toggle(&#x27;is-related&#x27;,related);
+      path.classList.toggle(&#x27;is-muted&#x27;,!related);
+    });
+  };
 
   const renderCatalog = () =&gt; {
     const groups = normalizedCatalogs[currentView] || [];
     const query = search.value.trim().toLowerCase();
     const selectedCategory = category.value;
     groupHost.replaceChildren();
+    catalogNodes.clear();
+    catalogPaths = [];
+    catalogSvg.querySelectorAll(&#x27;.catalog-link&#x27;).forEach((path) =&gt; path.remove());
     let visible = 0;
     groups.forEach((group) =&gt; {
       if (selectedCategory !== &#x27;all&#x27; &amp;&amp; group.name !== selectedCategory) return;
@@ -1152,31 +1248,60 @@ html&gt;body{padding:0}&lt;/style&gt;
       visible += matches.length;
       const section = document.createElement(&#x27;section&#x27;);
       section.className = &#x27;atlas-group&#x27;;
-      const header = document.createElement(&#x27;div&#x27;);
-      header.className = &#x27;atlas-group-header&#x27;;
-      const heading = document.createElement(&#x27;h3&#x27;);
-      heading.textContent = group.name;
-      const badge = document.createElement(&#x27;span&#x27;);
-      badge.className = &#x27;viz-badge&#x27;;
-      badge.textContent = `${matches.length}`;
-      header.append(heading,badge);
+      const hub = document.createElement(&#x27;button&#x27;);
+      hub.type = &#x27;button&#x27;;
+      hub.className = &#x27;btn btn-block atlas-group-hub&#x27;;
+      hub.dataset.nodeId = group.id;
+      hub.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
+      hub.textContent = `${group.name} (${matches.length})`;
+      hub.setAttribute(&#x27;aria-label&#x27;,`${group.name}. ${group.description} Source: ${group.path}`);
+      hub.addEventListener(&#x27;click&#x27;,() =&gt; {
+        select(&#x27;Dependency group&#x27;,group.name,group.description,group.path,hub);
+        highlightCatalog(group.id);
+      });
+      catalogNodes.set(group.id,hub);
       const grid = document.createElement(&#x27;div&#x27;);
       grid.className = &#x27;atlas-grid&#x27;;
       matches.forEach((item) =&gt; {
         const button = document.createElement(&#x27;button&#x27;);
         button.type = &#x27;button&#x27;;
         button.className = &#x27;btn viz-tile atlas-item&#x27;;
+        button.dataset.nodeId = item.id;
         button.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;);
         button.textContent = item.name;
         button.setAttribute(&#x27;aria-label&#x27;,`${item.name}. ${group.description} Source: ${group.path}`);
-        button.addEventListener(&#x27;click&#x27;,() =&gt; select(group.name,item.name,group.description,group.path,button));
+        button.addEventListener(&#x27;click&#x27;,() =&gt; {
+          select(group.name,item.name,group.description,group.path,button);
+          highlightCatalog(item.id);
+        });
+        catalogNodes.set(item.id,button);
         grid.appendChild(button);
+        const path = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;path&#x27;);
+        path.setAttribute(&#x27;class&#x27;,&#x27;catalog-link&#x27;);
+        path.setAttribute(&#x27;marker-end&#x27;,&#x27;url(#catalog-arrow)&#x27;);
+        path.dataset.from = group.id;
+        path.dataset.to = item.id;
+        catalogSvg.appendChild(path);
+        catalogPaths.push({path,from:group.id,to:item.id,kind:&#x27;member&#x27;,index:catalogPaths.length});
       });
-      section.append(header,grid);
+      section.append(hub,grid);
       groupHost.appendChild(section);
+    });
+    const byName = new Map(groups.map((group) =&gt; [group.name,group]));
+    (catalogRelations[currentView] || []).forEach(([fromName,toName]) =&gt; {
+      const from = byName.get(fromName), to = byName.get(toName);
+      if (!from || !to || !catalogNodes.has(from.id) || !catalogNodes.has(to.id)) return;
+      const path = document.createElementNS(&#x27;http://www.w3.org/2000/svg&#x27;,&#x27;path&#x27;);
+      path.setAttribute(&#x27;class&#x27;,&#x27;catalog-link is-group-link&#x27;);
+      path.setAttribute(&#x27;marker-end&#x27;,&#x27;url(#catalog-arrow)&#x27;);
+      path.dataset.from = from.id;
+      path.dataset.to = to.id;
+      catalogSvg.appendChild(path);
+      catalogPaths.push({path,from:from.id,to:to.id,kind:&#x27;group&#x27;,index:catalogPaths.length});
     });
     count.textContent = `${visible} ${visible === 1 ? &#x27;item&#x27; : &#x27;items&#x27;}`;
     empty.hidden = visible !== 0;
+    requestAnimationFrame(drawCatalog);
   };
 
   const populateCategories = () =&gt; {
@@ -1203,8 +1328,9 @@ html&gt;body{padding:0}&lt;/style&gt;
   }));
   search.addEventListener(&#x27;input&#x27;,renderCatalog);
   category.addEventListener(&#x27;change&#x27;,renderCatalog);
-  const resizeObserver = new ResizeObserver(draw);
+  const resizeObserver = new ResizeObserver(() =&gt; { draw(); drawCatalog(); });
   resizeObserver.observe(map);
+  resizeObserver.observe(catalogMap);
   requestAnimationFrame(() =&gt; {
     draw();
     nodes.get(&#x27;web&#x27;).click();
