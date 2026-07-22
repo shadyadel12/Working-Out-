@@ -5,7 +5,7 @@ function cors(request: Request, env: Env) {
   const allowed = env.ALLOWED_WEB_ORIGINS.split(',').map((item) => item.trim());
   return {
     'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0],
-    'Access-Control-Allow-Headers': 'authorization,apikey,content-type,x-client-info,x-client-platform',
+    'Access-Control-Allow-Headers': 'authorization,apikey,content-type,x-client-info,x-client-platform,x-supabase-api-version,prefer,range,x-upsert,accept-profile,content-profile',
     'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Expose-Headers': 'x-request-id,content-range',
     Vary: 'Origin',
@@ -168,6 +168,9 @@ export default {
     try {
       const response = await proxy(request, env);
       const result = new Response(response.body, response);
+      for (const [name, value] of Object.entries(cors(request, env))) {
+        result.headers.set(name, value);
+      }
       result.headers.set('x-request-id', requestId);
       ctx.waitUntil(record(env, request, response.status, false, requestId));
       return result;
