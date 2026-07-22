@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -100,7 +101,7 @@ export default function LoginScreen() {
       <View style={[styles.card, language === "ar" && styles.rtl]}>
         {localizeTree(
           <>
-            <Text style={styles.brand}>COACH PLATFORM</Text>
+            <Image source={require('../../assets/trainova-wordmark.jpeg')} resizeMode="contain" accessibilityLabel="Trainova" style={styles.logo} />
             <Text style={styles.title}>
               {mode === "login"
                 ? "Sign in"
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     padding: 22,
     gap: 14,
   },
-  brand: { color: colors.accent, fontWeight: "900" },
+  logo: { width: 220, height: 86, alignSelf: "center" },
   title: { color: colors.text, fontSize: 30, fontWeight: "800" },
   input: {
     backgroundColor: colors.background,

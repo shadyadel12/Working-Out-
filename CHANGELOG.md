@@ -4,6 +4,9 @@
 
 ### Improvements
 
+- Rebranded the website and mobile app as Trainova, including the supplied logo, browser title, navigation, loading, login, and permission text.
+- Connected the Monitor, security, customer-support, and development assistants to their Slack team rooms with shared case handoffs and approval safeguards.
+- Prepared separate Monitor, security investigation, customer support, and development assistants with clear handoffs, safety limits, and plain-language approval reports.
 - Prepared privacy-safe traffic monitoring that aggregates request totals per IP and supports temporary or permanent network blocks without storing message contents or passwords.
 - Android testers can install a direct APK that receives the same compatible automatic updates as the production mobile release.
 - Mobile releases can now receive compatible app improvements through Expo updates after the first new store build is installed.

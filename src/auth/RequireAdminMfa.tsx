@@ -39,7 +39,7 @@ export default function RequireAdminMfa({ children }: { children: ReactNode }) {
 
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
-      friendlyName: 'Coach Platform admin',
+      friendlyName: 'Trainova admin',
     });
     if (error) return setState({ kind: 'error', message: error.message });
     setState({

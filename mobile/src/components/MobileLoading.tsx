@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme";
 
@@ -26,8 +26,8 @@ export default function MobileLoading({ variant = "launch" }: { variant?: keyof 
     <Animated.View style={[styles.ring, { transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.16] }) }], opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [.55, 1] }) }]}>
       <Ionicons name={config.icon} size={34} color={colors.text} />
     </Animated.View>
-    <Text style={styles.brand}>PULSEFIT</Text><Text style={styles.copy}>{config.title}</Text>
+    <Image source={require('../../assets/trainova-wordmark.jpeg')} resizeMode="contain" accessibilityLabel="Trainova" style={styles.logo} /><Text style={styles.copy}>{config.title}</Text>
     <View style={styles.track}><Animated.View style={[styles.progress, { backgroundColor: config.colors[0], transform: [{ scaleX: pulse.interpolate({ inputRange: [0, 1], outputRange: [.25, 1] }) }] }]} /></View>
   </View>;
 }
-const styles = StyleSheet.create({root:{flex:1,backgroundColor:colors.background,alignItems:"center",justifyContent:"center",overflow:"hidden",gap:10},orb:{position:"absolute",width:300,height:300,borderRadius:150,opacity:.2},one:{top:-130,right:-100},two:{bottom:-130,left:-100},ring:{width:88,height:88,borderRadius:44,alignItems:"center",justifyContent:"center",backgroundColor:colors.surfaceRaised,borderWidth:1,borderColor:colors.border},brand:{color:colors.text,fontSize:23,fontWeight:"900",letterSpacing:3},copy:{color:colors.muted,fontSize:14},track:{width:140,height:3,borderRadius:2,backgroundColor:colors.surfaceSoft,overflow:"hidden",marginTop:10},progress:{width:"100%",height:"100%"}});
+const styles = StyleSheet.create({root:{flex:1,backgroundColor:colors.background,alignItems:"center",justifyContent:"center",overflow:"hidden",gap:10},orb:{position:"absolute",width:300,height:300,borderRadius:150,opacity:.2},one:{top:-130,right:-100},two:{bottom:-130,left:-100},ring:{width:88,height:88,borderRadius:44,alignItems:"center",justifyContent:"center",backgroundColor:colors.surfaceRaised,borderWidth:1,borderColor:colors.border},logo:{width:230,height:92},copy:{color:colors.muted,fontSize:14},track:{width:140,height:3,borderRadius:2,backgroundColor:colors.surfaceSoft,overflow:"hidden",marginTop:10},progress:{width:"100%",height:"100%"}});

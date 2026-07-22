@@ -700,7 +700,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       language === "ar" ? translateText(String(message ?? "")) : String(message ?? ""),
       language === "ar" && defaultValue ? translateText(defaultValue) : defaultValue,
     );
-    document.title = language === "ar" ? "منصة التدريب" : "Coach Platform";
+    document.title = language === "ar" ? "ترينوفا" : "Trainova";
     return () => {
       window.alert = originalAlert;
       window.confirm = originalConfirm;

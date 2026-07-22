@@ -13,8 +13,8 @@ export default function Terms() {
           <h2>1. Ownership &amp; Copyright</h2>
           <p>
             All content, design, code, graphics, and features of this platform are the exclusive
-            intellectual property of Coach Platform and are protected under applicable copyright
-            laws. © {year} Coach Platform. All rights reserved.
+            intellectual property of Trainova and are protected under applicable copyright
+            laws. © {year} Trainova. All rights reserved.
           </p>
         </section>
 
@@ -71,7 +71,7 @@ export default function Terms() {
       </div>
 
       <p style={{ marginTop: '2rem', fontSize: '0.8rem', color: 'var(--text-muted, #888)' }}>
-        © {year} Coach Platform. All rights reserved.
+        © {year} Trainova. All rights reserved.
       </p>
     </div>
   );

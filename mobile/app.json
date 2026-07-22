@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Coach Platform",
+    "name": "Trainova",
     "slug": "bloodyx",
     "version": "0.1.0",
     "platforms": ["ios", "android"],
@@ -28,14 +28,14 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Coach Platform to record voice messages."
+          "microphonePermission": "Allow Trainova to record voice messages."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Coach Platform to attach workout and chat media.",
-          "cameraPermission": "Allow Coach Platform to take workout and chat photos."
+          "photosPermission": "Allow Trainova to attach workout and chat media.",
+          "cameraPermission": "Allow Trainova to take workout and chat photos."
         }
       ],
       "expo-document-picker",

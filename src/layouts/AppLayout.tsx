@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useUnreadCounts } from '../hooks/useUnreadCounts';
-import AppIcon from '../components/AppIcon';
 import { useLanguage } from '../i18n/LanguageProvider';
 import { Activity, Apple, BarChart3, BookOpen, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
 
@@ -79,19 +78,19 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
 
   return <div className={`${isCoach ? 'app-shell coach-shell coach-top-shell' : 'app-shell player-top-shell'} route-background route-${pageTheme}`}>
     {isCoach && <header className="coach-topnav">
-      <div className="coach-brand"><span className="coach-brand-mark"><AppIcon name="pulse" size={19} /></span><span>PULSE<strong>FIT</strong></span></div>
+      <div className="coach-brand" aria-label="Trainova"><span className="trainova-mark"><img src="/trainova-wordmark.jpeg" alt="" /></span><strong>TRAINOVA</strong></div>
       {menuButton}
       <div id="signed-in-navigation" className={`coach-nav mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>{navigation}</div>
       <div className="coach-top-account">{coachProfileMenu}{themeToggle}</div>
     </header>}
     <div className="app-content">
       <header className="topbar">
-        <div className="signed-in-heading"><strong>{isCoach ? 'Coach workspace' : 'PULSEFIT'}</strong>{!isCoach && menuButton}</div>
+        <div className="signed-in-heading"><strong>{isCoach ? 'Coach workspace' : 'TRAINOVA'}</strong>{!isCoach && menuButton}</div>
         {!isCoach && <div id="signed-in-navigation" className={`player-navigation mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>{navigation}</div>}
         <div className="topbar-account"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}><LogOut size={17} /><span>Sign out</span></button></div>
       </header>
       <main className="container"><Outlet /></main>
-      <footer>© {new Date().getFullYear()} Coach Platform. All rights reserved. · <a href="/terms">Terms of Use</a></footer>
+      <footer>© {new Date().getFullYear()} Trainova. All rights reserved. · <a href="/terms">Terms of Use</a></footer>
     </div>
   </div>;
 }
