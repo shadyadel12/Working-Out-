@@ -149,6 +149,12 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(request, env) });
     const requestId = crypto.randomUUID();
     const url = new URL(request.url);
+    if (url.pathname === '/') return json(request, env, {
+      ok: true,
+      service: 'PulseFit request gateway',
+      dashboard: 'https://working-out-rho.vercel.app/admin/traffic',
+      health: '/health',
+    });
     if (url.pathname === '/health') return json(request, env, { ok: true });
     if (url.pathname.startsWith('/admin/')) return adminApi(request, env);
     if (!url.pathname.startsWith('/proxy/')) return json(request, env, { error: 'Not found.' }, 404);
