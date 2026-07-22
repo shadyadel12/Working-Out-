@@ -9,6 +9,24 @@ const url = process.env.EXPO_PUBLIC_API_GATEWAY_URL || directUrl;
 const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 if (!directUrl || !key) throw new Error('Copy mobile/.env.example to mobile/.env and add the Supabase values.');
 
+const gatewayBase = process.env.EXPO_PUBLIC_API_GATEWAY_URL?.replace(/\/$/, '');
+const directBase = directUrl.replace(/\/$/, '');
+
+/** Keep auth available when a device or ISP cannot reach the Cloudflare gateway. */
+async function resilientFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const requestUrl = typeof input === 'string' || input instanceof URL ? String(input) : input.url;
+  try {
+    return await fetch(input, init);
+  } catch (error) {
+    const canRetryDirect = error instanceof TypeError
+      && gatewayBase
+      && gatewayBase !== directBase
+      && requestUrl.startsWith(gatewayBase);
+    if (!canRetryDirect) throw error;
+    return fetch(`${directBase}${requestUrl.slice(gatewayBase.length)}`, init);
+  }
+}
+
 const secureStorage = {
   getItem: (name: string) => SecureStore.getItemAsync(name),
   setItem: (name: string, value: string) => SecureStore.setItemAsync(name, value, {
@@ -18,7 +36,10 @@ const secureStorage = {
 };
 
 export const supabase = createClient(url, key, {
-  global: { headers: { 'x-client-platform': Platform.OS } },
+  global: {
+    fetch: resilientFetch,
+    headers: { 'x-client-platform': Platform.OS },
+  },
   auth: {
     storage: Platform.OS === 'web' ? AsyncStorage : secureStorage,
     autoRefreshToken: true,
