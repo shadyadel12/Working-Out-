@@ -31,3 +31,4 @@ supabase/_all_migrations_combined.sql
 .vite-*.log
 New Text Document.txt
 .vercel
+.wrangler
