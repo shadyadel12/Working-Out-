@@ -19,6 +19,7 @@ if (!directUrl || !key) {
  * only in the `admin` edge function's server env.
  */
 export const supabase = createClient<Database>(url ?? '', key ?? '', {
+  global: { headers: { 'x-client-platform': 'web' } },
   auth: {
     persistSession: true,
     autoRefreshToken: true,

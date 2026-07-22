@@ -18,6 +18,7 @@ const secureStorage = {
 };
 
 export const supabase = createClient(url, key, {
+  global: { headers: { 'x-client-platform': Platform.OS } },
   auth: {
     storage: Platform.OS === 'web' ? AsyncStorage : secureStorage,
     autoRefreshToken: true,
