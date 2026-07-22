@@ -6,6 +6,8 @@ export interface SubscriptionInfo {
   active: boolean; // status='active' AND end_date >= today
 }
 
+export type SignupType = 'player' | 'coach' | 'team';
+
 /** Sign in with email + password. Throws on failure. */
 export async function signIn(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -13,28 +15,27 @@ export async function signIn(email: string, password: string) {
   return data;
 }
 
-/** Create an auth account (defaults to role 'player' via DB trigger). */
-export async function signUp(email: string, password: string, name: string) {
+/** Create an auth account and atomically consume its required access key. */
+export async function signUp(email: string, password: string, name: string, signupType: SignupType, accessKey: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: { data: { name, signup_type: signupType, access_key: accessKey.trim() } },
   });
   if (error) throw error;
   return data;
 }
 
 /**
- * Create an account and guarantee that the caller is authenticated before it
- * attempts an invitation/key claim. Hosted Auth projects may require email
- * confirmation, in which case signUp intentionally returns no session.
+ * Create an account after the database atomically consumes the access key,
+ * then guarantee a session when hosted email confirmation permits one.
  */
-export async function signUpAndEnsureSession(email: string, password: string, name: string) {
-  const signUpData = await signUp(email, password, name);
+export async function signUpAndEnsureSession(email: string, password: string, name: string, signupType: SignupType, accessKey: string) {
+  const signUpData = await signUp(email, password, name, signupType, accessKey);
   if (signUpData.session) return signUpData;
 
-  // Do not hide this error: it explains an email-confirmation/configuration
-  // problem and prevents the following key claim from running anonymously.
+  // Do not hide this error: the account/key transaction succeeded, but the
+  // user still has to confirm the email before an authenticated session exists.
   return signIn(email, password);
 }
 

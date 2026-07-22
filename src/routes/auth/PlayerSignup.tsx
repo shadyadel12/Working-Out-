@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { signUpAndEnsureSession, claimSubscriptionKey, checkSubscriptionKey, signOut, getErrorMessage } from '../../api/auth';
+import { signUpAndEnsureSession, checkSubscriptionKey, signOut, getErrorMessage } from '../../api/auth';
 import ActionButtonContent from '../../components/ActionButtonContent';
 
 /** Player self-serve signup: name + email + password + subscription key. */
@@ -22,9 +22,8 @@ export default function PlayerSignup() {
       if (!valid) {
         throw new Error('Invalid or already-used subscription key.');
       }
-      // 2) Create the account, then claim the key.
-      await signUpAndEnsureSession(email, password, name);
-      await claimSubscriptionKey(key);
+      // 2) Account creation and key consumption are one database transaction.
+      await signUpAndEnsureSession(email, password, name, 'player', key);
       // Full reload so AuthContext loads the fresh subscription.
       window.location.assign('/player/program');
     } catch (err) {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { signUpAndEnsureSession, claimCoachKey, checkCoachKey, signOut, getErrorMessage } from '../../api/auth';
-import { checkTeamInvite, claimTeamInvite } from '../../api/team';
+import { signUpAndEnsureSession, checkCoachKey, signOut, getErrorMessage } from '../../api/auth';
+import { checkTeamInvite } from '../../api/team';
 import ActionButtonContent from '../../components/ActionButtonContent';
 
 /** Coach self-serve signup: name + email + password + single-use coach key. */
@@ -24,9 +24,8 @@ export default function CoachSignup() {
       if (!valid) {
         throw new Error('Invalid or already-used coach key.');
       }
-      // 2) Create the account, then consume the key to become a coach.
-      await signUpAndEnsureSession(email, password, name);
-      if (signupType === 'team') await claimTeamInvite(coachKey); else await claimCoachKey(coachKey);
+      // 2) Account creation and key consumption are one database transaction.
+      await signUpAndEnsureSession(email, password, name, signupType === 'team' ? 'team' : 'coach', coachKey);
       // Full reload so AuthContext re-fetches the profile with the new role.
       window.location.assign('/coach/dashboard');
     } catch (err) {

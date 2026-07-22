@@ -27,6 +27,8 @@ export type CoachPlayerLink = {
   is_vip: boolean;
   checkup_days_per_week: number;
   checkup_weekdays: number[];
+  key_generated_by: string | null;
+  key_generated_at: string | null;
   created_at: string;
 }
 
@@ -119,6 +121,7 @@ export type CoachKey = {
   key: string;
   status: LinkStatus;
   claimed_by: string | null;
+  created_by: string | null;
   created_at: string;
 }
 

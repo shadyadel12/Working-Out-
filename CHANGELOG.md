@@ -18,6 +18,11 @@
 - Expanded Arabic across web and mobile navigation, headings, helper text, placeholders, status labels, accessibility text, validation messages, alerts, confirmations, and other popups, with RTL-aware directional controls.
 - Replaced the compact workout editor’s add, remove, save, edit, and confirm action words with accessible icon-only controls.
 
+### Security
+
+- New player, coach, and team accounts are now created only when a valid access key is consumed successfully, preventing incomplete accounts without an assigned coach or team.
+- Newly generated player keys now record the exact account that created them for future administrator audits.
+
 This page explains what the app can do and what has changed in everyday language. The newest updates appear first.
 
 ## July 21, 2026

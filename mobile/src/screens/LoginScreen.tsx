@@ -65,22 +65,17 @@ export default function LoginScreen() {
         const { data, error: signError } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { data: { name: name.trim() } },
+          options: {
+            data: {
+              name: name.trim(),
+              signup_type: mode === "player" ? "player" : team ? "team" : "coach",
+              access_key: key.trim(),
+            },
+          },
         });
         if (signError) throw signError;
         if (!data.session)
           throw new Error("Check your email, then return to sign in.");
-        const claim =
-          mode === "coach"
-            ? team
-              ? await (supabase.rpc as any)("claim_team_invite", {
-                  p_key: key.trim(),
-                })
-              : await supabase.rpc("claim_coach_key", { p_key: key.trim() })
-            : await supabase.rpc("claim_subscription_key", {
-                p_key: key.trim(),
-              });
-        if (claim.error) throw claim.error;
         await supabase.auth.refreshSession();
       }
     } catch (e) {
