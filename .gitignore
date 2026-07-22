@@ -11,6 +11,7 @@ mobile/android
 mobile/ios
 mobile/dist-mobile
 mobile/dist-mobile-phase1
+mobile/.env.eas-simulator
 
 # Editor
 .vscode/*

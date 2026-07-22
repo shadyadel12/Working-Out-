@@ -44,6 +44,12 @@
         "projectId": "a1bd66e9-592e-4477-a82e-d5c77e436d69"
       }
     },
-    "owner": "adelshadys-team"
+    "owner": "adelshadys-team",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a1bd66e9-592e-4477-a82e-d5c77e436d69"
+    }
   }
 }

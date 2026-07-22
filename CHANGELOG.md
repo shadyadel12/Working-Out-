@@ -2,6 +2,10 @@
 
 ## July 22, 2026
 
+### Improvements
+
+- Mobile releases can now receive compatible app improvements through Expo updates after the first new store build is installed.
+
 ### Fixes
 
 - Repaired coach and player signup so access keys are claimed only after Supabase establishes an authenticated session.
@@ -40,6 +44,7 @@ This page explains what the app can do and what has changed in everyday language
 ## July 20, 2026
 
 ### New Features
+
 
 - Players can confirm a complete workout, which marks it done for both the player and coach and locks the submitted details until Edit is selected.
 - Coaches can open uploaded or YouTube workout videos in a focused popup player.
