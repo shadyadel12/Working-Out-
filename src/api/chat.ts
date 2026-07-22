@@ -15,16 +15,13 @@ export interface ChatMessage {
 
 export interface CoachChatThread { player_id: string; latest_at: string; latest_body: string; unread: boolean }
 
-export async function listCoachChatThreads(coachId: string): Promise<CoachChatThread[]> {
-  const { data, error } = await supabase.from('chat_messages').select('player_id,sender_id,body,attachment_type,created_at').eq('coach_id', coachId).order('created_at', { ascending: false }).limit(1000);
+export async function listCoachChatThreads(coachId: string, viewerId = coachId): Promise<CoachChatThread[]> {
+  const { data, error } = await (supabase.rpc as any)('get_coach_chat_threads', { p_coach_id: coachId });
   if (error) throw error;
-  const latest = new Map<string, CoachChatThread>();
-  for (const row of data ?? []) {
-    if (latest.has(row.player_id)) continue;
-    const lastRead = localStorage.getItem(`lastRead_${coachId}_chat_${row.player_id}`) ?? new Date(0).toISOString();
-    latest.set(row.player_id, { player_id: row.player_id, latest_at: row.created_at, latest_body: row.body || (row.attachment_type ? `${row.attachment_type} attachment` : 'Message'), unread: row.sender_id !== coachId && row.created_at > lastRead });
-  }
-  return [...latest.values()];
+  return (data ?? []).map((row: any) => {
+    const lastRead = localStorage.getItem(`lastRead_${viewerId}_chat_${row.player_id}`) ?? new Date(0).toISOString();
+    return { player_id: row.player_id, latest_at: row.created_at, latest_body: row.body || (row.attachment_type ? `${row.attachment_type} attachment` : 'Message'), unread: row.sender_id !== viewerId && row.created_at > lastRead };
+  });
 }
 
 export function markCoachThreadRead(coachId: string, playerId: string) {
@@ -120,6 +117,21 @@ export function subscribeToChatMessages(
         const msg = payload.new as ChatMessage;
         if (msg.player_id === playerId) onNew(msg);
       }
+    )
+    .subscribe();
+}
+
+/** Keep the coach inbox current without repeatedly polling message history. */
+export function subscribeToCoachChatThreads(
+  coachId: string,
+  onNew: (msg: ChatMessage) => void
+) {
+  return supabase
+    .channel(`chat-inbox-${coachId}`)
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `coach_id=eq.${coachId}` },
+      (payload) => onNew(payload.new as ChatMessage)
     )
     .subscribe();
 }

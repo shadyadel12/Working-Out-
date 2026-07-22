@@ -13,8 +13,9 @@ import AppIcon from '../../components/AppIcon';
 const DAY = 86_400_000;
 
 export default function CoachDashboard() {
-  const { profile, effectiveCoachId, coachCapabilities } = useAuth();
+  const { session, profile, effectiveCoachId, coachCapabilities } = useAuth();
   const coachId = effectiveCoachId!;
+  const viewerId = session!.user.id;
   const today = todayISO();
   const playersQuery = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
   const claimedIds = useMemo(() => (playersQuery.data ?? []).flatMap((player) => player.profile ? [player.profile.id] : []), [playersQuery.data]);
@@ -24,7 +25,7 @@ export default function CoachDashboard() {
     enabled: claimedIds.length > 0,
   });
   const checkupsQuery = useQuery({ queryKey: ['checkups', coachId, today], queryFn: () => listCheckupsForDate(coachId, today) });
-  const chatsQuery = useQuery({ queryKey: ['coach-chat-threads', coachId], queryFn: () => listCoachChatThreads(coachId) });
+  const chatsQuery = useQuery({ queryKey: ['coach-chat-threads', coachId, viewerId], queryFn: () => listCoachChatThreads(coachId, viewerId) });
 
   const dashboard = useMemo(() => {
     const players = playersQuery.data ?? [];

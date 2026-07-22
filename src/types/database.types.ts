@@ -634,6 +634,16 @@ export type Database = {
         Args: { p_player_id: string; p_workout?: string | null; p_exercise?: string | null; p_start?: string | null; p_end?: string | null; p_limit?: number; p_offset?: number };
         Returns: unknown;
       };
+      get_coach_chat_threads: {
+        Args: { p_coach_id: string };
+        Returns: Array<{
+          player_id: string;
+          sender_id: string;
+          body: string;
+          attachment_type: string | null;
+          created_at: string;
+        }>;
+      };
       save_workout_as_template: { Args: { p_workout_id: string }; Returns: string };
       assign_workout_template: { Args: { p_program_day_id: string; p_template_id: string; p_position?: number }; Returns: string };
       save_diet_as_template: { Args: { p_diet_day_id: string; p_name: string }; Returns: string };

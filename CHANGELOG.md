@@ -17,6 +17,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### Improvements
 
+- Chat inboxes now stay current in real time without repeatedly downloading large message histories, reducing data use and improving responsiveness as more players come online.
+
 - Navigation now keeps inactive destinations icon-only and reveals the active destination label responsively. Action buttons now pair clear icons with their labels across the website and mobile app.
 - Login, signup, and administrator key forms now expose clear field names to screen readers and other accessibility tools.
 - Delegated coach-team accounts now open the correct assigned players and see only the navigation and actions allowed by their team role.

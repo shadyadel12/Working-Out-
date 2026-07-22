@@ -43,7 +43,7 @@ export default function CoachDashboardScreen() {
     const weekday = new Date().getDay();
     const [linksResult, chatsResult, checksResult] = await Promise.all([
       supabase.from("coach_player_links").select("id,status,subscription_end_date,is_vip,checkup_weekdays,player_id,profiles!coach_player_links_player_id_fkey(name,email)").eq("coach_id", effectiveCoachId),
-      supabase.from("chat_messages").select("player_id,sender_id,created_at").eq("coach_id", effectiveCoachId).order("created_at", { ascending: false }).limit(1000),
+      (supabase.rpc as any)("get_coach_chat_threads", { p_coach_id: effectiveCoachId }),
       supabase.from("checkups").select("player_id,is_checked").eq("coach_id", effectiveCoachId).eq("check_date", today),
     ]);
     const queryError = linksResult.error || chatsResult.error || checksResult.error;

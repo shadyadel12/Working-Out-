@@ -168,15 +168,13 @@ export function ChatScreen() {
           .eq("coach_id", effectiveCoachId!)
           .eq("status", "active")
           .not("player_id", "is", null);
-        const { data: recent } = await supabase
-          .from("chat_messages")
-          .select("player_id,sender_id,body,created_at")
-          .eq("coach_id", effectiveCoachId!)
-          .order("created_at", { ascending: false })
-          .limit(1000);
-        const latest = new Map<string, any>();
-        for (const row of recent ?? [])
-          if (!latest.has(row.player_id)) latest.set(row.player_id, row);
+        const { data: recent } = await (supabase.rpc as any)(
+          "get_coach_chat_threads",
+          { p_coach_id: effectiveCoachId! },
+        );
+        const latest = new Map<string, any>(
+          (recent ?? []).map((row: any) => [row.player_id, row]),
+        );
         const mapped = await Promise.all(
           (data ?? []).map(async (x: any) => {
             const last = latest.get(x.player_id),

@@ -1,14 +1,26 @@
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
-import { listCoachChatThreads } from '../../api/chat';
+import { listCoachChatThreads, subscribeToCoachChatThreads, type CoachChatThread } from '../../api/chat';
 import { listPlayersForCoach } from '../../api/players';
 
 export default function ChatInbox() {
-  const { effectiveCoachId, coachCapabilities } = useAuth();
+  const { session, effectiveCoachId, coachCapabilities } = useAuth();
   const coachId = effectiveCoachId!;
+  const viewerId = session!.user.id;
+  const qc = useQueryClient();
   const players = useQuery({ queryKey: ['players', coachId], queryFn: () => listPlayersForCoach(coachId) });
-  const threads = useQuery({ queryKey: ['coach-chat-threads', coachId], queryFn: () => listCoachChatThreads(coachId), refetchInterval: 15000 });
+  const threadKey = ['coach-chat-threads', coachId, viewerId] as const;
+  const threads = useQuery({ queryKey: threadKey, queryFn: () => listCoachChatThreads(coachId, viewerId) });
+  useEffect(() => {
+    const channel = subscribeToCoachChatThreads(coachId, (message) => {
+      const lastRead = localStorage.getItem(`lastRead_${viewerId}_chat_${message.player_id}`) ?? new Date(0).toISOString();
+      const next: CoachChatThread = { player_id: message.player_id, latest_at: message.created_at, latest_body: message.body || (message.attachment_type ? `${message.attachment_type} attachment` : 'Message'), unread: message.sender_id !== viewerId && message.created_at > lastRead };
+      qc.setQueryData<CoachChatThread[]>(threadKey, (current = []) => [next, ...current.filter((thread) => thread.player_id !== next.player_id)]);
+    });
+    return () => { void channel.unsubscribe(); };
+  }, [coachId, qc, viewerId]);
   const byId = new Map((players.data ?? []).filter((player) => player.profile).map((player) => [player.profile!.id, player]));
   const rows = (threads.data ?? []).map((thread) => ({ thread, player: byId.get(thread.player_id) })).filter((row) => row.player).sort((a, b) => {
     const aVipUnread = a.player!.link.is_vip && a.thread.unread;
