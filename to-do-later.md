@@ -64,3 +64,35 @@ Never put Cloudflare passwords, payment details, API tokens, or secret keys in c
 - Apply `supabase/migrations/0049_training_blueprint_builder.sql` immediately after `0048` before enabling the workout builder.
 - Regenerate hosted database TypeScript types with `npm run db:types` after the migration is live.
 - Controlled follow-template update diffs are intentionally not automatic; add an approval UI before propagating published revisions to active deliveries.
+
+# Mobile store deployment — waiting for developer accounts
+
+Expo hosting and over-the-air updates are configured. Resume store publishing after the Google Play Console and Apple Developer accounts are available.
+
+## Android / Google Play
+
+- [ ] Create or obtain access to a Google Play Console developer account.
+- [ ] Create the app using package ID `com.coachplatform.app`.
+- [ ] Complete the store listing, privacy policy, data-safety form, content rating, target audience, and app-access instructions.
+- [ ] Upload the existing production Android App Bundle from EAS build `5182bb25-ff78-4992-8d10-e25c51d82a00` if it is still current; otherwise create a fresh production build.
+- [ ] Release through internal testing first, then closed/open testing or production.
+
+Current Android bundle: `https://expo.dev/artifacts/eas/5h3cC7r-HbGkH4pMxFOUaYtK1Jae2y5FDRLPEqgzKvo.aab`
+
+## iOS / App Store
+
+- [ ] Enroll in the Apple Developer Program and obtain App Store Connect access.
+- [ ] Run the first interactive EAS iOS build to configure Apple signing credentials and two-factor authentication.
+- [ ] Create the App Store Connect app using bundle ID `com.coachplatform.app`.
+- [ ] Complete privacy details, screenshots, age rating, review notes, and app-access instructions.
+- [ ] Upload through EAS Submit, test with TestFlight, then submit for App Review.
+
+## Already completed
+
+- [x] Expo project linked as `@adelshadys-team/bloodyx`.
+- [x] Production EAS environment connected to Supabase.
+- [x] EAS Update configured on the `production` channel for Android and iOS.
+- [x] Android production signing and store build completed.
+- [x] iOS encryption declaration configured.
+
+EAS Update dashboard: `https://expo.dev/accounts/adelshadys-team/projects/bloodyx/updates/21a515cc-65db-45ad-b992-8a163119eb9f`
