@@ -4,6 +4,7 @@
 
 ### Improvements
 
+- Android testers can install a direct APK that receives the same compatible automatic updates as the production mobile release.
 - Mobile releases can now receive compatible app improvements through Expo updates after the first new store build is installed.
 
 ### Fixes
