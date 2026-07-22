@@ -1,10 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/database.types';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
+const directUrl = import.meta.env.VITE_SUPABASE_URL;
+const url = import.meta.env.VITE_API_GATEWAY_URL || directUrl;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-if (!url || !key) {
+if (!directUrl || !key) {
   // Fail loud in dev so a missing .env.local is obvious rather than a cryptic 401.
   console.error(
     'Missing Supabase env vars. Copy .env.example to .env.local and fill in ' +

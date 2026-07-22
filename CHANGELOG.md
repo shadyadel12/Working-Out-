@@ -47,6 +47,8 @@ This page explains what the app can do and what has changed in everyday language
 
 ### New Features
 
+- Administrators can review request totals by IP, platform and country, inspect errors, and temporarily or permanently block suspicious networks.
+
 
 - Players can confirm a complete workout, which marks it done for both the player and coach and locks the submitted details until Edit is selected.
 - Coaches can open uploaded or YouTube workout videos in a focused popup player.

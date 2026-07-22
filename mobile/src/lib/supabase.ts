@@ -4,9 +4,10 @@ import * as SecureStore from 'expo-secure-store';
 import { AppState, Platform } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 
-const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const directUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const url = process.env.EXPO_PUBLIC_API_GATEWAY_URL || directUrl;
 const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-if (!url || !key) throw new Error('Copy mobile/.env.example to mobile/.env and add the Supabase values.');
+if (!directUrl || !key) throw new Error('Copy mobile/.env.example to mobile/.env and add the Supabase values.');
 
 const secureStorage = {
   getItem: (name: string) => SecureStore.getItemAsync(name),

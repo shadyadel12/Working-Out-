@@ -428,6 +428,7 @@ html[dir="rtl"] .player-meal-dropdown.snack { border-right-color:var(--warning, 
 .library-heading p { margin: 3px 0 0; color: #7b8190; font-size: .86rem; }
 .library-table-card { background: white; border: 1px solid #e2e5eb; border-radius: 12px; overflow: hidden; }
 .library-table { min-width: 900px; }
+.traffic-heading{justify-content:space-between;align-items:flex-end}.traffic-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.traffic-stats>div{display:grid;gap:5px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px}.traffic-stats span{color:var(--text-dim);font-size:.75rem;text-transform:uppercase}.traffic-stats strong{font-size:1.65rem}.traffic-section-title{display:flex;align-items:center;gap:9px;padding:18px 20px;border-bottom:1px solid var(--border)}.traffic-page code{white-space:nowrap}.traffic-page td button{white-space:nowrap}@media(max-width:720px){.traffic-heading{align-items:stretch;flex-direction:column}.traffic-stats{grid-template-columns:1fr 1fr}}
 .library-actions { display: flex; gap: 5px; white-space: nowrap; }
 .library-actions button { padding: 5px 8px; font-size: .68rem; }
 .library-empty { min-height: 200px; display: grid; place-content: center; gap: 7px; text-align: center; color: #727987; }

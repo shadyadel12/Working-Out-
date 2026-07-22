@@ -50,6 +50,7 @@ import Blocked from './routes/player/Blocked';
 import PlayerProfileDetails from './routes/player/Profile';
 import AdminCoaches from './routes/admin/Coaches';
 import AdminSupport from './routes/admin/Support';
+import AdminTraffic from './routes/admin/Traffic';
 import DesignPreview from './routes/DesignPreview';
 
 const coachLinks = [
@@ -83,6 +84,7 @@ const playerLinks = [
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
   { to: '/admin/support', label: 'Support', badgeKey: 'support' as const },
+  { to: '/admin/traffic', label: 'Traffic' },
 ];
 
 export default function App() {
@@ -170,6 +172,7 @@ export default function App() {
             <Route index element={<Navigate to="coaches" replace />} />
             <Route path="coaches" element={<AdminCoaches />} />
             <Route path="support" element={<AdminSupport />} />
+            <Route path="traffic" element={<AdminTraffic />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
