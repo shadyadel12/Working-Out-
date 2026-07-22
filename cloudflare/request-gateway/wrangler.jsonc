@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pulsefit-request-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "SUPABASE_ORIGIN": "https://lvbmbaeeriwgypelpfhh.supabase.co",
+    "ALLOWED_WEB_ORIGINS": "https://working-out-rho.vercel.app,http://localhost:5173"
+  },
+  "d1_databases": [
+    {
+      "binding": "ANALYTICS_DB",
+      "database_name": "pulsefit-request-analytics",
+      "database_id": "c35c1f26-b7b0-460f-87c1-cfc5f2f25c01",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["17 3 * * *"]
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.05
+  }
+}

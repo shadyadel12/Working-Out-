@@ -1,0 +1,14 @@
+{
+  "name": "pulsefit-request-gateway",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "types": "wrangler types"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.113.0"
+  }
+}
