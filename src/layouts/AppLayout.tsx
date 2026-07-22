@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useUnreadCounts } from '../hooks/useUnreadCounts';
 import { useLanguage } from '../i18n/LanguageProvider';
-import { Activity, Apple, BarChart3, BookOpen, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
+import { Activity, Apple, BarChart3, BookOpen, Box, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
 
 type NavLink_ = { to: string; label: string; badgeKey?: 'chat' | 'support'; group?: 'library' };
 
@@ -15,7 +15,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const { theme, setTheme } = useLanguage();
   const isCoach = profile?.role === 'coach';
   const visibleLinks = !teamMembership ? links : links.filter((link) => {
-    if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support') return true;
+    if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support' || link.label === 'How It Works') return true;
     if (link.group === 'library') return false;
     if (link.label === 'Messages') return teamMembership.role === 'chat' || teamMembership.role === 'head_coach';
     if (link.label === 'Check-ups') return teamMembership.role !== 'sales';
@@ -105,6 +105,7 @@ function iconFor(label: string): LucideIcon {
     Progress: BarChart3, 'Diet Progress': Salad, Chat: MessageCircle, 'My Profile': UserRound,
     'Users & Keys': KeyRound,
     Traffic: Activity,
+    'How It Works': Box,
   };
   return icons[label] ?? NotebookTabs;
 }

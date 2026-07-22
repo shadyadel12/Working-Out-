@@ -52,6 +52,7 @@ import AdminCoaches from './routes/admin/Coaches';
 import AdminSupport from './routes/admin/Support';
 import AdminTraffic from './routes/admin/Traffic';
 import DesignPreview from './routes/DesignPreview';
+import HowItWorks from './routes/HowItWorks';
 
 const coachLinks = [
   { to: '/coach/dashboard', label: 'Dashboard', badgeKey: 'chat' as const },
@@ -72,6 +73,7 @@ const coachLinks = [
   { to: '/coach/subs', label: 'Subs' },
   { to: '/coach/settings', label: 'Settings' },
   { to: '/coach/support', label: 'Support', badgeKey: 'support' as const },
+  { to: '/coach/how-it-works', label: 'How It Works' },
 ];
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
@@ -80,11 +82,13 @@ const playerLinks = [
   { to: '/player/diet-progress', label: 'Diet Progress' },
   { to: '/player/chat', label: 'Chat', badgeKey: 'chat' as const },
   { to: '/player/profile', label: 'My Profile' },
+  { to: '/player/how-it-works', label: 'How It Works' },
 ];
 const adminLinks = [
   { to: '/admin/coaches', label: 'Users & Keys' },
   { to: '/admin/support', label: 'Support', badgeKey: 'support' as const },
   { to: '/admin/traffic', label: 'Traffic' },
+  { to: '/admin/how-it-works', label: 'How It Works' },
 ];
 
 export default function App() {
@@ -137,6 +141,7 @@ export default function App() {
             <Route path="subs" element={<RequireCoachCapability capability="sell"><CoachSubs /></RequireCoachCapability>} />
             <Route path="settings" element={<CoachSettings />} />
             <Route path="support" element={<CoachSupport />} />
+            <Route path="how-it-works" element={<HowItWorks />} />
           </Route>
 
           {/* Player */}
@@ -156,6 +161,7 @@ export default function App() {
             <Route path="chat" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerChat /></RequirePlayerDetails></RequireActiveSubscription>} />
             <Route path="profile" element={<RequireActiveSubscription><PlayerProfileDetails /></RequireActiveSubscription>} />
             <Route path="blocked" element={<Blocked />} />
+            <Route path="how-it-works" element={<HowItWorks />} />
           </Route>
 
           {/* Admin */}
@@ -173,6 +179,7 @@ export default function App() {
             <Route path="coaches" element={<AdminCoaches />} />
             <Route path="support" element={<AdminSupport />} />
             <Route path="traffic" element={<AdminTraffic />} />
+            <Route path="how-it-works" element={<HowItWorks />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

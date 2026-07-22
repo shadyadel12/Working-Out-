@@ -4,6 +4,7 @@
 
 ### Improvements
 
+- Added a plain-language “How It Works” guide that explains what every main navigation button does for coaches, players, and administrators.
 - Rebranded the website and mobile app as Trainova, including the supplied logo, browser title, navigation, loading, login, and permission text.
 - Connected the Monitor, security, customer-support, and development assistants to their Slack team rooms with shared case handoffs and approval safeguards.
 - Prepared separate Monitor, security investigation, customer support, and development assistants with clear handoffs, safety limits, and plain-language approval reports.
