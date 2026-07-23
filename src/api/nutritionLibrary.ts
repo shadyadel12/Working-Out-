@@ -3,8 +3,7 @@ import type { DietFoodItem, DietRecipeSnapshot } from '../types/database.types';
 
 export interface MealPlanOption { id:string; title:string; description:string|null; weekCount:number }
 export interface PlayerMealPlanAssignment { id:string;title:string;description:string|null;coverUrl:string|null;startWeek:number;endWeek:number;assignedAt:string;status:string }
-export interface RecipeBookOption { id:string; title:string }
-export interface RecipeOption { id:string; title:string; summary:string|null; servings:number; instructions:string|null; bookIds:string[] }
+export interface RecipeOption { id:string; title:string; summary:string|null; servings:number; instructions:string|null }
 
 const from=(table:string)=>supabase.from(table as never) as any;
 
@@ -23,18 +22,10 @@ export async function getActiveMealPlanAssignment(playerId:string):Promise<Playe
   const{data,error}=await from('player_meal_plan_assignments').select('id,start_week,end_week,assigned_at,status,menu_templates(title,description,cover_url)').eq('player_id',playerId).eq('status','active').order('assigned_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;if(!data)return null;const plan=data.menu_templates as any;return{id:data.id,title:plan?.title??'Meal plan',description:plan?.description??null,coverUrl:plan?.cover_url??null,startWeek:data.start_week,endWeek:data.end_week,assignedAt:data.assigned_at,status:data.status};
 }
 
-export async function listRecipeBooks(coachId:string):Promise<RecipeBookOption[]> {
-  const {data,error}=await from('dish_collections').select('id,title').eq('coach_id',coachId).eq('lifecycle','published').is('deleted_at',null).order('title');
-  if(error) throw error; return data??[];
-}
-
 export async function listPublishedRecipes(coachId:string):Promise<RecipeOption[]> {
-  const [{data:recipes,error},{data:links,error:linkError}]=await Promise.all([
-    from('dishes').select('id,title,summary,servings,instructions').eq('coach_id',coachId).eq('lifecycle','published').is('deleted_at',null).order('title'),
-    from('collection_dishes').select('collection_id,dish_id'),
-  ]);
-  if(error) throw error; if(linkError) throw linkError;
-  return (recipes??[]).map((row:any)=>({...row,bookIds:(links??[]).filter((link:any)=>link.dish_id===row.id).map((link:any)=>link.collection_id)}));
+  const {data,error}=await from('dishes').select('id,title,summary,servings,instructions').eq('coach_id',coachId).eq('lifecycle','published').is('deleted_at',null).order('title');
+  if(error) throw error;
+  return data??[];
 }
 
 export async function getRecipeSnapshot(recipeId:string):Promise<{recipe:DietRecipeSnapshot;items:DietFoodItem[]}> {

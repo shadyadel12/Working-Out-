@@ -39,7 +39,6 @@ import FoodLibrary from './routes/coach/FoodLibrary';
 import MealPlanLibrary from './routes/coach/MealPlanLibrary';
 import RecipeLibrary from './routes/coach/RecipeLibrary';
 import IngredientLibrary from './routes/coach/IngredientLibrary';
-import RecipeBookLibrary from './routes/coach/RecipeBookLibrary';
 import MetricGroupLibrary from './routes/coach/MetricGroupLibrary';
 import CoachTeam from './routes/coach/Team';
 import CoachSubs from './routes/coach/Subs';
@@ -69,7 +68,6 @@ const coachLinks = [
   { to: '/coach/meal-plan-library', label: 'Meal Plans', group: 'library' as const },
   { to: '/coach/recipe-library', label: 'Recipes', group: 'library' as const },
   { to: '/coach/ingredient-library', label: 'Ingredients', group: 'library' as const },
-  { to: '/coach/recipe-book-library', label: 'Recipe Books', group: 'library' as const },
   { to: '/coach/metric-group-library', label: 'Metric Groups', group: 'library' as const },
   { to: '/coach/checkups', label: 'Check-ups' },
   { to: '/coach/messages', label: 'Messages', badgeKey: 'chat' as const },
@@ -132,7 +130,6 @@ export default function App() {
             <Route path="meal-plan-library" element={<RequireCoachCapability capability="owner"><MealPlanLibrary /></RequireCoachCapability>} />
             <Route path="recipe-library" element={<RequireCoachCapability capability="owner"><RecipeLibrary /></RequireCoachCapability>} />
             <Route path="ingredient-library" element={<RequireCoachCapability capability="owner"><IngredientLibrary /></RequireCoachCapability>} />
-            <Route path="recipe-book-library" element={<RequireCoachCapability capability="owner"><RecipeBookLibrary /></RequireCoachCapability>} />
             <Route path="metric-group-library" element={<RequireCoachCapability capability="owner"><MetricGroupLibrary /></RequireCoachCapability>} />
             <Route path="players/:playerId" element={<CoachPlayerProfile />} />
             <Route path="players/:playerId/assignments" element={<RequireCoachCapability capability="manage"><CoachPlayerAssignments /></RequireCoachCapability>} />

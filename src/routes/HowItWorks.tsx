@@ -14,7 +14,6 @@ const coachGuide: GuideItem[] = [
   { name: 'Meal Plans', description: 'Shows saved nutrition plans that can be assigned to players.' },
   { name: 'Recipes', description: 'Shows saved recipes for use in nutrition plans.' },
   { name: 'Ingredients', description: 'Shows the foods and ingredients used in recipes.' },
-  { name: 'Recipe Books', description: 'Shows collections of recipes that can be shared with players.' },
   { name: 'Metric Groups', description: 'Shows the measurements you use to track player progress.' },
   { name: 'Check-ups', description: 'Opens the page where you can see the players you have checked up on so far and who is still waiting.' },
   { name: 'Messages', description: 'Opens your conversations with players.' },

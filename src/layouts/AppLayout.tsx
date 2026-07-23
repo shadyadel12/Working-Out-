@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useUnreadCounts } from '../hooks/useUnreadCounts';
 import { useLanguage } from '../i18n/LanguageProvider';
-import { Activity, Apple, BarChart3, BookOpen, Box, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
+import { Activity, Apple, BarChart3, Box, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
 
 type NavLink_ = { to: string; label: string; badgeKey?: 'chat' | 'support'; group?: 'library' };
 
@@ -99,7 +99,7 @@ function iconFor(label: string): LucideIcon {
   const icons: Record<string, LucideIcon> = {
     Clients: UsersRound, Dashboard: LayoutDashboard, Exercises: Dumbbell, Workouts: ClipboardCheck,
     Sections: FolderKanban, Programs: CalendarCheck2, Tasks: ListChecks, Forms: FileText, Foods: Apple,
-    'Meal Plans': Salad, Recipes: Utensils, Ingredients: Apple, 'Recipe Books': BookOpen,
+    'Meal Plans': Salad, Recipes: Utensils, Ingredients: Apple,
     'Metric Groups': BarChart3, 'Check-ups': CheckSquare, Messages: MessageCircle, Team: UsersRound,
     Subs: CreditCard, Settings, Support: LifeBuoy, Program: Dumbbell, Diet: Utensils,
     Progress: BarChart3, 'Diet Progress': Salad, Chat: MessageCircle, 'My Profile': UserRound,
