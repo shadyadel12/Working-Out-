@@ -1213,6 +1213,27 @@ button:has(.action-button-icon),
   margin: 0;
 }
 .library-nav-group > button:not(.active) .library-chevron { display: none; }
+
+/* Player desktop navigation keeps icons beside English labels for a clear, even toolbar. */
+@media (min-width: 761px) {
+  html:not([dir="rtl"]) .player-top-shell .topbar { gap: 18px; padding-inline: 20px; }
+  html:not([dir="rtl"]) .player-top-shell .topbar > .signed-in-heading { flex: 0 0 auto; }
+  html:not([dir="rtl"]) .player-top-shell .player-navigation { flex: 1 1 auto; min-width: 0; }
+  html:not([dir="rtl"]) .player-top-shell .adaptive-nav { display: flex; align-items: center; justify-content: flex-end; gap: 3px; }
+  html:not([dir="rtl"]) .player-top-shell .adaptive-nav-item {
+    min-width: 0;
+    min-height: 38px;
+    flex: 0 1 auto;
+    flex-direction: row;
+    gap: 6px !important;
+    padding: 7px 9px;
+    text-align: left;
+  }
+  html:not([dir="rtl"]) .player-top-shell .adaptive-nav-label { max-width: none; font-size: .7rem; line-height: 1.15; }
+  html:not([dir="rtl"]) .player-top-shell .adaptive-nav-item .coach-nav-icon { width: 18px; height: 18px; flex: 0 0 18px; }
+  html:not([dir="rtl"]) .player-top-shell .adaptive-nav-item .coach-nav-icon svg { width: 16px; height: 16px; }
+  html:not([dir="rtl"]) .player-top-shell .topbar-account { flex: 0 0 auto; }
+}
 @media (max-width: 720px) {
   .adaptive-nav-item.active,
   .library-nav-group > button.active { flex-direction: column-reverse; }
