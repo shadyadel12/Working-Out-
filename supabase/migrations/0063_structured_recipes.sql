@@ -1,0 +1,15 @@
+alter table public.dishes
+  add column if not exists categories text[] not null default '{}',
+  add column if not exists prep_minutes integer check (prep_minutes is null or prep_minutes >= 0),
+  add column if not exists cook_minutes integer check (cook_minutes is null or cook_minutes >= 0),
+  add column if not exists dietary_labels text[] not null default '{}',
+  add column if not exists instruction_video_url text,
+  add column if not exists preparation_steps jsonb not null default '[]'::jsonb,
+  add column if not exists cooking_steps jsonb not null default '[]'::jsonb,
+  add column if not exists calories numeric check (calories is null or calories >= 0),
+  add column if not exists protein_g numeric check (protein_g is null or protein_g >= 0),
+  add column if not exists carbs_g numeric check (carbs_g is null or carbs_g >= 0),
+  add column if not exists fat_g numeric check (fat_g is null or fat_g >= 0),
+  add column if not exists saturated_fat_g numeric check (saturated_fat_g is null or saturated_fat_g >= 0),
+  add column if not exists sugar_g numeric check (sugar_g is null or sugar_g >= 0),
+  add column if not exists fiber_g numeric check (fiber_g is null or fiber_g >= 0);
