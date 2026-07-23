@@ -5,6 +5,7 @@ import AppIcon from '../../components/AppIcon';
 import ActionButtonContent from '../../components/ActionButtonContent';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import { addLibraryRelation, archiveCoachLibraryItem, createMeasurementForGroup, duplicateCoachLibraryItem, listCoachLibraryItems, listLibraryRelations, publishCoachLibraryItem, removeLibraryRelation, saveCoachLibraryItem, type CatalogLifecycle, type CatalogShareMode, type CoachLibraryItem, type LibraryKind } from '../../api/coachLibrary';
+import IngredientEditor from './ingredients/IngredientEditor';
 
 const configs: Record<LibraryKind, { title: string; singular: string; description: string; subtypeLabel?: string; subtypeOptions?: string[]; numberLabel?: string; unit?: boolean }> = {
   sections: { title: 'Workout Sections', singular: 'section', description: 'Reusable exercise groups with format-specific timing and prescriptions.', subtypeLabel: 'Format', subtypeOptions: ['standard','interval','amrap','timed','freestyle'], numberLabel: 'Rounds' },
@@ -77,7 +78,7 @@ function CatalogEditor({ kind, item, onClose, onSaved }: { kind: LibraryKind; it
 }
 
 function LibraryRelationsEditor({ kind, parentId, coachId }: { kind: LibraryKind; parentId: string; coachId: string }) {
-  const supported = !['tasks','ingredients'].includes(kind); const [choiceId, setChoiceId] = useState(''); const [label, setLabel] = useState(''); const [subtype, setSubtype] = useState('short_text'); const [amount, setAmount] = useState(1); const [secondaryAmount, setSecondaryAmount] = useState(kind === 'sections' ? 60 : 1); const [unit, setUnit] = useState('g'); const [required, setRequired] = useState(false); const [mealType,setMealType]=useState<'meal'|'snack'>('meal');
+  const supported = !['tasks','ingredients'].includes(kind); const [choiceId, setChoiceId] = useState(''); const [label, setLabel] = useState(''); const [subtype, setSubtype] = useState('short_text'); const [amount, setAmount] = useState(1); const [secondaryAmount, setSecondaryAmount] = useState(kind === 'sections' ? 60 : 1); const [unit, setUnit] = useState('g'); const [required, setRequired] = useState(false); const [mealType,setMealType]=useState<'meal'|'snack'>('meal'); const [newIngredient,setNewIngredient]=useState(false);
   const query = useQuery({ queryKey: ['library-relations', kind, parentId], queryFn: () => listLibraryRelations(kind, parentId, coachId), enabled: supported });
   const refresh = () => query.refetch(); const add = useMutation({ mutationFn: () => addLibraryRelation(kind, parentId, { choiceId, label, subtype, amount, secondaryAmount, unit, required, mealType }), onSuccess: async () => { await refresh(); setChoiceId(''); setLabel(''); } });
   const createMetric = useMutation({ mutationFn: () => createMeasurementForGroup(coachId, parentId, label, unit), onSuccess: async () => { await refresh(); setLabel(''); } });
@@ -96,7 +97,8 @@ function LibraryRelationsEditor({ kind, parentId, coachId }: { kind: LibraryKind
       {kind === 'recipes' && <><label>Quantity<input type="number" min="0.01" step="0.01" value={amount} onChange={(event) => setAmount(Number(event.target.value))} /></label><label>Unit<input value={unit} onChange={(event) => setUnit(event.target.value)} /></label></>}
       {kind === 'meal-plans' && <><label>Meal name<input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Breakfast" /></label><label>Type<select value={mealType} onChange={(event)=>setMealType(event.target.value as 'meal'|'snack')}><option value="meal">Meal</option><option value="snack">Snack</option></select></label><label>Week<input type="number" min="1" max="52" value={amount} onChange={(event) => setAmount(Number(event.target.value))} /></label><label>Day<input type="number" min="1" max="7" value={secondaryAmount} onChange={(event) => setSecondaryAmount(Number(event.target.value))} /></label></>}
       <button type="button" disabled={!canAdd || add.isPending} onClick={() => add.mutate()}>{add.isPending ? 'Adding…' : 'Add item'}</button>
-    </div>{add.error && <p className="error" role="alert">{(add.error as Error).message}</p>}
+      {kind==='recipes'&&<button type="button" className="secondary" onClick={()=>setNewIngredient(true)}>+ New ingredient</button>}
+    </div>{add.error && <p className="error" role="alert">{(add.error as Error).message}</p>}{newIngredient&&<IngredientEditor coachId={coachId} mode="single" onClose={()=>setNewIngredient(false)} onSaved={async()=>{await refresh();setNewIngredient(false)}}/>}
   </fieldset>;
 }
 
