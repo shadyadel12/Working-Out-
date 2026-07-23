@@ -14,6 +14,7 @@
 
 ### Fixes
 
+- Saved workouts now appear reliably in the workout builder library and can be reused with other players.
 - Sign in and key-based registration now remain available if a phone or network cannot connect to the request gateway.
 - Restored website login and signup after the protected request gateway was added.
 - Repaired coach and player signup so access keys are claimed only after Supabase establishes an authenticated session.

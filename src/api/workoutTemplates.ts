@@ -1,10 +1,14 @@
 import { supabase } from '../lib/supabase';
 
-export interface WorkoutTemplate { id:string;coach_id:string;name:string;description:string|null;difficulty:string|null;notes:string|null;lifecycle?:'draft'|'published'|'archived';revision?:number;created_at:string }
+export interface WorkoutTemplate { id:string;coach_id:string;name:string;description:string|null;difficulty:string|null;notes:string|null;lifecycle?:'draft'|'published'|'archived';revision?:number;created_at:string;updated_at?:string;deleted_at?:string|null }
 export interface WorkoutTemplateExercise { id:string;template_id:string;position:number;name:string;exercise_library_id:string|null;section_name:string|null;target_sets:number|null;target_reps:string|null;target_seconds:number|null;rest_seconds:number|null;load_value:number|null;load_percent:number|null;tempo:string|null;bilateral:boolean;coach_comment:string|null;chain_key:string|null;coach_video_url:string|null;coach_video_is_external:boolean }
 export interface WorkoutBlueprintItem { clientId:string;kind:'exercise'|'section';sourceId:string;name:string;sets:number;reps:string;seconds:string;restSeconds:number;loadValue:string;loadPercent:string;tempo:string;bilateral:boolean;note:string;chainKey:string }
 const from=(table:string)=>supabase.from(table as never) as any;
-export async function listWorkoutTemplates(coachId:string):Promise<WorkoutTemplate[]>{const{data,error}=await from('workout_templates').select('*').eq('coach_id',coachId).is('deleted_at',null).order('updated_at',{ascending:false});if(error)throw error;return data??[]}
+export async function listWorkoutTemplates(coachId:string):Promise<WorkoutTemplate[]>{
+  const{data,error}=await from('workout_templates').select('*').eq('coach_id',coachId).order('created_at',{ascending:false});
+  if(error)throw error;
+  return((data??[])as WorkoutTemplate[]).filter((template)=>!template.deleted_at).sort((a,b)=>new Date(b.updated_at??b.created_at).getTime()-new Date(a.updated_at??a.created_at).getTime());
+}
 export async function listWorkoutSections(coachId:string){const{data,error}=await from('workout_sections').select('*').eq('coach_id',coachId).is('deleted_at',null).order('name');if(error)throw error;return data??[]}
 export async function getWorkoutTemplate(id:string){const [{data:template,error},{data:exercises,error:exError},{data:sections,error:sError}]=await Promise.all([from('workout_templates').select('*').eq('id',id).single(),from('workout_template_exercises').select('*').eq('template_id',id).is('section_id',null).order('position'),from('workout_template_sections').select('*,workout_sections(*)').eq('template_id',id).order('position')]);if(error)throw error;if(exError)throw exError;if(sError)throw sError;return{template:template as WorkoutTemplate,exercises:exercises as WorkoutTemplateExercise[],sections:sections??[]}}
 export async function saveWorkoutBlueprint(templateId:string|null,input:{name:string;description:string;difficulty:string;notes:string;items:WorkoutBlueprintItem[]}):Promise<string>{const{data,error}=await(supabase.rpc as any)('save_workout_blueprint',{p_template_id:templateId,p_name:input.name,p_description:input.description,p_difficulty:input.difficulty,p_notes:input.notes,p_items:input.items.map(({clientId:_,...item})=>item)});if(error)throw error;return data}
