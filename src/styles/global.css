@@ -1219,7 +1219,7 @@ button:has(.action-button-icon),
   .player-top-shell .topbar { gap: 20px; padding-inline: 20px; }
   .player-top-shell .topbar > .signed-in-heading { flex: 0 0 auto; }
   .player-top-shell .player-navigation { flex: 1 1 auto; min-width: 0; }
-  .player-top-shell .adaptive-nav { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+  .player-top-shell .adaptive-nav { display: flex; align-items: center; justify-content: flex-start; gap: 4px; }
   .player-top-shell .adaptive-nav-item {
     min-width: 58px;
     min-height: 52px;
@@ -1234,6 +1234,7 @@ button:has(.action-button-icon),
   .player-top-shell .adaptive-nav-item .coach-nav-icon { width: 22px; height: 22px; flex: 0 0 22px; }
   .player-top-shell .adaptive-nav-item .coach-nav-icon svg { width: 18px; height: 18px; }
   .player-top-shell .topbar-account { flex: 0 0 auto; }
+  html[dir="rtl"] .player-top-shell .adaptive-nav { justify-content: flex-end; direction: rtl; }
 }
 @media (max-width: 720px) {
   .adaptive-nav-item.active,
