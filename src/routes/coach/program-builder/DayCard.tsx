@@ -1,10 +1,9 @@
-/** Edits one program day and coordinates its draft/live workout editors. */
+/** Creates a program day before exposing its workout builder. */
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { upsertProgramDay, createFullDay, duplicateDayToWeeks, type DraftWorkoutData } from '../../../api/programs';
+import { upsertProgramDay, duplicateDayToWeeks } from '../../../api/programs';
 import type { ProgramDay } from '../../../types/database.types';
 import WeekPicker from '../../../components/WeekPicker';
-import DraftWorkoutsEditor from './DraftWorkoutsEditor';
 import WorkoutList from './WorkoutList';
 
 export default function DayCard({
@@ -26,8 +25,6 @@ export default function DayCard({
 }) {
   const qc = useQueryClient();
   const [dayType, setDayType] = useState(existing?.day_type ?? 'training');
-  // Draft workouts (each with draft exercises) for a not-yet-created day.
-  const [draftWorkouts, setDraftWorkouts] = useState<DraftWorkoutData[]>([]);
   // Duplicate-day picker toggle.
   const [dupOpen, setDupOpen] = useState(false);
   const dupDay = useMutation({
@@ -50,15 +47,10 @@ export default function DayCard({
         title: existing?.title ?? null,
         diet_plan: existing?.diet_plan ?? null,
       };
-      if (!existing && dayType === 'training' && draftWorkouts.length > 0) {
-        await createFullDay(base, draftWorkouts);
-      } else {
-        await upsertProgramDay(base);
-      }
+      await upsertProgramDay(base);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['program', playerId] });
-      setDraftWorkouts([]);
     },
   });
 
@@ -111,11 +103,6 @@ export default function DayCard({
           </label>
         </div>
 
-        {/* New training day: build workouts + exercises before the first save. */}
-        {!existing && dayType === 'training' && (
-          <DraftWorkoutsEditor drafts={draftWorkouts} setDrafts={setDraftWorkouts} coachId={coachId} />
-        )}
-
         <div className="row">
           <button onClick={() => saveDay.mutate()} disabled={saveDay.isPending}>
             {saveDay.isPending ? 'Saving…' : existing ? 'Save day' : 'Create day'}
@@ -123,7 +110,7 @@ export default function DayCard({
           {saveDay.error && <span className="error">{(saveDay.error as Error).message}</span>}
         </div>
 
-        {/* Existing training day: live workout editor. */}
+        {/* Workouts always use the same builder after the day exists. */}
         {existing && dayType === 'training' && (
           <WorkoutList
             programDayId={existing.id}
@@ -137,5 +124,3 @@ export default function DayCard({
     </div>
   );
 }
-
-// ---- Draft editors (for a day that doesn't exist in the DB yet) ----

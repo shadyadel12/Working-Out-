@@ -65,6 +65,8 @@ export interface DraftExerciseData {
   target_sets: number | null;
   target_reps: string | null;
   target_weight: string | null;
+  target_seconds?: number | null;
+  tempo?: string | null;
   coach_comment: string | null;
   coach_video_url: string | null;
   coach_video_is_external: boolean;
@@ -128,6 +130,8 @@ export async function createFullDay(
           target_sets: ex.target_sets,
           target_reps: ex.target_reps,
           target_weight: ex.target_weight,
+          target_seconds: ex.target_seconds ?? null,
+          tempo: ex.tempo ?? null,
           coach_comment: ex.coach_comment,
           coach_video_url: ex.coach_video_url,
           coach_video_is_external: ex.coach_video_is_external,

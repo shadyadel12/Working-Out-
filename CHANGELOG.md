@@ -4,6 +4,7 @@
 
 ### Improvements
 
+- Workout creation now follows one consistent flow: create the day first, then build its workouts in the full workout builder.
 - Added a plain-language “How It Works” guide that explains what every main navigation button does for coaches, players, and administrators.
 - Rebranded the website and mobile app as Trainova, including the supplied logo, browser title, navigation, loading, login, and permission text.
 - Connected the Monitor, security, customer-support, and development assistants to their Slack team rooms with shared case handoffs and approval safeguards.
@@ -60,6 +61,8 @@ This page explains what the app can do and what has changed in everyday language
 ## July 20, 2026
 
 ### New Features
+
+- Workout exercises can now use repetitions or a timed duration, include a tempo, and attach a video link or uploaded video.
 
 - Administrators can review request totals by IP, platform and country, inspect errors, and temporarily or permanently block suspicious networks.
 

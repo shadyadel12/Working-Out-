@@ -65,6 +65,8 @@ export type Exercise = {
   target_sets: number | null;
   target_reps: string | null;
   target_weight: string | null;
+  target_seconds: number | null;
+  tempo: string | null;
   coach_video_url: string | null;
   coach_video_is_external: boolean;
   coach_comment: string | null;
@@ -299,9 +301,9 @@ export type Database = {
         Relationships: [];
       };
       workout_template_exercises: {
-        Row: { id: string; template_id: string; position: number; name: string; target_sets: number | null; target_reps: string | null; target_weight: string | null; coach_video_url: string | null; coach_video_is_external: boolean; coach_comment: string | null; created_at: string };
-        Insert: { id?: string; template_id: string; position?: number; name: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
-        Update: { id?: string; template_id?: string; position?: number; name?: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
+        Row: { id: string; template_id: string; position: number; name: string; target_sets: number | null; target_reps: string | null; target_weight: string | null; target_seconds: number | null; tempo: string | null; coach_video_url: string | null; coach_video_is_external: boolean; coach_comment: string | null; created_at: string };
+        Insert: { id?: string; template_id: string; position?: number; name: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; target_seconds?: number | null; tempo?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
+        Update: { id?: string; template_id?: string; position?: number; name?: string; target_sets?: number | null; target_reps?: string | null; target_weight?: string | null; target_seconds?: number | null; tempo?: string | null; coach_video_url?: string | null; coach_video_is_external?: boolean; coach_comment?: string | null; created_at?: string };
         Relationships: [];
       };
       exercises: {
@@ -317,6 +319,8 @@ export type Database = {
           target_sets?: number | null;
           target_reps?: string | null;
           target_weight?: string | null;
+          target_seconds?: number | null;
+          tempo?: string | null;
           coach_video_url?: string | null;
           coach_video_is_external?: boolean;
           coach_comment?: string | null;
@@ -333,6 +337,8 @@ export type Database = {
           target_sets?: number | null;
           target_reps?: string | null;
           target_weight?: string | null;
+          target_seconds?: number | null;
+          tempo?: string | null;
           coach_video_url?: string | null;
           coach_video_is_external?: boolean;
           coach_comment?: string | null;

@@ -17,6 +17,8 @@ export async function listExercises(workoutId: string): Promise<Exercise[]> {
       target_sets: row.is_template_override ? row.target_sets : (row.target_sets ?? template?.target_sets ?? null),
       target_reps: row.is_template_override ? row.target_reps : (row.target_reps ?? template?.target_reps ?? null),
       target_weight: row.is_template_override ? row.target_weight : (row.target_weight ?? template?.target_weight ?? null),
+      target_seconds: row.is_template_override ? row.target_seconds : (row.target_seconds ?? template?.target_seconds ?? null),
+      tempo: row.is_template_override ? row.tempo : (row.tempo ?? template?.tempo ?? null),
       coach_video_url: row.is_template_override ? row.coach_video_url : (row.coach_video_url ?? template?.coach_video_url ?? null),
       coach_video_is_external: row.is_template_override ? row.coach_video_is_external : (template?.coach_video_is_external ?? false),
       coach_comment: row.is_template_override ? row.coach_comment : (row.coach_comment ?? template?.coach_comment ?? null),
@@ -31,6 +33,8 @@ export interface ExerciseInput {
   target_sets: number | null;
   target_reps: string | null;
   target_weight: string | null;
+  target_seconds?: number | null;
+  tempo?: string | null;
   coach_video_url: string | null;
   coach_video_is_external: boolean;
   coach_comment: string | null;
