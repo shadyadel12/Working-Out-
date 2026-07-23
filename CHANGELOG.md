@@ -1,5 +1,7 @@
 # App Updates
 
+- Coaches can optionally add pictures submitted for photo tasks to a player's private Progress Photos, with dated thumbnails, full-size viewing, and side-by-side comparison.
+
 ## July 22, 2026
 
 ### Improvements

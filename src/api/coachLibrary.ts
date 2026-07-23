@@ -26,6 +26,7 @@ export interface CoachLibraryInput {
   unit?: string;
   availableFrom?: string;
   availableUntil?: string;
+  addUploadsToProgressPhotos?: boolean;
 }
 
 type KindConfig = { table: string; title: string; summary?: string; subtype?: string; numberValue?: string; unit?: string; hasLifecycle: boolean };
@@ -71,6 +72,7 @@ export async function saveCoachLibraryItem(kind: LibraryKind, coachId: string, i
   if (config.hasLifecycle) { payload.lifecycle = input.lifecycle; payload.share_mode = input.shareMode; }
   if (kind === 'sections') payload.format = input.subtype || 'standard';
   if (kind === 'tasks') payload.task_type = input.subtype || 'general';
+  if (kind === 'tasks') payload.add_uploads_to_progress_photos = input.subtype === 'progress_photo' && Boolean(input.addUploadsToProgressPhotos);
   if (kind === 'forms') { payload.available_from = input.availableFrom || null; payload.available_until = input.availableUntil || null; }
   const query = id ? from(config.table).update(payload).eq('id', id) : from(config.table).insert(payload);
   const { data, error } = await query.select('id').single();

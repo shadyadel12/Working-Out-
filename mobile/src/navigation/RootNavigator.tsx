@@ -16,6 +16,7 @@ import { supabase } from "../lib/supabase";
 import PlayerHomeScreen from "../screens/player/PlayerHomeScreen";
 import AdminOverviewScreen from "../screens/admin/AdminOverviewScreen";
 import PlayerProgressScreen from "../screens/player/PlayerProgressScreen";
+import AssignmentsScreen from "../screens/player/AssignmentsScreen";
 import AdminManagementScreen from "../screens/admin/AdminManagementScreen";
 import { tr, useLanguage } from "../i18n/MobileLanguage";
 import MobileLoading from "../components/MobileLoading";
@@ -95,6 +96,11 @@ function PlayerTabs() {
         name="Diet"
         component={DietScreen}
         options={{ tabBarLabel: tabLabel(tr("Diet", language)), tabBarIcon: tabIcon(Utensils) }}
+      />
+      <Tabs.Screen
+        name="Assignments"
+        component={AssignmentsScreen}
+        options={{ tabBarLabel: tabLabel(tr("Assignments", language)), tabBarIcon: tabIcon(Gauge) }}
       />
       <Tabs.Screen
         name="Progress"

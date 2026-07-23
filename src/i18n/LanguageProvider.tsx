@@ -26,6 +26,8 @@ const ar: Record<string, string> = {
   Recipes: "الوصفات",
   Ingredients: "المكونات",
   "Recipe Books": "كتب الوصفات",
+  "Add uploaded photos to Progress Photos": "إضافة الصور المرفوعة إلى صور التقدم",
+  "Progress Photos": "صور التقدم",
   "Metric Groups": "مجموعات القياسات",
   "Users & Keys": "المستخدمون والمفاتيح",
   Traffic: "حركة الموقع",

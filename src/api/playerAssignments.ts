@@ -12,7 +12,7 @@ export interface PlayerAssignment {
   scheduled_for: string;
   status: 'scheduled' | 'active' | 'complete' | 'cancelled';
   completed_at: string | null;
-  snapshot: { title?: string; summary?: string | null };
+  snapshot: { title?: string; summary?: string | null; task_type?: string; add_uploads_to_progress_photos?: boolean };
   created_at: string;
 }
 
@@ -36,7 +36,7 @@ export async function assignLibraryItem(coachId: string, playerId: string, type:
   const { data, error } = await table().insert({
     coach_id: coachId, player_id: playerId, item_type: type, item_id: item.id,
     scheduled_for: new Date(`${scheduledFor}T12:00:00`).toISOString(),
-    status: 'scheduled', snapshot: { title: item.title, summary: item.summary },
+    status: 'scheduled', snapshot: { title: item.title, summary: item.summary, task_type: item.meta.task_type, add_uploads_to_progress_photos: Boolean(item.meta.add_uploads_to_progress_photos) },
   }).select('id').single();
   if (error) throw error;
   return data.id;

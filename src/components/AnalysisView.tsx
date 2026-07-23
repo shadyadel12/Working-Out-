@@ -6,6 +6,7 @@ import LoadingSkeleton from './LoadingSkeleton';
 import ProgressFilter from './progress/ProgressFilter';
 import ProgressStat from './progress/ProgressStat';
 import VideoDialog from './VideoDialog';
+import ProgressPhotos from './progress/ProgressPhotos';
 
 const PAGE_SIZE = 20;
 const cell: React.CSSProperties = { padding: '0.45rem 0.6rem', textAlign: 'left' };
@@ -45,6 +46,7 @@ export default function AnalysisView({ playerId, coachView = false }: { playerId
   const filtersChanged = workout !== applied.workout || exercise !== applied.exercise || range !== applied.range;
 
   return <div className="stack">
+    <ProgressPhotos playerId={playerId}/>
     <div className="card row" style={{ flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end' }}>
       <ProgressFilter label="Workout" value={workout} all="All workouts" options={options.data?.workouts ?? []} onChange={setWorkout} />
       <ProgressFilter label="Exercise" value={exercise} all="All exercises" options={options.data?.exercises ?? []} onChange={setExercise} />
