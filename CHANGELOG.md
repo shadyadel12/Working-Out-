@@ -19,6 +19,7 @@
 - The Meal Plan Add Meal dialog now includes an explicit day selector instead of defaulting Recipe Library additions to the first day.
 - Added a Foods library under Forms for managing the reusable foods shown in the player Diet meal builder.
 - Form editing now supports optional “Available from” and “Available until” dates.
+- Fixed library publishing by mapping database table names to valid revision entity types, with visible publish progress and errors.
 - Coaches can assign published tasks, forms, and metric groups from a dedicated player Assignments page.
 - Improved the player assignment cards with clear labels, contained controls, responsive layouts, and assignment counts.
 - Matched the player toolbar to the coach navigation with centered icons above their labels.

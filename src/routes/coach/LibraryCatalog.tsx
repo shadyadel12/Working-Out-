@@ -45,9 +45,10 @@ export default function LibraryCatalog({ kind }: { kind: LibraryKind }) {
       <div className="catalog-card-top"><span className={`catalog-status ${item.lifecycle}`}>{item.lifecycle}</span><span>v{item.revision}</span></div>
       <h2>{item.title}</h2><p>{item.summary || `No ${config.singular} description yet.`}</p>
       <dl><div><dt>Visibility</dt><dd>{item.share_mode === 'workspace' ? 'Team workspace' : 'Private'}</dd></div><div><dt>Updated</dt><dd>{new Date(item.updated_at).toLocaleDateString()}</dd></div></dl>
-      <footer><button className="secondary" onClick={() => setEditor(item)}>Edit</button><button className="secondary" onClick={() => duplicate.mutate(item)}>Duplicate</button>{item.lifecycle !== 'published' && <button className="secondary" onClick={() => publish.mutate(item.id)}>Publish</button>}<button className="danger" onClick={() => window.confirm(`Archive ${item.title}? Existing player history will be preserved.`) && archive.mutate(item.id)}>Archive</button></footer>
+      <footer><button className="secondary" onClick={() => setEditor(item)}>Edit</button><button className="secondary" onClick={() => duplicate.mutate(item)}>Duplicate</button>{item.lifecycle !== 'published' && <button className="secondary" disabled={publish.isPending} onClick={() => publish.mutate(item.id)}>{publish.isPending ? 'Publishing…' : 'Publish'}</button>}<button className="danger" onClick={() => window.confirm(`Archive ${item.title}? Existing player history will be preserved.`) && archive.mutate(item.id)}>Archive</button></footer>
     </article>)}</div>}
     {!query.isLoading && !query.error && rows.length === 0 && <div className="catalog-empty"><AppIcon name="library" size={34} /><h2>No {config.title.toLowerCase()} found</h2><p>Create the first reusable {config.singular}, or change the current search and status filters.</p><button onClick={() => setEditor('new')}><ActionButtonContent action="create">Create {config.singular}</ActionButtonContent></button></div>}
+    {publish.error && <p className="error" role="alert">Publish failed: {(publish.error as Error).message}</p>}
     {editor && <CatalogEditor kind={kind} item={editor === 'new' ? null : editor} onClose={() => setEditor(null)} onSaved={async () => { await refresh(); setEditor(null); }} />}
   </div>;
 }
