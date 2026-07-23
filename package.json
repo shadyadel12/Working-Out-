@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "security:check": "node scripts/security-regression.mjs",
+    "security:library": "node scripts/library-security-regression.mjs",
     "typecheck": "tsc --noEmit",
     "db:types": "supabase gen types typescript --local > src/types/database.types.ts"
   },

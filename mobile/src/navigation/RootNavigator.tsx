@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { NavigationContainer, DarkTheme, DefaultTheme, type InitialState } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  DarkTheme,
+  DefaultTheme,
+  type InitialState,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../auth/AuthProvider";
@@ -18,12 +23,25 @@ import AdminOverviewScreen from "../screens/admin/AdminOverviewScreen";
 import PlayerProgressScreen from "../screens/player/PlayerProgressScreen";
 import AssignmentsScreen from "../screens/player/AssignmentsScreen";
 import AdminManagementScreen from "../screens/admin/AdminManagementScreen";
+import AdminLibraryModerationScreen from "../screens/admin/AdminLibraryModerationScreen";
 import { tr, useLanguage } from "../i18n/MobileLanguage";
 import MobileLoading from "../components/MobileLoading";
 import CoachTabShell from "./CoachTabShell";
 import { useMobileTheme } from "../theme/MobileTheme";
 import { Text, useWindowDimensions } from "react-native";
-import { BarChart3, Dumbbell, Gauge, Home, KeyRound, LifeBuoy, MessageCircle, UserRound, Utensils, type LucideIcon } from "lucide-react-native";
+import {
+  BarChart3,
+  Dumbbell,
+  Gauge,
+  Home,
+  KeyRound,
+  ShieldCheck,
+  LifeBuoy,
+  MessageCircle,
+  UserRound,
+  Utensils,
+  type LucideIcon,
+} from "lucide-react-native";
 
 const Tabs = createBottomTabNavigator();
 const tabOptions = {
@@ -48,12 +66,25 @@ const tabOptions = {
   tabBarInactiveTintColor: colors.muted,
   tabBarLabelStyle: { fontSize: 11, fontWeight: "700" as const },
 };
-const tabIcon = (Icon: LucideIcon) => ({ color, size }: { color: string; size: number }) => <Icon color={color} size={size} strokeWidth={1.9} />;
-const tabLabel = (label: string) => ({ color }: { focused: boolean; color: string }) =>
-  <Text numberOfLines={1} style={{ color, fontSize: 11, fontWeight: "700" }}>{label}</Text>;
+const tabIcon =
+  (Icon: LucideIcon) =>
+  ({ color, size }: { color: string; size: number }) => (
+    <Icon color={color} size={size} strokeWidth={1.9} />
+  );
+const tabLabel =
+  (label: string) =>
+  ({ color }: { focused: boolean; color: string }) => (
+    <Text numberOfLines={1} style={{ color, fontSize: 11, fontWeight: "700" }}>
+      {label}
+    </Text>
+  );
 function useTabOptions() {
   const { width } = useWindowDimensions();
-  return { ...tabOptions, tabBarLabelPosition: width >= 600 ? "beside-icon" as const : "below-icon" as const };
+  return {
+    ...tabOptions,
+    tabBarLabelPosition:
+      width >= 600 ? ("beside-icon" as const) : ("below-icon" as const),
+  };
 }
 function PlayerTabs() {
   const { language } = useLanguage();
@@ -77,40 +108,57 @@ function PlayerTabs() {
   useEffect(() => {
     void check();
   }, [session]);
-  if (active === null)
-    return <MobileLoading variant="player" />;
+  if (active === null) return <MobileLoading variant="player" />;
   if (!active) return <RenewSubscriptionScreen onRenewed={check} />;
   return (
     <Tabs.Navigator screenOptions={adaptiveTabOptions}>
       <Tabs.Screen
         name="Home"
         component={PlayerHomeScreen}
-        options={{ tabBarLabel: tabLabel(tr("Home", language)), tabBarIcon: tabIcon(Home) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Home", language)),
+          tabBarIcon: tabIcon(Home),
+        }}
       />
       <Tabs.Screen
         name="Program"
         component={ProgramScreen}
-        options={{ tabBarLabel: tabLabel(tr("Program", language)), tabBarIcon: tabIcon(Dumbbell) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Program", language)),
+          tabBarIcon: tabIcon(Dumbbell),
+        }}
       />
       <Tabs.Screen
         name="Diet"
         component={DietScreen}
-        options={{ tabBarLabel: tabLabel(tr("Diet", language)), tabBarIcon: tabIcon(Utensils) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Diet", language)),
+          tabBarIcon: tabIcon(Utensils),
+        }}
       />
       <Tabs.Screen
         name="Assignments"
         component={AssignmentsScreen}
-        options={{ tabBarLabel: tabLabel(tr("Assignments", language)), tabBarIcon: tabIcon(Gauge) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Assignments", language)),
+          tabBarIcon: tabIcon(Gauge),
+        }}
       />
       <Tabs.Screen
         name="Progress"
         component={PlayerProgressScreen}
-        options={{ tabBarLabel: tabLabel(tr("Progress", language)), tabBarIcon: tabIcon(BarChart3) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Progress", language)),
+          tabBarIcon: tabIcon(BarChart3),
+        }}
       />
       <Tabs.Screen
         name="Coach"
         component={ChatScreen}
-        options={{ tabBarLabel: tabLabel(tr("Coach", language)), tabBarIcon: tabIcon(MessageCircle) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Coach", language)),
+          tabBarIcon: tabIcon(MessageCircle),
+        }}
       />
     </Tabs.Navigator>
   );
@@ -126,22 +174,42 @@ function AdminTabs() {
       <Tabs.Screen
         name="Overview"
         component={AdminOverviewScreen}
-        options={{ tabBarLabel: tabLabel(tr("Overview", language)), tabBarIcon: tabIcon(Gauge) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Overview", language)),
+          tabBarIcon: tabIcon(Gauge),
+        }}
       />
       <Tabs.Screen
         name="Users & Keys"
         component={AdminManagementScreen}
-        options={{ tabBarLabel: tabLabel(tr("Users & Keys", language)), tabBarIcon: tabIcon(KeyRound) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Users & Keys", language)),
+          tabBarIcon: tabIcon(KeyRound),
+        }}
       />
       <Tabs.Screen
         name="Support"
         component={AdminSupportScreen}
-        options={{ tabBarLabel: tabLabel(tr("Support", language)), tabBarIcon: tabIcon(LifeBuoy) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Support", language)),
+          tabBarIcon: tabIcon(LifeBuoy),
+        }}
+      />
+      <Tabs.Screen
+        name="Libraries"
+        component={AdminLibraryModerationScreen}
+        options={{
+          tabBarLabel: tabLabel(tr("Libraries", language)),
+          tabBarIcon: tabIcon(ShieldCheck),
+        }}
       />
       <Tabs.Screen
         name="Account"
         component={AccountScreen}
-        options={{ tabBarLabel: tabLabel(tr("Account", language)), tabBarIcon: tabIcon(UserRound) }}
+        options={{
+          tabBarLabel: tabLabel(tr("Account", language)),
+          tabBarIcon: tabIcon(UserRound),
+        }}
       />
     </Tabs.Navigator>
   );
@@ -157,20 +225,28 @@ export default function RootNavigator() {
     setNavigationReady(false);
     AsyncStorage.getItem(persistenceKey).then((stored) => {
       if (!active) return;
-      try { setInitialState(stored ? JSON.parse(stored) as InitialState : undefined); }
-      catch { setInitialState(undefined); }
+      try {
+        setInitialState(
+          stored ? (JSON.parse(stored) as InitialState) : undefined,
+        );
+      } catch {
+        setInitialState(undefined);
+      }
       setNavigationReady(true);
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [persistenceKey]);
-  if (loading)
-    return <MobileLoading variant="launch" />;
+  if (loading) return <MobileLoading variant="launch" />;
   if (!navigationReady) return <MobileLoading variant="launch" />;
   return (
     <NavigationContainer
       key={persistenceKey}
       initialState={initialState}
-      onStateChange={(state) => { void AsyncStorage.setItem(persistenceKey, JSON.stringify(state)); }}
+      onStateChange={(state) => {
+        void AsyncStorage.setItem(persistenceKey, JSON.stringify(state));
+      }}
       theme={{
         ...(mobileTheme.dark ? DarkTheme : DefaultTheme),
         colors: {

@@ -1,7 +1,213 @@
-import { useMemo, useState } from 'react';
-import { useMutation,useQuery,useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../auth/AuthContext';
-import { listIngredients,removeIngredients,type Ingredient } from '../../api/ingredients';
-import LoadingSkeleton from '../../components/LoadingSkeleton';
-import IngredientEditor from './ingredients/IngredientEditor';
-export default function IngredientLibrary(){const{session}=useAuth();const coachId=session!.user.id;const qc=useQueryClient();const[search,setSearch]=useState('');const[category,setCategory]=useState('');const[tab,setTab]=useState<'all'|'custom'>('all');const[editor,setEditor]=useState<Ingredient|'single'|'multiple'|null>(null);const[selected,setSelected]=useState<string[]>([]);const query=useQuery({queryKey:['ingredients',coachId],queryFn:()=>listIngredients(coachId)});const refresh=()=>qc.invalidateQueries({queryKey:['ingredients',coachId]});const remove=useMutation({mutationFn:removeIngredients,onSuccess:async()=>{setSelected([]);await refresh()}});const categories=[...new Set((query.data??[]).map(x=>x.category).filter(Boolean) as string[])].sort();const rows=useMemo(()=>(query.data??[]).filter(x=>(!category||x.category===category)&&`${x.name} ${x.category??''}`.toLowerCase().includes(search.toLowerCase())),[query.data,category,search,tab]);return <div className="ingredient-page"><header className="catalog-heading"><div><span className="overview-kicker">Nutrition Library</span><h1>Ingredients</h1><p>Create foods once, then reuse them inside recipes and player meal plans.</p></div><div className="ingredient-add-actions"><button onClick={()=>setEditor('single')}>+ Add ingredient</button><button className="secondary" onClick={()=>setEditor('multiple')}>Add multiple</button></div></header><section className="ingredient-help"><strong>How ingredients are used</strong><span>Ingredient → Recipe → Meal Plan → Player Diet</span><p>Add nutrition building blocks here. When building a recipe, choose these ingredients and adjust each quantity and unit.</p></section><div className="catalog-toolbar"><label className="catalog-search"><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search ingredients"/></label><div className="catalog-tabs"><button className={tab==='all'?'active':''} onClick={()=>setTab('all')}>All</button><button className={tab==='custom'?'active':''} onClick={()=>setTab('custom')}>Custom</button></div><select value={category} onChange={e=>setCategory(e.target.value)}><option value="">All categories</option>{categories.map(x=><option key={x}>{x}</option>)}</select></div>{selected.length>0&&<div className="ingredient-bulk-bar"><span>{selected.length} selected</span><button className="danger" onClick={()=>confirm(`Remove ${selected.length} ingredients? Existing recipes keep their history.`)&&remove.mutate(selected)}>Remove selected</button></div>}{query.isLoading?<LoadingSkeleton rows={6}/>:<div className="ingredient-table-wrap"><table className="clients-table ingredient-table"><thead><tr><th><input type="checkbox" checked={rows.length>0&&selected.length===rows.length} onChange={e=>setSelected(e.target.checked?rows.map(x=>x.id):[])}/></th><th>Ingredient</th><th>Category</th><th>Default unit</th><th>Actions</th></tr></thead><tbody>{rows.map(x=><tr key={x.id}><td><input type="checkbox" checked={selected.includes(x.id)} onChange={()=>setSelected(v=>v.includes(x.id)?v.filter(id=>id!==x.id):[...v,x.id])}/></td><td><div className="ingredient-name"><span>{x.image_url?<img src={x.image_url} alt=""/>:x.name.slice(0,2).toUpperCase()}</span><strong>{x.name}</strong></div></td><td>{x.category||'Uncategorized'}</td><td>{x.default_unit}</td><td className="library-actions"><button className="secondary" onClick={()=>setEditor(x)}>Edit</button><button className="danger" onClick={()=>confirm(`Remove ${x.name}?`)&&remove.mutate([x.id])}>Remove</button></td></tr>)}</tbody></table>{rows.length===0&&<div className="catalog-empty"><h2>No ingredients found</h2><p>Create one ingredient or add several at once.</p></div>}</div>}{editor&&<IngredientEditor coachId={coachId} mode={editor} onClose={()=>setEditor(null)} onSaved={async()=>{await refresh();setEditor(null)}}/>}</div>}
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../../auth/AuthContext";
+import {
+  listIngredients,
+  removeIngredients,
+  type Ingredient,
+} from "../../api/ingredients";
+import LoadingSkeleton from "../../components/LoadingSkeleton";
+import IngredientEditor from "./ingredients/IngredientEditor";
+import LibraryAccessPanel from "../../components/LibraryAccessPanel";
+export default function IngredientLibrary() {
+  const { session } = useAuth();
+  const coachId = session!.user.id;
+  const qc = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [tab, setTab] = useState<"all" | "custom">("all");
+  const [editor, setEditor] = useState<
+    Ingredient | "single" | "multiple" | null
+  >(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const query = useQuery({
+    queryKey: ["ingredients", coachId],
+    queryFn: () => listIngredients(coachId),
+  });
+  const refresh = () =>
+    qc.invalidateQueries({ queryKey: ["ingredients", coachId] });
+  const remove = useMutation({
+    mutationFn: removeIngredients,
+    onSuccess: async () => {
+      setSelected([]);
+      await refresh();
+    },
+  });
+  const categories = [
+    ...new Set(
+      (query.data ?? []).map((x) => x.category).filter(Boolean) as string[],
+    ),
+  ].sort();
+  const rows = useMemo(
+    () =>
+      (query.data ?? []).filter(
+        (x) =>
+          (!category || x.category === category) &&
+          `${x.name} ${x.category ?? ""}`
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+      ),
+    [query.data, category, search, tab],
+  );
+  return (
+    <div className="ingredient-page">
+      <header className="catalog-heading">
+        <div>
+          <span className="overview-kicker">Nutrition Library</span>
+          <h1>Ingredients</h1>
+          <p>
+            Create foods once, then reuse them inside recipes and player meal
+            plans.
+          </p>
+        </div>
+        <div className="ingredient-add-actions">
+          <button onClick={() => setEditor("single")}>+ Add ingredient</button>
+          <button className="secondary" onClick={() => setEditor("multiple")}>
+            Add multiple
+          </button>
+        </div>
+      </header>
+      <LibraryAccessPanel kind="ingredients" coachId={coachId} />
+      <section className="ingredient-help">
+        <strong>How ingredients are used</strong>
+        <span>Ingredient → Recipe → Meal Plan → Player Diet</span>
+        <p>
+          Add nutrition building blocks here. When building a recipe, choose
+          these ingredients and adjust each quantity and unit.
+        </p>
+      </section>
+      <div className="catalog-toolbar">
+        <label className="catalog-search">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search ingredients"
+          />
+        </label>
+        <div className="catalog-tabs">
+          <button
+            className={tab === "all" ? "active" : ""}
+            onClick={() => setTab("all")}
+          >
+            All
+          </button>
+          <button
+            className={tab === "custom" ? "active" : ""}
+            onClick={() => setTab("custom")}
+          >
+            Custom
+          </button>
+        </div>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {categories.map((x) => (
+            <option key={x}>{x}</option>
+          ))}
+        </select>
+      </div>
+      {selected.length > 0 && (
+        <div className="ingredient-bulk-bar">
+          <span>{selected.length} selected</span>
+          <button
+            className="danger"
+            onClick={() =>
+              confirm(
+                `Remove ${selected.length} ingredients? Existing recipes keep their history.`,
+              ) && remove.mutate(selected)
+            }
+          >
+            Remove selected
+          </button>
+        </div>
+      )}
+      {query.isLoading ? (
+        <LoadingSkeleton rows={6} />
+      ) : (
+        <div className="ingredient-table-wrap">
+          <table className="clients-table ingredient-table">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={rows.length > 0 && selected.length === rows.length}
+                    onChange={(e) =>
+                      setSelected(e.target.checked ? rows.map((x) => x.id) : [])
+                    }
+                  />
+                </th>
+                <th>Ingredient</th>
+                <th>Category</th>
+                <th>Default unit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((x) => (
+                <tr key={x.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(x.id)}
+                      onChange={() =>
+                        setSelected((v) =>
+                          v.includes(x.id)
+                            ? v.filter((id) => id !== x.id)
+                            : [...v, x.id],
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <div className="ingredient-name">
+                      <span>
+                        {x.image_url ? (
+                          <img src={x.image_url} alt="" />
+                        ) : (
+                          x.name.slice(0, 2).toUpperCase()
+                        )}
+                      </span>
+                      <strong>{x.name}</strong>
+                    </div>
+                  </td>
+                  <td>{x.category || "Uncategorized"}</td>
+                  <td>{x.default_unit}</td>
+                  <td className="library-actions">
+                    <button className="secondary" onClick={() => setEditor(x)}>
+                      Edit
+                    </button>
+                    <button
+                      className="danger"
+                      onClick={() =>
+                        confirm(`Remove ${x.name}?`) && remove.mutate([x.id])
+                      }
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {rows.length === 0 && (
+            <div className="catalog-empty">
+              <h2>No ingredients found</h2>
+              <p>Create one ingredient or add several at once.</p>
+            </div>
+          )}
+        </div>
+      )}
+      {editor && (
+        <IngredientEditor
+          coachId={coachId}
+          mode={editor}
+          onClose={() => setEditor(null)}
+          onSaved={async () => {
+            await refresh();
+            setEditor(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}

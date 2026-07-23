@@ -4,6 +4,7 @@ export interface LibraryExercise {
   id: string; coach_id: string; name: string; equipment: string | null; category: string;
   instructions: string | null; target_muscle_groups: string[]; default_note: string | null;
   movement_patterns: string[]; tracking_fields: string[]; video_url: string | null;
+  visibility?: 'private'|'public'; lifecycle?: 'draft'|'published'|'archived';
   created_at: string; updated_at: string;
 }
 export type LibraryExerciseInput = Omit<LibraryExercise, 'id' | 'coach_id' | 'created_at' | 'updated_at'>;

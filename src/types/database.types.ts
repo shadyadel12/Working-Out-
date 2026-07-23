@@ -6,6 +6,10 @@
 export type UserRole = 'admin' | 'coach' | 'player';
 export type DayType = 'training' | 'rest';
 export type LinkStatus = 'active' | 'expired' | 'revoked';
+export type CatalogVisibility = 'private' | 'public';
+export type CatalogModerationStatus = 'visible' | 'hidden' | 'removed';
+export type CatalogReportStatus = 'open' | 'reviewing' | 'resolved' | 'dismissed';
+export type CatalogSyncStatus = 'never' | 'running' | 'ok' | 'failed' | 'quarantined' | 'disabled';
 
 // ---- Row shapes (also exported for app use) ----
 
@@ -678,11 +682,19 @@ export type Database = {
         Args: { p_player_id: string; p_days: unknown; p_foods: unknown };
         Returns: { daysCreated: number; mealsCreated: number; foodsCreated: number };
       };
+      publish_catalog_item: { Args: { p_table: string; p_id: string; p_visibility: CatalogVisibility }; Returns: number };
+      copy_public_catalog_item: { Args: { p_table: string; p_id: string }; Returns: string };
+      report_catalog_item: { Args: { p_table: string; p_id: string; p_reason: string }; Returns: string };
+      moderate_catalog_item: { Args: { p_table: string; p_id: string; p_status: CatalogModerationStatus; p_reason: string }; Returns: undefined };
     };
     Enums: {
       user_role: UserRole;
       day_type: DayType;
       link_status: LinkStatus;
+      catalog_visibility: CatalogVisibility;
+      catalog_moderation_status: CatalogModerationStatus;
+      catalog_report_status: CatalogReportStatus;
+      catalog_sync_status: CatalogSyncStatus;
     };
     CompositeTypes: Record<never, never>;
   };

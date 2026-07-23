@@ -1,38 +1,367 @@
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../auth/AuthContext';
-import { createLibraryExercise, deleteLibraryExercise, listLibraryExercises, updateLibraryExercise, type LibraryExercise } from '../../api/exerciseLibrary';
-import LoadingSkeleton from '../../components/LoadingSkeleton';
-import MultiSelectDropdown from '../../components/MultiSelectDropdown';
-import ActionButtonContent from '../../components/ActionButtonContent';
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../../auth/AuthContext";
+import {
+  createLibraryExercise,
+  deleteLibraryExercise,
+  listLibraryExercises,
+  updateLibraryExercise,
+  type LibraryExercise,
+} from "../../api/exerciseLibrary";
+import LoadingSkeleton from "../../components/LoadingSkeleton";
+import MultiSelectDropdown from "../../components/MultiSelectDropdown";
+import ActionButtonContent from "../../components/ActionButtonContent";
+import LibraryAccessPanel from "../../components/LibraryAccessPanel";
+import VisibilitySelect from "../../components/VisibilitySelect";
+import {
+  publishCatalogItem,
+  type LibraryVisibility,
+} from "../../api/publicLibrary";
 
-const equipmentOptions = ['None', 'Barbell', 'Dumbbell', 'Kettlebell', 'Machine', 'Cable', 'Resistance Band', 'Bodyweight', 'Bench', 'Other'];
-const categoryOptions = ['Strength', 'Cardio', 'Mobility', 'Flexibility', 'Balance', 'Warm-up', 'Recovery', 'Other'];
-const muscleOptions = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Forearms', 'Core', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Full Body'];
-const patternOptions = ['Push', 'Pull', 'Squat', 'Hinge', 'Lunge', 'Carry', 'Rotation', 'Locomotion', 'Isolation'];
-const trackingOptions = ['Sets', 'Reps', 'Weight', 'Time', 'Distance', 'Calories', 'RPE'];
+const equipmentOptions = [
+  "None",
+  "Barbell",
+  "Dumbbell",
+  "Kettlebell",
+  "Machine",
+  "Cable",
+  "Resistance Band",
+  "Bodyweight",
+  "Bench",
+  "Other",
+];
+const categoryOptions = [
+  "Strength",
+  "Cardio",
+  "Mobility",
+  "Flexibility",
+  "Balance",
+  "Warm-up",
+  "Recovery",
+  "Other",
+];
+const muscleOptions = [
+  "Chest",
+  "Back",
+  "Shoulders",
+  "Biceps",
+  "Triceps",
+  "Forearms",
+  "Core",
+  "Quadriceps",
+  "Hamstrings",
+  "Glutes",
+  "Calves",
+  "Full Body",
+];
+const patternOptions = [
+  "Push",
+  "Pull",
+  "Squat",
+  "Hinge",
+  "Lunge",
+  "Carry",
+  "Rotation",
+  "Locomotion",
+  "Isolation",
+];
+const trackingOptions = [
+  "Sets",
+  "Reps",
+  "Weight",
+  "Time",
+  "Distance",
+  "Calories",
+  "RPE",
+];
 
 export default function ExerciseLibrary() {
-  const { session } = useAuth(); const coachId = session!.user.id; const qc = useQueryClient();
-  const [search, setSearch] = useState(''); const [editing, setEditing] = useState<LibraryExercise | 'new' | null>(null);
-  const [name, setName] = useState(''); const [equipment, setEquipment] = useState(''); const [category, setCategory] = useState('');
-  const [instructions, setInstructions] = useState(''); const [muscles, setMuscles] = useState<string[]>([]); const [note, setNote] = useState('');
-  const [patterns, setPatterns] = useState<string[]>([]); const [tracking, setTracking] = useState<string[]>([]); const [video, setVideo] = useState('');
-  const query = useQuery({ queryKey: ['exercise-library', coachId], queryFn: () => listLibraryExercises(coachId) });
-  const save = useMutation({ mutationFn: () => { if (!name.trim() || !category) throw new Error('Exercise name and category are required.'); if (!tracking.length) throw new Error('Select at least one tracking field.'); return (editing === 'new' ? createLibraryExercise : (_coachId: string, input: any) => updateLibraryExercise((editing as LibraryExercise).id, input))(coachId, { name: name.trim(), equipment: equipment || null, category, instructions: instructions.trim() || null, target_muscle_groups: muscles, default_note: note.trim() || null, movement_patterns: patterns, tracking_fields: tracking, video_url: video.trim() || null }); }, onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['exercise-library', coachId] }); close(); } });
-  const remove = useMutation({ mutationFn: deleteLibraryExercise, onSuccess: () => qc.invalidateQueries({ queryKey: ['exercise-library', coachId] }) });
-  const rows = (query.data ?? []).filter((item) => `${item.name} ${item.category} ${item.target_muscle_groups.join(' ')} ${item.movement_patterns.join(' ')}`.toLowerCase().includes(search.toLowerCase()));
-  function open(item?: LibraryExercise) { setEditing(item ?? 'new'); setName(item?.name ?? ''); setEquipment(item?.equipment ?? ''); setCategory(item?.category ?? ''); setInstructions(item?.instructions ?? ''); setMuscles(item?.target_muscle_groups ?? []); setNote(item?.default_note ?? ''); setPatterns(item?.movement_patterns ?? []); setTracking(item?.tracking_fields ?? []); setVideo(item?.video_url ?? ''); }
-  function close() { setEditing(null); setName(''); setEquipment(''); setCategory(''); setInstructions(''); setMuscles([]); setNote(''); setPatterns([]); setTracking([]); setVideo(''); save.reset(); }
-  return <div className="exercise-library-page"><div className="library-heading"><div><h1>Exercise Library</h1><p>Create exercises once and reuse them in any player program.</p></div><button onClick={() => open()}>+ Add New Exercise</button></div>
-    {query.isLoading && <LoadingSkeleton rows={5} />}{query.error && <p className="error">{(query.error as Error).message}</p>}
-    {query.data && <div className="library-table-card"><div className="clients-search"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by exercise name…" /></div><div className="clients-table-scroll"><table className="clients-table library-table"><thead><tr><th>Exercise</th><th>Category</th><th>Target Muscle Groups</th><th>Movement Patterns</th><th>Created On</th><th></th></tr></thead><tbody>{rows.map((item) => <tr key={item.id}><td><strong>{item.name}</strong></td><td>{item.category}</td><td>{item.target_muscle_groups.join(', ') || '—'}</td><td>{item.movement_patterns.join(', ') || '—'}</td><td>{new Date(item.created_at).toLocaleDateString()}</td><td className="library-actions"><button className="secondary" onClick={() => open(item)}>Edit</button><button className="danger" disabled={remove.isPending} onClick={() => window.confirm(`Delete ${item.name}?`) && remove.mutate(item.id)}>Delete</button></td></tr>)}</tbody></table></div>{rows.length === 0 && <div className="library-empty"><strong>No Exercises Found</strong><span>Start adding exercises to reuse in programs.</span></div>}</div>}
-    {editing && <div className="workout-modal-backdrop"><section className="workout-modal exercise-library-modal" role="dialog" aria-modal="true"><header><h2>{editing === 'new' ? 'Add New Exercise' : 'Edit Exercise'}</h2><button className="modal-close" onClick={close}>×</button></header><div className="workout-modal-body exercise-library-form">
-      <div className="field"><label>Exercise Name *</label><input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Exercise Name" maxLength={200} /></div><div className="field"><label>Equipment</label><select value={equipment} onChange={(e) => setEquipment(e.target.value)}><option value="">Select Equipment</option>{equipmentOptions.map(x => <option key={x}>{x}</option>)}</select></div>
-      <div className="field"><label>Category *</label><select value={category} onChange={(e) => setCategory(e.target.value)}><option value="">Select Category</option>{categoryOptions.map(x => <option key={x}>{x}</option>)}</select></div><div className="field"><label>Exercise Instructions</label><textarea rows={2} value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="Exercise Instructions" /></div>
-      <div className="field"><label>Muscle Groups</label><MultiSelectDropdown options={muscleOptions} value={muscles} onChange={setMuscles} placeholder="Select Muscle Groups" /></div><div className="field"><label>Default Note</label><textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Default Note" /></div>
-      <div className="field"><label>Movement Pattern</label><MultiSelectDropdown options={patternOptions} value={patterns} onChange={setPatterns} placeholder="Select Movement Pattern" /></div><div className="field"><label>Video</label><input type="url" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="Video Link" /></div>
-      <div className="field"><label>Tracking Fields (Up to 3) *</label><MultiSelectDropdown options={trackingOptions} value={tracking} onChange={setTracking} placeholder="Select Tracking Fields" max={3} /></div>{save.error && <p className="error">{(save.error as Error).message}</p>}
-    </div><footer><button className="secondary" onClick={close}><ActionButtonContent>Cancel</ActionButtonContent></button><button disabled={save.isPending} onClick={() => save.mutate()}><ActionButtonContent action="save">{save.isPending ? 'Saving…' : 'Save'}</ActionButtonContent></button></footer></section></div>}
-  </div>;
+  const { session } = useAuth();
+  const coachId = session!.user.id;
+  const qc = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [editing, setEditing] = useState<LibraryExercise | "new" | null>(null);
+  const [name, setName] = useState("");
+  const [equipment, setEquipment] = useState("");
+  const [category, setCategory] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [muscles, setMuscles] = useState<string[]>([]);
+  const [note, setNote] = useState("");
+  const [patterns, setPatterns] = useState<string[]>([]);
+  const [tracking, setTracking] = useState<string[]>([]);
+  const [video, setVideo] = useState("");
+  const [visibility, setVisibility] = useState<LibraryVisibility>("private");
+  const query = useQuery({
+    queryKey: ["exercise-library", coachId],
+    queryFn: () => listLibraryExercises(coachId),
+  });
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!name.trim() || !category)
+        throw new Error("Exercise name and category are required.");
+      if (!tracking.length)
+        throw new Error("Select at least one tracking field.");
+      const result = await (
+        editing === "new"
+          ? createLibraryExercise
+          : (_coachId: string, input: any) =>
+              updateLibraryExercise((editing as LibraryExercise).id, input)
+      )(coachId, {
+        name: name.trim(),
+        equipment: equipment || null,
+        category,
+        instructions: instructions.trim() || null,
+        target_muscle_groups: muscles,
+        default_note: note.trim() || null,
+        movement_patterns: patterns,
+        tracking_fields: tracking,
+        video_url: video.trim() || null,
+      });
+      if (
+        editing === "new" ||
+        editing?.visibility !== visibility ||
+        editing?.lifecycle !== "published"
+      )
+        await publishCatalogItem("exercises", result.id, visibility);
+      return result;
+    },
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["exercise-library", coachId] });
+      close();
+    },
+  });
+  const remove = useMutation({
+    mutationFn: deleteLibraryExercise,
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["exercise-library", coachId] }),
+  });
+  const rows = (query.data ?? []).filter((item) =>
+    `${item.name} ${item.category} ${item.target_muscle_groups.join(" ")} ${item.movement_patterns.join(" ")}`
+      .toLowerCase()
+      .includes(search.toLowerCase()),
+  );
+  function open(item?: LibraryExercise) {
+    setEditing(item ?? "new");
+    setName(item?.name ?? "");
+    setEquipment(item?.equipment ?? "");
+    setCategory(item?.category ?? "");
+    setInstructions(item?.instructions ?? "");
+    setMuscles(item?.target_muscle_groups ?? []);
+    setNote(item?.default_note ?? "");
+    setPatterns(item?.movement_patterns ?? []);
+    setTracking(item?.tracking_fields ?? []);
+    setVideo(item?.video_url ?? "");
+    setVisibility(item?.visibility ?? "private");
+  }
+  function close() {
+    setEditing(null);
+    setName("");
+    setEquipment("");
+    setCategory("");
+    setInstructions("");
+    setMuscles([]);
+    setNote("");
+    setPatterns([]);
+    setTracking([]);
+    setVideo("");
+    setVisibility("private");
+    save.reset();
+  }
+  return (
+    <div className="exercise-library-page">
+      <div className="library-heading">
+        <div>
+          <h1>Exercise Library</h1>
+          <p>Create exercises once and reuse them in any player program.</p>
+        </div>
+        <button onClick={() => open()}>+ Add New Exercise</button>
+      </div>
+      <LibraryAccessPanel kind="exercises" coachId={coachId} />
+      {query.isLoading && <LoadingSkeleton rows={5} />}
+      {query.error && <p className="error">{(query.error as Error).message}</p>}
+      {query.data && (
+        <div className="library-table-card">
+          <div className="clients-search">
+            <span>⌕</span>
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by exercise name…"
+            />
+          </div>
+          <div className="clients-table-scroll">
+            <table className="clients-table library-table">
+              <thead>
+                <tr>
+                  <th>Exercise</th>
+                  <th>Category</th>
+                  <th>Target Muscle Groups</th>
+                  <th>Movement Patterns</th>
+                  <th>Created On</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <strong>{item.name}</strong>
+                    </td>
+                    <td>{item.category}</td>
+                    <td>{item.target_muscle_groups.join(", ") || "—"}</td>
+                    <td>{item.movement_patterns.join(", ") || "—"}</td>
+                    <td>{new Date(item.created_at).toLocaleDateString()}</td>
+                    <td className="library-actions">
+                      <button className="secondary" onClick={() => open(item)}>
+                        Edit
+                      </button>
+                      <button
+                        className="danger"
+                        disabled={remove.isPending}
+                        onClick={() =>
+                          window.confirm(`Delete ${item.name}?`) &&
+                          remove.mutate(item.id)
+                        }
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {rows.length === 0 && (
+            <div className="library-empty">
+              <strong>No Exercises Found</strong>
+              <span>Start adding exercises to reuse in programs.</span>
+            </div>
+          )}
+        </div>
+      )}
+      {editing && (
+        <div className="workout-modal-backdrop">
+          <section
+            className="workout-modal exercise-library-modal"
+            role="dialog"
+            aria-modal="true"
+          >
+            <header>
+              <h2>
+                {editing === "new" ? "Add New Exercise" : "Edit Exercise"}
+              </h2>
+              <button className="modal-close" onClick={close}>
+                ×
+              </button>
+            </header>
+            <div className="workout-modal-body exercise-library-form">
+              <div className="field">
+                <label>Exercise Name *</label>
+                <input
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Exercise Name"
+                  maxLength={200}
+                />
+              </div>
+              <div className="field">
+                <label>Equipment</label>
+                <select
+                  value={equipment}
+                  onChange={(e) => setEquipment(e.target.value)}
+                >
+                  <option value="">Select Equipment</option>
+                  {equipmentOptions.map((x) => (
+                    <option key={x}>{x}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>Category *</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  {categoryOptions.map((x) => (
+                    <option key={x}>{x}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>Exercise Instructions</label>
+                <textarea
+                  rows={2}
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  placeholder="Exercise Instructions"
+                />
+              </div>
+              <div className="field">
+                <label>Muscle Groups</label>
+                <MultiSelectDropdown
+                  options={muscleOptions}
+                  value={muscles}
+                  onChange={setMuscles}
+                  placeholder="Select Muscle Groups"
+                />
+              </div>
+              <div className="field">
+                <label>Default Note</label>
+                <textarea
+                  rows={2}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Default Note"
+                />
+              </div>
+              <div className="field">
+                <label>Movement Pattern</label>
+                <MultiSelectDropdown
+                  options={patternOptions}
+                  value={patterns}
+                  onChange={setPatterns}
+                  placeholder="Select Movement Pattern"
+                />
+              </div>
+              <div className="field">
+                <label>Video</label>
+                <input
+                  type="url"
+                  value={video}
+                  onChange={(e) => setVideo(e.target.value)}
+                  placeholder="Video Link"
+                />
+              </div>
+              <div className="field">
+                <label>Tracking Fields (Up to 3) *</label>
+                <MultiSelectDropdown
+                  options={trackingOptions}
+                  value={tracking}
+                  onChange={setTracking}
+                  placeholder="Select Tracking Fields"
+                  max={3}
+                />
+              </div>
+              <VisibilitySelect value={visibility} onChange={setVisibility} />
+              {save.error && (
+                <p className="error">{(save.error as Error).message}</p>
+              )}
+            </div>
+            <footer>
+              <button className="secondary" onClick={close}>
+                <ActionButtonContent>Cancel</ActionButtonContent>
+              </button>
+              <button disabled={save.isPending} onClick={() => save.mutate()}>
+                <ActionButtonContent action="save">
+                  {save.isPending ? "Saving…" : "Save"}
+                </ActionButtonContent>
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
+    </div>
+  );
 }

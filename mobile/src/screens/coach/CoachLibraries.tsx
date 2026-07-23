@@ -86,9 +86,10 @@ export function ExerciseLibrary() {
     }
   }
   async function remove(id: string) {
-    const { error } = await (supabase.from("exercise_library" as never) as any)
-      .delete()
-      .eq("id", id);
+    const { error } = await (supabase.rpc as any)("soft_delete_library_item", {
+      p_table: "exercise_library",
+      p_id: id,
+    });
     if (error) Alert.alert("Could not delete", error.message);
     else void load();
   }
@@ -285,10 +286,10 @@ export function WorkoutLibrary() {
     else void load();
   }
   async function remove(id: string) {
-    const { error } = await supabase
-      .from("workout_templates")
-      .delete()
-      .eq("id", id);
+    const { error } = await (supabase.rpc as any)("soft_delete_library_item", {
+      p_table: "workout_templates",
+      p_id: id,
+    });
     if (error) Alert.alert("Could not delete", error.message);
     else void load();
   }

@@ -22,6 +22,12 @@ import {
   type RecipeOption,
 } from "../../api/nutritionLibrary";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
+import LibraryAccessPanel from "../../components/LibraryAccessPanel";
+import VisibilitySelect from "../../components/VisibilitySelect";
+import {
+  publishCatalogItem,
+  type LibraryVisibility,
+} from "../../api/publicLibrary";
 
 const DAYS = [
   "Saturday",
@@ -135,6 +141,7 @@ export default function MealPlanLibrary() {
         <h1>Meal Plan Library</h1>
         <button onClick={() => setCreateOpen(true)}>+ Create Meal Plan</button>
       </div>
+      <LibraryAccessPanel kind="meal-plans" coachId={coachId} />
       <div className="library-table-card">
         <div className="clients-search">
           <span>⌕</span>
@@ -208,243 +215,269 @@ export default function MealPlanLibrary() {
           </div>
         )}
       </div>
-      {selected && <div className="meal-plan-popup-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setPlanId("")}><div className="meal-planner-layout meal-plan-edit-popup">
-        <main className="meal-plan-workspace">
-          {selected ? (
-            <>
-              <div className="meal-plan-toolbar">
-                <div>
-                  <button className="secondary" onClick={() => setEditPlan(selected)}>Plan details</button>
-                  <button className="secondary" onClick={() => setPlanId("")}>Close</button>
-                  {Boolean(selected.meta.cover_url) && (
-                    <img
-                      className="meal-plan-cover"
-                      src={String(selected.meta.cover_url)}
-                      alt=""
-                    />
-                  )}
-                  <span>
-                    <h2>{selected.title}</h2>
-                    <p>{selected.summary || "Reusable player meal schedule"}</p>
-                  </span>
-                </div>
-                <div>
-                  <div className="meal-view-toggle">
-                    <button
-                      className={
-                        view === "week" ? "active secondary" : "secondary"
-                      }
-                      onClick={() => setView("week")}
-                    >
-                      Week
-                    </button>
-                    <button
-                      className={
-                        view === "day" ? "active secondary" : "secondary"
-                      }
-                      onClick={() => setView("day")}
-                    >
-                      Day
-                    </button>
+      {selected && (
+        <div
+          className="meal-plan-popup-backdrop"
+          onMouseDown={(event) =>
+            event.target === event.currentTarget && setPlanId("")
+          }
+        >
+          <div className="meal-planner-layout meal-plan-edit-popup">
+            <main className="meal-plan-workspace">
+              {selected ? (
+                <>
+                  <div className="meal-plan-toolbar">
+                    <div>
+                      <button
+                        className="secondary"
+                        onClick={() => setEditPlan(selected)}
+                      >
+                        Plan details
+                      </button>
+                      <button
+                        className="secondary"
+                        onClick={() => setPlanId("")}
+                      >
+                        Close
+                      </button>
+                      {Boolean(selected.meta.cover_url) && (
+                        <img
+                          className="meal-plan-cover"
+                          src={String(selected.meta.cover_url)}
+                          alt=""
+                        />
+                      )}
+                      <span>
+                        <h2>{selected.title}</h2>
+                        <p>
+                          {selected.summary || "Reusable player meal schedule"}
+                        </p>
+                      </span>
+                    </div>
+                    <div>
+                      <div className="meal-view-toggle">
+                        <button
+                          className={
+                            view === "week" ? "active secondary" : "secondary"
+                          }
+                          onClick={() => setView("week")}
+                        >
+                          Week
+                        </button>
+                        <button
+                          className={
+                            view === "day" ? "active secondary" : "secondary"
+                          }
+                          onClick={() => setView("day")}
+                        >
+                          Day
+                        </button>
+                      </div>
+                      <select
+                        value={week}
+                        onChange={(e) => setWeek(Number(e.target.value))}
+                      >
+                        {Array.from({ length: weekCount }, (_, i) => i + 1).map(
+                          (x) => (
+                            <option value={x} key={x}>
+                              Week {x}
+                            </option>
+                          ),
+                        )}
+                      </select>
+                      {selected.lifecycle !== "published" && (
+                        <button onClick={() => publish.mutate(selected.id)}>
+                          Publish
+                        </button>
+                      )}
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          confirm(`Archive ${selected.title}?`) &&
+                          archive.mutate(selected.id)
+                        }
+                      >
+                        Archive
+                      </button>
+                    </div>
                   </div>
-                  <select
-                    value={week}
-                    onChange={(e) => setWeek(Number(e.target.value))}
-                  >
-                    {Array.from({ length: weekCount }, (_, i) => i + 1).map(
-                      (x) => (
-                        <option value={x} key={x}>
-                          Week {x}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                  {selected.lifecycle !== "published" && (
-                    <button onClick={() => publish.mutate(selected.id)}>
-                      Publish
-                    </button>
+                  <label className="meal-dietary-toggle">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(selected.meta.show_dietary_info)}
+                      onChange={(e) => dietary.mutate(e.target.checked)}
+                    />{" "}
+                    Show dietary information on recipe cards
+                  </label>
+                  {view === "day" && (
+                    <div className="meal-day-tabs">
+                      {DAYS.map((name, index) => (
+                        <button
+                          className={day === index + 1 ? "active" : ""}
+                          onClick={() => setDay(index + 1)}
+                          key={name}
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                  <button
-                    className="danger"
-                    onClick={() =>
-                      confirm(`Archive ${selected.title}?`) &&
-                      archive.mutate(selected.id)
-                    }
+                  <div
+                    className={`meal-calendar ${view === "day" ? "day-view" : ""}`}
                   >
-                    Archive
+                    {DAYS.map((dayName, index) => {
+                      const dayNumber = index + 1;
+                      if (view === "day" && day !== dayNumber) return null;
+                      const rows = weekRows.filter(
+                        (row) => Number(row.raw.day_number) === dayNumber,
+                      );
+                      return (
+                        <section key={dayName}>
+                          <header>
+                            <strong>{dayName}</strong>
+                            <small>{rows.length} recipes</small>
+                          </header>
+                          <div>
+                            {rows.map((row) => (
+                              <article
+                                draggable
+                                onDragStart={() => setDragged(row)}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={() => moveEntry(row)}
+                                key={row.id}
+                              >
+                                <button
+                                  className="meal-card-main"
+                                  onClick={() =>
+                                    row.raw.dish_id &&
+                                    setDetailId(row.raw.dish_id)
+                                  }
+                                >
+                                  <strong>{row.raw.meal_name}</strong>
+                                  <span>{row.title}</span>
+                                  {Boolean(selected.meta.show_dietary_info) && (
+                                    <small>
+                                      {recipeDietary(
+                                        recipes.data ?? [],
+                                        row.raw.dish_id,
+                                      )}
+                                    </small>
+                                  )}
+                                </button>
+                                <div>
+                                  <button
+                                    className="secondary"
+                                    onClick={() => setEditing(row)}
+                                  >
+                                    Replace
+                                  </button>
+                                  <button
+                                    aria-label={`Remove ${row.raw.meal_name}`}
+                                    onClick={() => remove.mutate(row)}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              </article>
+                            ))}
+                            <button
+                              className="meal-calendar-add"
+                              onClick={() => setAddDay(dayNumber)}
+                            >
+                              + Add meal
+                            </button>
+                            {view === "day" &&
+                              DEFAULT_MEALS.filter(
+                                (name) =>
+                                  !rows.some(
+                                    (row) => row.raw.meal_name === name,
+                                  ),
+                              ).map((name) => (
+                                <button
+                                  className="meal-empty-slot"
+                                  onClick={() => {
+                                    setAddDay(dayNumber);
+                                    setEditing({
+                                      id: "",
+                                      title: "",
+                                      detail: "",
+                                      raw: {
+                                        meal_name: name,
+                                        meal_type:
+                                          name === "Snack" ? "snack" : "meal",
+                                      },
+                                    });
+                                  }}
+                                  key={name}
+                                >
+                                  + {name}
+                                </button>
+                              ))}
+                          </div>
+                        </section>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="catalog-empty">
+                  <h2>No meal plans yet</h2>
+                  <p>
+                    Create a plan to start arranging recipes by week and day.
+                  </p>
+                  <button onClick={() => setCreateOpen(true)}>
+                    Create meal plan
                   </button>
                 </div>
-              </div>
-              <label className="meal-dietary-toggle">
-                <input
-                  type="checkbox"
-                  checked={Boolean(selected.meta.show_dietary_info)}
-                  onChange={(e) => dietary.mutate(e.target.checked)}
-                />{" "}
-                Show dietary information on recipe cards
-              </label>
-              {view === "day" && (
-                <div className="meal-day-tabs">
-                  {DAYS.map((name, index) => (
-                    <button
-                      className={day === index + 1 ? "active" : ""}
-                      onClick={() => setDay(index + 1)}
-                      key={name}
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </div>
               )}
-              <div
-                className={`meal-calendar ${view === "day" ? "day-view" : ""}`}
-              >
-                {DAYS.map((dayName, index) => {
-                  const dayNumber = index + 1;
-                  if (view === "day" && day !== dayNumber) return null;
-                  const rows = weekRows.filter(
-                    (row) => Number(row.raw.day_number) === dayNumber,
-                  );
-                  return (
-                    <section key={dayName}>
-                      <header>
-                        <strong>{dayName}</strong>
-                        <small>{rows.length} recipes</small>
-                      </header>
-                      <div>
-                        {rows.map((row) => (
-                          <article
-                            draggable
-                            onDragStart={() => setDragged(row)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={() => moveEntry(row)}
-                            key={row.id}
-                          >
-                            <button
-                              className="meal-card-main"
-                              onClick={() =>
-                                row.raw.dish_id && setDetailId(row.raw.dish_id)
-                              }
-                            >
-                              <strong>{row.raw.meal_name}</strong>
-                              <span>{row.title}</span>
-                              {Boolean(selected.meta.show_dietary_info) && (
-                                <small>
-                                  {recipeDietary(
-                                    recipes.data ?? [],
-                                    row.raw.dish_id,
-                                  )}
-                                </small>
-                              )}
-                            </button>
-                            <div>
-                              <button
-                                className="secondary"
-                                onClick={() => setEditing(row)}
-                              >
-                                Replace
-                              </button>
-                              <button
-                                aria-label={`Remove ${row.raw.meal_name}`}
-                                onClick={() => remove.mutate(row)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </article>
-                        ))}
-                        <button
-                          className="meal-calendar-add"
-                          onClick={() => setAddDay(dayNumber)}
-                        >
-                          + Add meal
-                        </button>
-                        {view === "day" &&
-                          DEFAULT_MEALS.filter(
-                            (name) =>
-                              !rows.some((row) => row.raw.meal_name === name),
-                          ).map((name) => (
-                            <button
-                              className="meal-empty-slot"
-                              onClick={() => {
-                                setAddDay(dayNumber);
-                                setEditing({
-                                  id: "",
-                                  title: "",
-                                  detail: "",
-                                  raw: {
-                                    meal_name: name,
-                                    meal_type:
-                                      name === "Snack" ? "snack" : "meal",
-                                  },
-                                });
-                              }}
-                              key={name}
-                            >
-                              + {name}
-                            </button>
-                          ))}
-                      </div>
-                    </section>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="catalog-empty">
-              <h2>No meal plans yet</h2>
-              <p>Create a plan to start arranging recipes by week and day.</p>
-              <button onClick={() => setCreateOpen(true)}>
-                Create meal plan
-              </button>
-            </div>
-          )}
-        </main>
-        <aside className="meal-recipe-library">
-          <h3>Recipe library</h3>
-          <input
-            value={recipeSearch}
-            onChange={(e) => setRecipeSearch(e.target.value)}
-            placeholder="Search recipes"
-          />
-          {visibleRecipes.map((recipe) => (
-            <article key={recipe.id}>
-              <button
-                className="recipe-card-main"
-                onClick={() => setDetailId(recipe.id)}
-              >
-                <span className="recipe-card-art">
-                  {recipe.title.slice(0, 2).toUpperCase()}
-                </span>
-                <span>
-                  <strong>{recipe.title}</strong>
-                  <small>{recipe.servings} servings</small>
-                </span>
-              </button>
-              <button
-                onClick={() => {
-                  setAddDay(day);
-                  setEditing({
-                    id: "",
-                    title: recipe.title,
-                    detail: "",
-                    raw: {
-                      dish_id: recipe.id,
-                      meal_name: "Lunch",
-                      meal_type: "meal",
-                    },
-                  });
-                }}
-              >
-                Add
-              </button>
-            </article>
-          ))}
-          {recipes.isSuccess && visibleRecipes.length === 0 && (
-            <p className="muted">Publish recipes to use them here.</p>
-          )}
-        </aside>
-      </div></div>}
+            </main>
+            <aside className="meal-recipe-library">
+              <h3>Recipe library</h3>
+              <input
+                value={recipeSearch}
+                onChange={(e) => setRecipeSearch(e.target.value)}
+                placeholder="Search recipes"
+              />
+              {visibleRecipes.map((recipe) => (
+                <article key={recipe.id}>
+                  <button
+                    className="recipe-card-main"
+                    onClick={() => setDetailId(recipe.id)}
+                  >
+                    <span className="recipe-card-art">
+                      {recipe.title.slice(0, 2).toUpperCase()}
+                    </span>
+                    <span>
+                      <strong>{recipe.title}</strong>
+                      <small>{recipe.servings} servings</small>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAddDay(day);
+                      setEditing({
+                        id: "",
+                        title: recipe.title,
+                        detail: "",
+                        raw: {
+                          dish_id: recipe.id,
+                          meal_name: "Lunch",
+                          meal_type: "meal",
+                        },
+                      });
+                    }}
+                  >
+                    Add
+                  </button>
+                </article>
+              ))}
+              {recipes.isSuccess && visibleRecipes.length === 0 && (
+                <p className="muted">Publish recipes to use them here.</p>
+              )}
+            </aside>
+          </div>
+        </div>
+      )}
       {editPlan && (
         <EditMealPlan
           plan={editPlan}
@@ -513,9 +546,19 @@ function EditMealPlan({
   const [name, setName] = useState(plan.title);
   const [description, setDescription] = useState(plan.summary ?? "");
   const [weeks, setWeeks] = useState(Number(plan.meta.week_count ?? 1));
+  const [visibility, setVisibility] = useState<LibraryVisibility>(
+    (plan.meta.visibility as LibraryVisibility) ?? "private",
+  );
   const save = useMutation({
-    mutationFn: () =>
-      updateMealPlan(plan.id, { title: name, description, weekCount: weeks }),
+    mutationFn: async () => {
+      await updateMealPlan(plan.id, {
+        title: name,
+        description,
+        weekCount: weeks,
+      });
+      if (plan.meta.visibility !== visibility || plan.lifecycle !== "published")
+        await publishCatalogItem("meal-plans", plan.id, visibility);
+    },
     onSuccess: onSaved,
   });
   return (
@@ -564,6 +607,7 @@ function EditMealPlan({
               }
             />
           </div>
+          <VisibilitySelect value={visibility} onChange={setVisibility} />
           {save.error && (
             <p className="error">{(save.error as Error).message}</p>
           )}
@@ -598,6 +642,7 @@ function CreateMealPlan({
 }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [visibility, setVisibility] = useState<LibraryVisibility>("private");
   const [weeks, setWeeks] = useState(1);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [addingDay, setAddingDay] = useState<number | null>(null);
@@ -632,6 +677,7 @@ function CreateMealPlan({
           });
         }
       }
+      await publishCatalogItem("meal-plans", id, visibility);
       return id;
     },
     onSuccess: onCreated,
@@ -681,6 +727,7 @@ function CreateMealPlan({
         </header>
         <div className="workout-modal-body">
           <div className="program-details-grid">
+            <VisibilitySelect value={visibility} onChange={setVisibility} />
             <div className="field">
               <label>Meal Plan Name</label>
               <input

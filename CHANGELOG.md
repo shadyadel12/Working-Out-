@@ -1,6 +1,17 @@
 # App Updates
 
+## July 23, 2026
+
+### New Features
+
+- Coaches can keep exercises, workouts, ingredients, recipes, and meal plans private or publish them for every coach immediately.
+- Public libraries show the creator and source, and coaches can copy an independent version into their private library or report a concern.
+- Administrators can review reports, hide or restore public items, and manage trusted food and exercise sources.
 - Coaches can optionally add pictures submitted for photo tasks to a player's private Progress Photos, with dated thumbnails, full-size viewing, and side-by-side comparison.
+
+### Security
+
+- Private library items stay limited to their owner and authorized team members, while assigned plans keep their saved content when a library item changes.
 
 ## July 22, 2026
 
