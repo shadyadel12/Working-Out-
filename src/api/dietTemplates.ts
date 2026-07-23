@@ -21,3 +21,17 @@ export async function deleteDietTemplate(templateId: string): Promise<void> {
   const { error } = await supabase.from('diet_templates').delete().eq('id', templateId);
   if (error) throw error;
 }
+export async function saveDietTemplate(input: { id?: string; coachId: string; name: string; meals: DietMeal[]; comment: string | null }): Promise<DietTemplate> {
+  const payload = { coach_id: input.coachId, name: input.name.trim(), meals: input.meals, comment: input.comment?.trim() || null };
+  const query = input.id ? supabase.from('diet_templates').update(payload).eq('id', input.id).eq('coach_id', input.coachId) : supabase.from('diet_templates').insert(payload);
+  const { data, error } = await query.select().single();
+  if (error) throw error;
+  return data as DietTemplate;
+}
+export async function duplicateDietTemplate(template: DietTemplate): Promise<DietTemplate> {
+  let name = `${template.name} copy`;
+  const existing = await listDietTemplates(template.coach_id);
+  let number = 2;
+  while (existing.some((item) => item.name.toLowerCase() === name.toLowerCase())) name = `${template.name} copy ${number++}`;
+  return saveDietTemplate({ coachId: template.coach_id, name, meals: template.meals, comment: template.comment });
+}
