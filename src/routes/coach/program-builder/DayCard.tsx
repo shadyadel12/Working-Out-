@@ -113,7 +113,7 @@ export default function DayCard({
 
         {/* New training day: build workouts + exercises before the first save. */}
         {!existing && dayType === 'training' && (
-          <DraftWorkoutsEditor drafts={draftWorkouts} setDrafts={setDraftWorkouts} />
+          <DraftWorkoutsEditor drafts={draftWorkouts} setDrafts={setDraftWorkouts} coachId={coachId} />
         )}
 
         <div className="row">

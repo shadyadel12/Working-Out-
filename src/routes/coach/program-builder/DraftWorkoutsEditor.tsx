@@ -1,131 +1,18 @@
-/** Builds workouts and exercises before a new program day is first saved. */
-import type React from 'react';
-import type { DraftWorkoutData } from '../../../api/programs';
+import { useState, type Dispatch, type SetStateAction } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import type { DraftExerciseData, DraftWorkoutData } from '../../../api/programs';
+import { getWorkoutTemplate, listWorkoutTemplates } from '../../../api/workoutTemplates';
 
-export default function DraftWorkoutsEditor({
-  drafts,
-  setDrafts,
-}: {
-  drafts: DraftWorkoutData[];
-  setDrafts: React.Dispatch<React.SetStateAction<DraftWorkoutData[]>>;
-}) {
-  const addWorkout = () =>
-    setDrafts((ds) => [...ds, { name: '', exercises: [] }]);
-  const removeWorkout = (i: number) =>
-    setDrafts((ds) => ds.filter((_, idx) => idx !== i));
-  const setWorkoutName = (i: number, name: string) =>
-    setDrafts((ds) => ds.map((d, idx) => (idx === i ? { ...d, name } : d)));
-  const addExercise = (i: number) =>
-    setDrafts((ds) =>
-      ds.map((d, idx) =>
-        idx === i
-          ? {
-              ...d,
-              exercises: [
-                ...d.exercises,
-                {
-                  name: '',
-                  target_sets: 3,
-                  target_reps: '10',
-                  target_weight: null,
-                  coach_comment: null,
-                  coach_video_url: null,
-                  coach_video_is_external: false,
-                },
-              ],
-            }
-          : d
-      )
-    );
-  const setExercise = (wi: number, ei: number, patch: Partial<DraftWorkoutData['exercises'][number]>) =>
-    setDrafts((ds) =>
-      ds.map((d, idx) =>
-        idx === wi
-          ? { ...d, exercises: d.exercises.map((ex, j) => (j === ei ? { ...ex, ...patch } : ex)) }
-          : d
-      )
-    );
-  const removeExercise = (wi: number, ei: number) =>
-    setDrafts((ds) =>
-      ds.map((d, idx) =>
-        idx === wi ? { ...d, exercises: d.exercises.filter((_, j) => j !== ei) } : d
-      )
-    );
+const blank=():DraftExerciseData=>({name:'',target_sets:3,target_reps:'10',target_weight:null,coach_comment:null,coach_video_url:null,coach_video_is_external:false});
 
-  return (
-    <div className="stack" style={{ marginTop: '0.3rem' }}>
-      <strong style={{ fontSize: '0.9rem' }}>Workouts</strong>
-      {drafts.length === 0 && (
-        <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
-          Add workouts and exercises now — they'll be saved together with the day.
-        </p>
-      )}
-      {drafts.map((w, wi) => (
-        <div key={wi} className="card stack" style={{ background: 'var(--surface-2)' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <div className="field" style={{ margin: 0, flex: 1 }}>
-              <label>Workout name</label>
-              <input value={w.name} onChange={(e) => setWorkoutName(wi, e.target.value)} placeholder="Push" />
-            </div>
-            <button className="danger" style={{ alignSelf: 'flex-end' }} type="button" onClick={() => removeWorkout(wi)}>
-              Remove
-            </button>
-          </div>
-
-          {w.exercises.map((ex, ei) => (
-            <div key={ei} className="card stack" style={{ background: 'var(--surface)' }}>
-              <div className="field" style={{ margin: 0 }}>
-                <label>Exercise name</label>
-                <input value={ex.name} onChange={(e) => setExercise(wi, ei, { name: e.target.value })} placeholder="Chest Press" />
-              </div>
-              <div className="row">
-                <div className="field" style={{ margin: 0, flex: 1 }}>
-                  <label>Target sets</label>
-                  <input
-                    type="number"
-                    value={ex.target_sets ?? ''}
-                    onChange={(e) => setExercise(wi, ei, { target_sets: e.target.value ? Number(e.target.value) : null })}
-                  />
-                </div>
-                <div className="field" style={{ margin: 0, flex: 1 }}>
-                  <label>Target reps</label>
-                  <input
-                    value={ex.target_reps ?? ''}
-                    onChange={(e) => setExercise(wi, ei, { target_reps: e.target.value || null })}
-                    placeholder="8-12"
-                  />
-                </div>
-                <div className="field" style={{ margin: 0, flex: 1 }}>
-                  <label>Target weight</label>
-                  <input
-                    value={ex.target_weight ?? ''}
-                    onChange={(e) => setExercise(wi, ei, { target_weight: e.target.value || null })}
-                    placeholder="60kg"
-                  />
-                </div>
-              </div>
-              <div className="field" style={{ margin: 0 }}>
-                <label>Comment</label>
-                <textarea
-                  rows={2}
-                  value={ex.coach_comment ?? ''}
-                  onChange={(e) => setExercise(wi, ei, { coach_comment: e.target.value || null })}
-                />
-              </div>
-              <button className="danger" type="button" onClick={() => removeExercise(wi, ei)}>
-                Remove exercise
-              </button>
-            </div>
-          ))}
-
-          <button className="secondary" type="button" onClick={() => addExercise(wi)}>
-            + Add exercise
-          </button>
-        </div>
-      ))}
-      <button className="secondary" type="button" onClick={addWorkout}>
-        + Add workout
-      </button>
-    </div>
-  );
+export default function DraftWorkoutsEditor({drafts,setDrafts,coachId}:{drafts:DraftWorkoutData[];setDrafts:Dispatch<SetStateAction<DraftWorkoutData[]>>;coachId:string}){
+ const[open,setOpen]=useState(false),[name,setName]=useState('New Workout'),[exercises,setExercises]=useState<DraftExerciseData[]>([blank()]),[selected,setSelected]=useState(0),[templateId,setTemplateId]=useState(''),[search,setSearch]=useState('');
+ const{data:templates=[]}=useQuery({queryKey:['workout-templates',coachId],queryFn:()=>listWorkoutTemplates(coachId)});
+ const reset=()=>{setName('New Workout');setExercises([blank()]);setSelected(0);setTemplateId('');setSearch('');setOpen(false)};
+ const patch=(p:Partial<DraftExerciseData>)=>setExercises(x=>x.map((e,i)=>i===selected?{...e,...p}:e));
+ const add=()=>{setExercises(x=>[...x,blank()]);setSelected(exercises.length)};
+ async function useSaved(id:string){const r=await getWorkoutTemplate(id);setTemplateId(id);setName(r.template.name);setExercises(r.exercises.map(e=>({name:e.name,target_sets:e.target_sets,target_reps:e.target_reps,target_weight:e.target_weight,coach_comment:e.coach_comment,coach_video_url:e.coach_video_url,coach_video_is_external:e.coach_video_is_external})));setSelected(0)}
+ function save(){if(!name.trim()||exercises.some(e=>!e.name.trim()))return;setDrafts(x=>[...x,{name:name.trim(),exercises}]);reset()}
+ const current=exercises[selected];
+ return <div className="stack"><strong>Workouts</strong>{drafts.map((w,i)=><div className="card row" key={i} style={{justifyContent:'space-between'}}><span><strong>{w.name}</strong><small className="muted"> · {w.exercises.length} exercises</small></span><button className="danger" onClick={()=>setDrafts(x=>x.filter((_,j)=>j!==i))}>Remove</button></div>)}<button className="secondary" onClick={()=>setOpen(true)}>+ Add workout</button>{open&&<div className="workout-modal-backdrop"><section className="workout-modal player-training-builder" role="dialog" aria-modal="true"><header><div><h2>Build player workout</h2><small>Arrange exercises, then edit the selected prescription.</small></div><button className="modal-close" onClick={reset}>×</button></header><div className="workout-modal-body player-builder-body"><div className="player-builder-meta"><div className="field"><label>Workout name</label><input value={name} onChange={e=>setName(e.target.value)}/></div></div><div className="player-builder-grid"><aside className="player-builder-sources"><h3>Library</h3><input placeholder="Search saved workouts" value={search} onChange={e=>setSearch(e.target.value)}/><div className="player-source-list">{templates.filter(t=>t.name.toLowerCase().includes(search.toLowerCase())).map(t=><button className={templateId===t.id?'selected':''} key={t.id} onClick={()=>useSaved(t.id)}><span><strong>{t.name}</strong><small>Saved workout</small></span><span>+</span></button>)}</div><div className="player-quick-add"><h4>Build from scratch</h4><button className="secondary" onClick={add}>+ Blank exercise</button></div></aside><main className="player-builder-canvas"><div className="training-canvas-heading"><h3>Arrangement</h3><button className="secondary" onClick={add}>+ Exercise</button></div><ol>{exercises.map((e,i)=><li className={selected===i?'selected':''} key={i}><button className="training-item-main" onClick={()=>setSelected(i)}><span className="training-item-index">{i+1}</span><span><strong>{e.name||'Untitled exercise'}</strong><small>{e.target_sets||0} sets · {e.target_reps||'No reps'} · {e.target_weight||'No load'}</small></span></button></li>)}</ol></main><aside className="player-builder-inspector"><h3>Prescription</h3><div className="field"><label>Exercise name</label><input value={current.name} onChange={e=>patch({name:e.target.value})}/></div><div className="modal-target-grid"><div className="field"><label>Sets</label><input type="number" value={current.target_sets??''} onChange={e=>patch({target_sets:e.target.value?Number(e.target.value):null})}/></div><div className="field"><label>Reps</label><input value={current.target_reps??''} onChange={e=>patch({target_reps:e.target.value||null})}/></div><div className="field"><label>Weight</label><input value={current.target_weight??''} onChange={e=>patch({target_weight:e.target.value||null})}/></div></div><div className="field"><label>Coach notes</label><textarea value={current.coach_comment??''} onChange={e=>patch({coach_comment:e.target.value||null})}/></div></aside></div></div><footer><button className="secondary" onClick={reset}>Cancel</button><button onClick={save} disabled={!name.trim()||exercises.some(e=>!e.name.trim())}>Save workout</button></footer></section></div>}</div>
 }

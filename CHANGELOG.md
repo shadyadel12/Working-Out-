@@ -14,6 +14,8 @@
 
 ### Fixes
 
+- New training days now use the same workout builder and saved-workout library as existing days.
+- Saving a workout again restores it to the library if an older copy had been removed.
 - Saved workouts now appear reliably in the workout builder library and can be reused with other players.
 - Sign in and key-based registration now remain available if a phone or network cannot connect to the request gateway.
 - Restored website login and signup after the protected request gateway was added.

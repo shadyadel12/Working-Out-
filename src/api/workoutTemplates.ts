@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 export interface WorkoutTemplate { id:string;coach_id:string;name:string;description:string|null;difficulty:string|null;notes:string|null;lifecycle?:'draft'|'published'|'archived';revision?:number;created_at:string;updated_at?:string;deleted_at?:string|null }
-export interface WorkoutTemplateExercise { id:string;template_id:string;position:number;name:string;exercise_library_id:string|null;section_name:string|null;target_sets:number|null;target_reps:string|null;target_seconds:number|null;rest_seconds:number|null;load_value:number|null;load_percent:number|null;tempo:string|null;bilateral:boolean;coach_comment:string|null;chain_key:string|null;coach_video_url:string|null;coach_video_is_external:boolean }
+export interface WorkoutTemplateExercise { id:string;template_id:string;position:number;name:string;exercise_library_id:string|null;section_name:string|null;target_sets:number|null;target_reps:string|null;target_weight:string|null;target_seconds:number|null;rest_seconds:number|null;load_value:number|null;load_percent:number|null;tempo:string|null;bilateral:boolean;coach_comment:string|null;chain_key:string|null;coach_video_url:string|null;coach_video_is_external:boolean }
 export interface WorkoutBlueprintItem { clientId:string;kind:'exercise'|'section';sourceId:string;name:string;sets:number;reps:string;seconds:string;restSeconds:number;loadValue:string;loadPercent:string;tempo:string;bilateral:boolean;note:string;chainKey:string }
 const from=(table:string)=>supabase.from(table as never) as any;
 export async function listWorkoutTemplates(coachId:string):Promise<WorkoutTemplate[]>{
