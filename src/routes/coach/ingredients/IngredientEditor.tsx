@@ -6,11 +6,12 @@ import {
   type Ingredient,
   type IngredientInput,
 } from '../../../api/ingredients';
+import IngredientUnitSelect from './IngredientUnitSelect';
 
 const blankIngredient = (): IngredientInput => ({
   name: '',
   category: '',
-  defaultUnit: 'g',
+  defaultUnit: 'Gram',
   imageUrl: '',
 });
 
@@ -52,7 +53,7 @@ export default function IngredientEditor({ coachId, mode, onClose, onSaved }: In
         {items.map((item, index) => <div className="ingredient-form-row" key={index}>
           <label>Name<input required value={item.name} onChange={(event) => patch(index, { name: event.target.value })} placeholder="Chicken breast" /></label>
           <label>Category<input value={item.category} onChange={(event) => patch(index, { category: event.target.value })} placeholder="Protein" /></label>
-          <label>Default unit<input required value={item.defaultUnit} onChange={(event) => patch(index, { defaultUnit: event.target.value })} placeholder="g, item, cup" /></label>
+          <label>Default unit<IngredientUnitSelect required value={item.defaultUnit} onChange={(defaultUnit) => patch(index, { defaultUnit })} /></label>
           <label>Image URL<input type="url" value={item.imageUrl} onChange={(event) => patch(index, { imageUrl: event.target.value })} placeholder="https://…" /></label>
           {multiple && items.length > 1 && <button type="button" className="danger" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>×</button>}
         </div>)}

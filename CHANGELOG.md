@@ -8,6 +8,7 @@
 - Recipe Books now organize the recipe picker instead of appearing as standalone player assignments.
 - Meal Plans now use a visual weekly calendar with a searchable recipe library, recipe details, and meal-slot scheduling.
 - Ingredients now support single and bulk creation, images, categories, default units, filtering, bulk removal, and creation directly from the Recipe editor.
+- Ingredient and recipe quantity units now use grouped Imperial, Metric, and everyday serving choices matching the reference workflow.
 - Coaches can assign published tasks, forms, and metric groups from a dedicated player Assignments page.
 - Improved the player assignment cards with clear labels, contained controls, responsive layouts, and assignment counts.
 - Matched the player toolbar to the coach navigation with centered icons above their labels.
