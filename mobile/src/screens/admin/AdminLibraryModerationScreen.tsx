@@ -19,16 +19,15 @@ const kinds = {
   recipes: "dishes",
   "meal-plans": "menu_templates",
 } as const;
-type Mode = "items" | "reports" | "audit" | "sources";
+type Mode = "items" | "reports" | "audit";
 export default function AdminLibraryModerationScreen() {
   const [mode, setMode] = useState<Mode>("items");
   const [kind, setKind] = useState<keyof typeof kinds>("exercises");
   const [rows, setRows] = useState<any[] | null>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [audit, setAudit] = useState<any[]>([]);
-  const [sources, setSources] = useState<any[]>([]);
   async function load() {
-    const [i, r, a, s] = await Promise.all([
+    const [i, r, a] = await Promise.all([
       (supabase.from(kinds[kind] as never) as any)
         .select("*")
         .eq("visibility", "public")
@@ -40,15 +39,11 @@ export default function AdminLibraryModerationScreen() {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(100),
-      (supabase.from("external_catalog_sources" as never) as any)
-        .select("*")
-        .order("display_name"),
     ]);
     if (i.error) Alert.alert("Could not load", i.error.message);
     setRows(i.data ?? []);
     setReports(r.data ?? []);
     setAudit(a.data ?? []);
-    setSources(s.data ?? []);
   }
   useEffect(() => {
     void load();
@@ -67,22 +62,13 @@ export default function AdminLibraryModerationScreen() {
     if (error) Alert.alert("Could not moderate", error.message);
     else void load();
   }
-  async function toggleSource(provider: string, enabled: boolean) {
-    const { error } = await (
-      supabase.from("external_catalog_sources" as never) as any
-    )
-      .update({ enabled, updated_at: new Date().toISOString() })
-      .eq("provider", provider);
-    if (error) Alert.alert("Could not update source", error.message);
-    else void load();
-  }
   return (
     <Screen
       title="Library Moderation"
-      subtitle="Reports, audit history, takedowns and sources"
+      subtitle="Reports, audit history and takedowns"
     >
       <View style={styles.wrap}>
-        {(["items", "reports", "audit", "sources"] as Mode[]).map((value) => (
+        {(["items", "reports", "audit"] as Mode[]).map((value) => (
           <Pressable
             key={value}
             onPress={() => setMode(value)}
@@ -157,24 +143,6 @@ export default function AdminLibraryModerationScreen() {
               <Text style={textStyles.muted}>
                 {new Date(x.created_at).toLocaleString()}
               </Text>
-            </Card>
-          ))
-        : null}
-      {mode === "sources"
-        ? sources.map((x) => (
-            <Card key={x.provider}>
-              <Text style={textStyles.heading}>{x.display_name}</Text>
-              <Text style={textStyles.muted}>{x.attribution}</Text>
-              <Text style={textStyles.muted}>
-                {x.license_name} · {x.last_status}
-              </Text>
-              <Button
-                danger={x.enabled}
-                secondary={!x.enabled}
-                onPress={() => toggleSource(x.provider, !x.enabled)}
-              >
-                {x.enabled ? "DISABLE" : "ENABLE"}
-              </Button>
             </Card>
           ))
         : null}

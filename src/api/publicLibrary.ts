@@ -158,22 +158,6 @@ export async function moderateCatalogItem(
   });
   if (error) throw error;
 }
-export async function listCatalogSources() {
-  const { data, error } = await from("external_catalog_sources")
-    .select("*")
-    .order("display_name");
-  if (error) throw error;
-  return data ?? [];
-}
-export async function setCatalogSourceEnabled(
-  provider: string,
-  enabled: boolean,
-) {
-  const { error } = await from("external_catalog_sources")
-    .update({ enabled, updated_at: new Date().toISOString() })
-    .eq("provider", provider);
-  if (error) throw error;
-}
 export async function listCatalogAudit() {
   const { data, error } = await from("library_audit_events")
     .select("*")
@@ -188,16 +172,4 @@ export async function listCatalogAudit() {
     .limit(200);
   if (error) throw error;
   return data ?? [];
-}
-export async function importCatalog(
-  provider: string,
-  query: string,
-  limit = 20,
-) {
-  const { data, error } = await supabase.functions.invoke("catalog-import", {
-    body: { provider, query, limit },
-  });
-  if (error) throw error;
-  if (data?.error) throw new Error(data.error);
-  return data;
 }

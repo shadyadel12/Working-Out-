@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  importCatalog,
   listCatalogAudit,
-  listCatalogSources,
   listModerationItems,
   listModerationReports,
   moderateCatalogItem,
-  setCatalogSourceEnabled,
   type PublicLibraryKind,
 } from "../../api/publicLibrary";
 
@@ -22,9 +19,8 @@ export default function LibraryModeration() {
   const qc = useQueryClient();
   const [kind, setKind] = useState<PublicLibraryKind>("exercises");
   const [section, setSection] = useState<
-    "items" | "reports" | "audit" | "sources"
+    "items" | "reports" | "audit"
   >("items");
-  const [importQuery, setImportQuery] = useState("");
   const items = useQuery({
     queryKey: ["moderation-items", kind],
     queryFn: () => listModerationItems(kind),
@@ -37,10 +33,6 @@ export default function LibraryModeration() {
     queryKey: ["catalog-audit"],
     queryFn: listCatalogAudit,
   });
-  const sources = useQuery({
-    queryKey: ["catalog-sources"],
-    queryFn: listCatalogSources,
-  });
   const moderate = useMutation({
     mutationFn: ({
       id,
@@ -52,23 +44,6 @@ export default function LibraryModeration() {
       reason: string;
     }) => moderateCatalogItem(kind, id, status, reason),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["moderation-items"] }),
-  });
-  const toggle = useMutation({
-    mutationFn: ({
-      provider,
-      enabled,
-    }: {
-      provider: string;
-      enabled: boolean;
-    }) => setCatalogSourceEnabled(provider, enabled),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["catalog-sources"] }),
-  });
-  const runImport = useMutation({
-    mutationFn: (provider: string) => importCatalog(provider, importQuery, 20),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["moderation-items"] });
-      qc.invalidateQueries({ queryKey: ["catalog-sources"] });
-    },
   });
   const act = (id: string, status: "visible" | "hidden" | "removed") => {
     const reason =
@@ -84,13 +59,12 @@ export default function LibraryModeration() {
           <span className="overview-kicker">Safety & discovery</span>
           <h1>Public Library Moderation</h1>
           <p>
-            Review reports, hide unsafe items, restore content and control
-            external sources.
+            Review reports, hide unsafe items and restore content.
           </p>
         </div>
       </header>
       <div className="catalog-tabs">
-        {(["items", "reports", "audit", "sources"] as const).map((x) => (
+        {(["items", "reports", "audit"] as const).map((x) => (
           <button
             className={section === x ? "active" : ""}
             onClick={() => setSection(x)}
@@ -213,52 +187,6 @@ export default function LibraryModeration() {
             </table>
           </div>
         </div>
-      )}
-      {section === "sources" && (
-        <>
-          <div className="catalog-toolbar">
-            <input
-              value={importQuery}
-              onChange={(e) => setImportQuery(e.target.value)}
-              placeholder="Optional search term for a small import"
-            />
-          </div>
-          <div className="recipe-card-grid">
-            {(sources.data ?? []).map((x: any) => (
-              <article className="recipe-library-card" key={x.provider}>
-                <div>
-                  <h2>{x.display_name}</h2>
-                  <p>{x.attribution}</p>
-                  <small>
-                    {x.license_name} · {x.last_status}
-                  </small>
-                  <footer>
-                    <button
-                      className={x.enabled ? "danger" : "secondary"}
-                      onClick={() =>
-                        toggle.mutate({
-                          provider: x.provider,
-                          enabled: !x.enabled,
-                        })
-                      }
-                    >
-                      {x.enabled ? "Disable source" : "Enable source"}
-                    </button>
-                    <button
-                      disabled={!x.enabled || runImport.isPending}
-                      onClick={() => runImport.mutate(x.provider)}
-                    >
-                      Import up to 20
-                    </button>
-                  </footer>
-                </div>
-              </article>
-            ))}
-          </div>
-          {runImport.error && (
-            <p className="error">{(runImport.error as Error).message}</p>
-          )}
-        </>
       )}
     </div>
   );
