@@ -80,7 +80,12 @@ export default function DietDayCard({
         idx === mi ? { ...m, items: (m.items ?? []).filter((_, j) => j !== ii) } : m
       )
     );
-  const addKnownFood = (name: string) => setMeals((current) => current.map((meal, index) => index === selectedMeal ? { ...meal, items: [...(meal.items ?? []), { food: name, grams: '', unit: 'grams', quantity: '' }] } : meal));
+  const addKnownFood = (name: string) => {
+    const saved = (foods ?? []).find((food) => food.name === name);
+    const unit = saved?.measure ?? 'grams';
+    const amount = saved?.amount ?? '';
+    setMeals((current) => current.map((meal, index) => index === selectedMeal ? { ...meal, items: [...(meal.items ?? []), { food: name, grams: unit === 'grams' ? amount : '', unit, quantity: unit === 'quantity' ? amount : '' }] } : meal));
+  };
   const moveMeal = (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= meals.length) return;

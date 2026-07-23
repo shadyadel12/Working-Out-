@@ -26,11 +26,11 @@ export async function listCoachFoods(coachId: string): Promise<CoachFood[]> {
 }
 
 /** Insert a food if it doesn't exist yet (case-insensitive match kept simple via unique constraint). */
-export async function addCoachFood(coachId: string, name: string): Promise<CoachFood> {
+export async function addCoachFood(coachId: string, name: string, measure: 'grams' | 'quantity' = 'grams', amount = ''): Promise<CoachFood> {
   const trimmed = name.trim();
   const { data, error } = await supabase
     .from('coach_foods')
-    .upsert({ coach_id: coachId, name: trimmed }, { onConflict: 'coach_id,name' })
+    .upsert({ coach_id: coachId, name: trimmed, measure, amount: amount.trim() }, { onConflict: 'coach_id,name' })
     .select()
     .single();
   if (error) throw error;

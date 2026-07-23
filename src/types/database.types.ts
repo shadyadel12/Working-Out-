@@ -150,6 +150,8 @@ export type CoachFood = {
   id: string;
   coach_id: string;
   name: string;
+  measure: 'grams' | 'quantity';
+  amount: string;
   created_at: string;
 }
 
@@ -475,12 +477,16 @@ export type Database = {
           id?: string;
           coach_id: string;
           name: string;
+          measure?: 'grams' | 'quantity';
+          amount?: string;
           created_at?: string;
         };
         Update: {
           id?: string;
           coach_id?: string;
           name?: string;
+          measure?: 'grams' | 'quantity';
+          amount?: string;
           created_at?: string;
         };
         Relationships: [];
