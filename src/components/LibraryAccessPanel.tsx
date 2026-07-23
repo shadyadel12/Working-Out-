@@ -60,7 +60,7 @@ export default function LibraryAccessPanel({
     queryKey: ["public-library", kind, coachId],
     queryFn: () => listPublicLibrary(kind),
   });
-  const [tab, setTab] = useState<LibraryTab>("your-private");
+  const [tab, setTab] = useState<LibraryTab>("all-public");
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("");
   const [sort, setSort] = useState<"newest" | "name">("newest");
@@ -130,6 +130,7 @@ export default function LibraryAccessPanel({
         {tabs.map(([value, label]) => (
           <button
             key={value}
+            type="button"
             role="tab"
             aria-selected={tab === value}
             className={tab === value ? "active" : ""}

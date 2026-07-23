@@ -13,6 +13,10 @@
 
 - Private library items stay limited to their owner and authorized team members, while assigned plans keep their saved content when a library item changes.
 
+### Fixes
+
+- Public libraries now open on public items so imported exercises and ingredients are visible immediately.
+
 ## July 22, 2026
 
 ### Improvements
