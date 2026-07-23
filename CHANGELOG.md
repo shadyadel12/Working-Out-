@@ -14,6 +14,7 @@
 - Meal Plan Templates now support covers and descriptions, multi-week day/week views, default and custom meal categories, published recipe selection, replacement, ordering, dietary-info display, and publishing for player assignment.
 - The Add Meal dialog now uses a compact saved-recipe dropdown instead of a card gallery.
 - Published meal plans now create tracked player assignments, appear as active plans for coaches and players, and deliver structured recipe steps, video, dietary labels, and nutrition into Player Diet.
+- Recipe instructions and nutrition are now optional checkbox-controlled sections that stay collapsed until the coach chooses to add them.
 - Coaches can assign published tasks, forms, and metric groups from a dedicated player Assignments page.
 - Improved the player assignment cards with clear labels, contained controls, responsive layouts, and assignment counts.
 - Matched the player toolbar to the coach navigation with centered icons above their labels.
