@@ -16,6 +16,8 @@ alter table public.food_items
   add column lifecycle public.catalog_lifecycle not null default 'published',
   add column share_mode public.catalog_share_mode not null default 'private',
   add column revision int not null default 1 check(revision>0);
+alter table public.workout_templates
+  add column if not exists updated_at timestamptz not null default now();
 
 do $$ declare v_table text; begin
   foreach v_table in array array['exercise_library','workout_templates','food_items','dishes','menu_templates'] loop
