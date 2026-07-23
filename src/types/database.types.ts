@@ -132,13 +132,17 @@ export type DietFoodItem = {
   grams: string;  // amount, e.g. "150"
   unit?: 'grams' | 'quantity'; // old rows without a unit are treated as grams
   quantity?: string; // count for whole foods, e.g. "2" eggs
+  quantityUnit?: string; // recipe units such as tbsp, cup, or item
 }
+
+export type DietRecipeSnapshot = { id:string; title:string; servings:number; instructions:string|null; ingredients:Array<{food:string;quantity:string;unit:string}> }
 
 export type DietMeal = {
   type: 'meal' | 'snack';
   label: string;
   content: string;        // legacy free text (kept for old rows)
   items?: DietFoodItem[]; // structured food items
+  recipe?: DietRecipeSnapshot | null;
 }
 
 export type CoachFood = {

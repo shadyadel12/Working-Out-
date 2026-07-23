@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { applyMealPlan, listPublishedMealPlans } from '../../../api/nutritionLibrary';
+
+export default function MealPlanApply({coachId,playerId,totalWeeks,currentWeek}:{coachId:string;playerId:string;totalWeeks:number;currentWeek:number}) {
+  const qc=useQueryClient(); const [planId,setPlanId]=useState(''); const [startWeek,setStartWeek]=useState(currentWeek);
+  const plans=useQuery({queryKey:['published-meal-plans',coachId],queryFn:()=>listPublishedMealPlans(coachId)});
+  const selected=plans.data?.find(plan=>plan.id===planId); const endWeek=startWeek+(selected?.weekCount??1)-1; const fits=endWeek<=totalWeeks;
+  const apply=useMutation({mutationFn:()=>applyMealPlan(playerId,planId,startWeek),onSuccess:async()=>{await qc.invalidateQueries({queryKey:['diet',playerId]});setPlanId('')}});
+  return <section className="card stack meal-plan-apply"><div><strong>Apply saved meal plan</strong><p className="muted">Use a complete published meal plan instead of writing each diet day manually.</p></div><div className="meal-plan-apply-controls"><label>Meal plan<select value={planId} onChange={event=>setPlanId(event.target.value)}><option value="">Choose a published meal plan…</option>{(plans.data??[]).map(plan=><option value={plan.id} key={plan.id}>{plan.title} · {plan.weekCount} week{plan.weekCount===1?'':'s'}</option>)}</select></label><label>Starting week<select value={startWeek} onChange={event=>setStartWeek(Number(event.target.value))}>{Array.from({length:totalWeeks},(_,i)=>i+1).map(week=><option value={week} key={week}>Week {week}</option>)}</select></label><button disabled={!selected||!fits||apply.isPending} onClick={()=>{if(confirm(`Replace the player's diet in Week ${startWeek}${endWeek>startWeek?` through Week ${endWeek}`:''} with ${selected?.title}?`))apply.mutate()}}>{apply.isPending?'Applying…':'Apply meal plan'}</button></div>{selected&&<small className={fits?'muted':'error'}>{fits?`This will replace diet data in Week ${startWeek}${endWeek>startWeek?`–${endWeek}`:''}.`:'This meal plan extends beyond the player’s subscription weeks.'}</small>}{plans.isSuccess&&plans.data.length===0&&<small className="muted">Publish a Meal Plan in the library before applying it.</small>}{apply.isSuccess&&<span className="badge active">Meal plan applied ✓</span>}{(plans.error||apply.error)&&<p className="error">{((plans.error||apply.error) as Error).message}</p>}</section>;
+}
+

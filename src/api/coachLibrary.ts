@@ -135,13 +135,13 @@ function relationDetail(kind: LibraryKind, row: Record<string, any>) {
   return `Position ${Number(row.position) + 1}`;
 }
 
-export async function addLibraryRelation(kind: LibraryKind, parentId: string, input: { choiceId?: string; label?: string; subtype?: string; amount?: number; secondaryAmount?: number; unit?: string; required?: boolean }): Promise<void> {
+export async function addLibraryRelation(kind: LibraryKind, parentId: string, input: { choiceId?: string; label?: string; subtype?: string; amount?: number; secondaryAmount?: number; unit?: string; required?: boolean; mealType?: 'meal'|'snack' }): Promise<void> {
   const config = relations[kind]; if (!config) return;
   const position = Math.floor(Date.now() / 10) % 2_000_000_000; const payload: Record<string, unknown> = { [config.parent]: parentId, position };
   if (config.choiceParent) payload[config.choiceParent] = input.choiceId;
   if (kind === 'sections') Object.assign(payload, { sets: input.amount || null, reps: input.label || null, rest_seconds: input.secondaryAmount ?? 0 });
   if (kind === 'forms') Object.assign(payload, { prompt: input.label, question_type: input.subtype || 'short_text', required: input.required ?? false, options: [] });
-  if (kind === 'meal-plans') Object.assign(payload, { week_number: input.amount || 1, day_number: input.secondaryAmount || 1, meal_name: input.label || 'Meal' });
+  if (kind === 'meal-plans') Object.assign(payload, { week_number: input.amount || 1, day_number: input.secondaryAmount || 1, meal_name: input.label || 'Meal', meal_type: input.mealType || 'meal' });
   if (kind === 'recipes') Object.assign(payload, { quantity: input.amount || 1, unit: input.unit || 'g' });
   const { error } = await from(config.table).insert(payload); if (error) throw error;
 }

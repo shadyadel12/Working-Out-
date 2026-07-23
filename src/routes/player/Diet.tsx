@@ -96,8 +96,9 @@ export default function PlayerDiet() {
                   <summary><strong>{m.label}</strong><span aria-hidden="true">⌄</span></summary>
                   <div className="player-meal-dropdown-body">
                     {(m.items ?? []).length > 0 ? (
-                      (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.unit === 'quantity' ? (it.quantity ? `${it.quantity} item${Number(it.quantity) === 1 ? '' : 's'}` : '') : (it.grams ? `${it.grams} g` : '')}</span></div>)
+                      (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.unit === 'quantity' ? (it.quantity ? `${it.quantity} ${it.quantityUnit ?? (Number(it.quantity) === 1 ? 'item' : 'items')}` : '') : (it.grams ? `${it.grams} g` : '')}</span></div>)
                     ) : <div style={{ whiteSpace: 'pre-wrap' }}>{m.content || <span className="muted">—</span>}</div>}
+                    {m.recipe&&<details className="player-recipe"><summary><span>View recipe</span>: {m.recipe.title}</summary><div><span className="muted">Makes {m.recipe.servings} serving{m.recipe.servings===1?'':'s'}</span><h4>Ingredients</h4><ul>{m.recipe.ingredients.map((ingredient,index)=><li key={`${ingredient.food}-${index}`}><span>{ingredient.food}</span><strong>{ingredient.quantity} {ingredient.unit}</strong></li>)}</ul><h4>How to make it</h4><p>{m.recipe.instructions||'No preparation instructions were added.'}</p></div></details>}
                   </div>
                 </details>
               ))}

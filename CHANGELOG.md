@@ -4,7 +4,9 @@
 
 ### Improvements
 
-- Coaches can now assign published tasks, forms, meal plans, recipe books, and metric groups from a dedicated player Assignments page.
+- Meal Plans now apply from a player's Diet page, and saved recipes can replace a meal while giving the player ingredients and cooking instructions.
+- Recipe Books now organize the recipe picker instead of appearing as standalone player assignments.
+- Coaches can assign published tasks, forms, and metric groups from a dedicated player Assignments page.
 - Improved the player assignment cards with clear labels, contained controls, responsive layouts, and assignment counts.
 - Matched the player toolbar to the coach navigation with centered icons above their labels.
 - Player navigation now starts on the left in English and on the right in Arabic, matching the coach toolbar direction.

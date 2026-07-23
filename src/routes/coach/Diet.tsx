@@ -11,6 +11,7 @@ import {
 } from '../../api/diet';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import DietDayCard from './diet/DietDayCard';
+import MealPlanApply from './diet/MealPlanApply';
 
 export default function CoachDiet() {
   const { playerId } = useParams<{ playerId: string }>();
@@ -88,6 +89,8 @@ export default function CoachDiet() {
       </div>
 
       {dietLoading && <LoadingSkeleton rows={6} />}
+
+      {!dietLoading && <MealPlanApply coachId={coachId} playerId={playerId!} totalWeeks={totalWeeks} currentWeek={week} />}
 
       {weekDays.length > 0 && week < totalWeeks && (
         <div className="card row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.6rem' }}>
