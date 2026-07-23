@@ -4,6 +4,7 @@
 
 ### Improvements
 
+- Coaches can now assign published tasks, forms, meal plans, recipe books, and metric groups from a dedicated player Assignments page.
 - Diet foods can now be prescribed by grams or by whole-item quantity, such as 2 eggs.
 - Workout creation now follows one consistent flow: create the day first, then build its workouts in the full workout builder.
 - Added a plain-language “How It Works” guide that explains what every main navigation button does for coaches, players, and administrators.

@@ -57,6 +57,7 @@ export default function PlayerProfile() {
         <Link className="active" to={`/coach/players/${playerId}`}>Summary</Link>
         {coachCapabilities.canManagePlayers && <Link to={`/coach/players/${playerId}/program`}>Training</Link>}
         {coachCapabilities.canManagePlayers && <Link className="client-diet-tab" to={`/coach/players/${playerId}/diet`}><AppIcon name="nutrition" size={16} /> <span>Diet</span></Link>}
+        {coachCapabilities.canManagePlayers && <Link to={`/coach/players/${playerId}/assignments`}>Assignments</Link>}
         <Link to={`/coach/players/${playerId}/analysis`}>Analysis</Link>
         <Link to={`/coach/players/${playerId}/diet-progress`}>Diet Analysis</Link>
       </nav>

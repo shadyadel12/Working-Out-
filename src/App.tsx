@@ -28,6 +28,7 @@ import CoachSettings from './routes/coach/Settings';
 import CoachSupport from './routes/coach/Support';
 import CoachDietProgress from './routes/coach/DietProgress';
 import CoachPlayerProfile from './routes/coach/PlayerProfile';
+import CoachPlayerAssignments from './routes/coach/PlayerAssignments';
 import CoachExerciseLibrary from './routes/coach/ExerciseLibrary';
 import CoachWorkoutLibrary from './routes/coach/WorkoutLibrary';
 import CoachProgramLibrary from './routes/coach/ProgramLibrary';
@@ -46,6 +47,7 @@ import PlayerAnalysis from './routes/player/Analysis';
 import PlayerChat from './routes/player/Chat';
 import PlayerDiet from './routes/player/Diet';
 import PlayerDietProgress from './routes/player/DietProgress';
+import PlayerAssignments from './routes/player/Assignments';
 import Blocked from './routes/player/Blocked';
 import PlayerProfileDetails from './routes/player/Profile';
 import AdminCoaches from './routes/admin/Coaches';
@@ -78,6 +80,7 @@ const coachLinks = [
 const playerLinks = [
   { to: '/player/program', label: 'Program' },
   { to: '/player/diet', label: 'Diet' },
+  { to: '/player/assignments', label: 'Assignments' },
   { to: '/player/analysis', label: 'Progress' },
   { to: '/player/diet-progress', label: 'Diet Progress' },
   { to: '/player/chat', label: 'Chat', badgeKey: 'chat' as const },
@@ -129,6 +132,7 @@ export default function App() {
             <Route path="recipe-book-library" element={<RequireCoachCapability capability="owner"><RecipeBookLibrary /></RequireCoachCapability>} />
             <Route path="metric-group-library" element={<RequireCoachCapability capability="owner"><MetricGroupLibrary /></RequireCoachCapability>} />
             <Route path="players/:playerId" element={<CoachPlayerProfile />} />
+            <Route path="players/:playerId/assignments" element={<RequireCoachCapability capability="manage"><CoachPlayerAssignments /></RequireCoachCapability>} />
             <Route path="players/:playerId/program" element={<RequireCoachCapability capability="manage"><ProgramBuilder /></RequireCoachCapability>} />
             <Route path="players/:playerId/diet" element={<RequireCoachCapability capability="manage"><CoachDiet /></RequireCoachCapability>} />
             <Route path="players/:playerId/analysis" element={<CoachPlayerAnalysis />} />
@@ -156,6 +160,7 @@ export default function App() {
             <Route index element={<Navigate to="program" replace />} />
             <Route path="program" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerProgram /></RequirePlayerDetails></RequireActiveSubscription>} />
             <Route path="diet" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerDiet /></RequirePlayerDetails></RequireActiveSubscription>} />
+            <Route path="assignments" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerAssignments /></RequirePlayerDetails></RequireActiveSubscription>} />
             <Route path="analysis" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerAnalysis /></RequirePlayerDetails></RequireActiveSubscription>} />
             <Route path="diet-progress" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerDietProgress /></RequirePlayerDetails></RequireActiveSubscription>} />
             <Route path="chat" element={<RequireActiveSubscription><RequirePlayerDetails><PlayerChat /></RequirePlayerDetails></RequireActiveSubscription>} />

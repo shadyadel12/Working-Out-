@@ -1223,3 +1223,10 @@ button:has(.action-button-icon),
 @media (max-width: 700px) {
   .diet-food-row { grid-template-columns: minmax(120px, 1fr) 90px 80px 44px; }
 }
+
+.assignments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.assignment-section h2, .assignments-grid article h2 { margin: 0; }
+.assignment-controls { display: grid; grid-template-columns: minmax(150px, 1fr) 145px auto; gap: 8px; }
+.assignment-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.assignment-row span { display: grid; gap: 3px; }
+@media (max-width: 600px) { .assignment-controls { grid-template-columns: 1fr; } }
