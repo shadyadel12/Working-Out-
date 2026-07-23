@@ -168,16 +168,16 @@ export default function DietDayCard({
       )}
 
       <div className="card stack" style={{ background: 'var(--surface-2)' }}>
-        <strong>Saved diet library</strong>
+        <strong>Saved Meal Days</strong>
         {templates.length > 0 && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Use saved diet</label><select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select from library…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></div>
+          <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Use a saved meal day</label><select value={templateId} onChange={(event) => setTemplateId(event.target.value)}><option value="">Select a saved meal day…</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></div>
           <button type="button" disabled={!templateId || useTemplate.isPending} onClick={() => useTemplate.mutate()}>{useTemplate.isPending ? 'Adding…' : 'Add to this player/day'}</button>
         </div>}
         {existing && <div className="row" style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}>
           <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}><label>Library name</label><input value={templateName} maxLength={200} onChange={(event) => setTemplateName(event.target.value)} /></div>
-          <button type="button" className="secondary" disabled={!templateName.trim() || saveTemplate.isPending} onClick={() => saveTemplate.mutate()}>{saveTemplate.isPending ? 'Saving…' : 'Save diet once for reuse'}</button>
+          <button type="button" className="secondary" disabled={!templateName.trim() || saveTemplate.isPending} onClick={() => saveTemplate.mutate()}>{saveTemplate.isPending ? 'Saving…' : 'Save to Saved Meal Days'}</button>
         </div>}
-        {saveTemplate.isSuccess && <span className="badge active">Saved once for reuse ✓</span>}
+        {saveTemplate.isSuccess && <span className="badge active">Saved to Saved Meal Days ✓</span>}
         {(saveTemplate.error || useTemplate.error) && <span className="error">{((saveTemplate.error || useTemplate.error) as Error).message}</span>}
       </div>
 

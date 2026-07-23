@@ -17,3 +17,7 @@ export async function assignDietTemplate(playerId: string, week: number, dayOfWe
   if (error) throw error;
   return data;
 }
+export async function deleteDietTemplate(templateId: string): Promise<void> {
+  const { error } = await supabase.from('diet_templates').delete().eq('id', templateId);
+  if (error) throw error;
+}
