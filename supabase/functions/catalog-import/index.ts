@@ -9,11 +9,12 @@ async function fetchRetry(url:string,init:RequestInit,attempts=3){let last:unkno
 
 Deno.serve(async(request)=>{
  if(request.method!=='POST')return json({error:'Method not allowed'},405);
- const url=Deno.env.get('SUPABASE_URL'),serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),ownerId=Deno.env.get('TRAINOVA_CATALOG_OWNER_ID');
- const auth=request.headers.get('authorization')??'';if(!url||!serviceKey||!ownerId)return json({error:'Catalog import is not configured'},503);
+ const url=Deno.env.get('SUPABASE_URL'),serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+ const auth=request.headers.get('authorization')??'';if(!url||!serviceKey)return json({error:'Catalog import is not configured'},503);
  const token=auth.replace(/^Bearer\s+/i,'');const admin=createClient(url,serviceKey,{auth:{persistSession:false}});const{data:{user}}=await admin.auth.getUser(token);
  if(!user||verifiedJwtAal(auth)!=='aal2')return json({error:'Administrator MFA is required'},403);
  const{data:profile}=await admin.from('profiles').select('role').eq('id',user.id).single();if(profile?.role!=='admin')return json({error:'Access denied'},403);
+ const ownerId=user.id;
  let input:{provider?:string;query?:string;limit?:number};try{input=await request.json()}catch{return json({error:'Invalid JSON'},400)}
  const provider=input.provider,query=clean(input.query),limit=Math.max(1,Math.min(Number(input.limit)||20,50));if(!['wger','usda_fdc','open_food_facts'].includes(provider??''))return json({error:'Unsupported provider'},400);
  const{data:source}=await admin.from('external_catalog_sources').select('*').eq('provider',provider).single();if(!source?.enabled)return json({error:'This source is disabled'},409);
