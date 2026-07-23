@@ -96,7 +96,7 @@ export default function PlayerDiet() {
                   <summary><strong>{m.label}</strong><span aria-hidden="true">⌄</span></summary>
                   <div className="player-meal-dropdown-body">
                     {(m.items ?? []).length > 0 ? (
-                      (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.grams ? `${it.grams} g` : ''}</span></div>)
+                      (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.unit === 'quantity' ? (it.quantity ? `${it.quantity} item${Number(it.quantity) === 1 ? '' : 's'}` : '') : (it.grams ? `${it.grams} g` : '')}</span></div>)
                     ) : <div style={{ whiteSpace: 'pre-wrap' }}>{m.content || <span className="muted">—</span>}</div>}
                   </div>
                 </details>

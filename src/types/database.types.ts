@@ -130,6 +130,8 @@ export type CoachKey = {
 export type DietFoodItem = {
   food: string;   // food type name (from coach's food library)
   grams: string;  // amount, e.g. "150"
+  unit?: 'grams' | 'quantity'; // old rows without a unit are treated as grams
+  quantity?: string; // count for whole foods, e.g. "2" eggs
 }
 
 export type DietMeal = {

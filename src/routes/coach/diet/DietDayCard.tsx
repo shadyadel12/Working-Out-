@@ -70,7 +70,7 @@ export default function DietDayCard({
   const addItem = (mi: number) =>
     setMeals((ms) =>
       ms.map((m, idx) =>
-        idx === mi ? { ...m, items: [...(m.items ?? []), { food: '', grams: '' }] } : m
+        idx === mi ? { ...m, items: [...(m.items ?? []), { food: '', grams: '', unit: 'grams', quantity: '' }] } : m
       )
     );
   const removeItem = (mi: number, ii: number) =>
@@ -79,7 +79,7 @@ export default function DietDayCard({
         idx === mi ? { ...m, items: (m.items ?? []).filter((_, j) => j !== ii) } : m
       )
     );
-  const addKnownFood = (name: string) => setMeals((current) => current.map((meal, index) => index === selectedMeal ? { ...meal, items: [...(meal.items ?? []), { food: name, grams: '' }] } : meal));
+  const addKnownFood = (name: string) => setMeals((current) => current.map((meal, index) => index === selectedMeal ? { ...meal, items: [...(meal.items ?? []), { food: name, grams: '', unit: 'grams', quantity: '' }] } : meal));
   const moveMeal = (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= meals.length) return;
@@ -218,7 +218,10 @@ export default function DietDayCard({
             <ol>{meals.map((meal, index) => <li key={`${meal.label}-${index}`} className={selectedMeal === index ? 'selected' : ''}><button type="button" className="training-item-main" onClick={() => setSelectedMeal(index)}><span className={`diet-slot-index ${meal.type}`}>{index + 1}</span><span><strong>{meal.label}</strong><small>{meal.items?.length ?? 0} food{meal.items?.length === 1 ? '' : 's'} · {meal.type}</small></span></button><div className="training-item-actions"><button type="button" className="secondary" aria-label={`Move ${meal.label} up`} disabled={index === 0} onClick={() => moveMeal(index, -1)}>↑</button><button type="button" className="secondary" aria-label={`Move ${meal.label} down`} disabled={index === meals.length - 1} onClick={() => moveMeal(index, 1)}>↓</button></div></li>)}</ol>
           </main>
           <aside className="diet-builder-inspector" aria-label="Meal details">
-            {selected ? <><h3>{selected.label}</h3><p className="muted">Add foods from the library or enter a custom food.</p>{(selected.items ?? []).map((item, itemIndex) => <div className="diet-food-row" key={itemIndex}><div className="field"><label>Food</label><FoodPicker value={item.food} onChange={(value) => setItem(selectedMeal, itemIndex, { food: value })} options={foodNames} /></div><div className="field"><label>Grams</label><input type="number" min={0} value={item.grams} onChange={(event) => setItem(selectedMeal, itemIndex, { grams: event.target.value })} placeholder="150" /></div><button className="danger" type="button" aria-label={`Remove ${item.food || 'food'}`} onClick={() => removeItem(selectedMeal, itemIndex)}>×</button></div>)}<button className="secondary" type="button" onClick={() => addItem(selectedMeal)}>+ Add custom food</button><div className="field diet-day-note"><label>Coach note for this day</label><textarea rows={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Optional instructions for the player…" /></div></> : <p className="muted">Select a meal or snack to edit it.</p>}
+            {selected ? <><h3>{selected.label}</h3><p className="muted">Add foods from the library or enter a custom food.</p>{(selected.items ?? []).map((item, itemIndex) => {
+              const unit = item.unit ?? 'grams';
+              return <div className="diet-food-row" key={itemIndex}><div className="field"><label>Food</label><FoodPicker value={item.food} onChange={(value) => setItem(selectedMeal, itemIndex, { food: value })} options={foodNames} /></div><div className="field"><label>Measure</label><select value={unit} onChange={(event) => setItem(selectedMeal, itemIndex, event.target.value === 'quantity' ? { unit: 'quantity', grams: '' } : { unit: 'grams', quantity: '' })}><option value="grams">Grams</option><option value="quantity">Quantity</option></select></div><div className="field"><label>{unit === 'quantity' ? 'Quantity' : 'Grams'}</label><input type="number" min={0} step={unit === 'quantity' ? 1 : 'any'} value={unit === 'quantity' ? (item.quantity ?? '') : item.grams} onChange={(event) => setItem(selectedMeal, itemIndex, unit === 'quantity' ? { quantity: event.target.value } : { grams: event.target.value })} placeholder={unit === 'quantity' ? '2' : '150'} /></div><button className="danger" type="button" aria-label={`Remove ${item.food || 'food'}`} onClick={() => removeItem(selectedMeal, itemIndex)}>×</button></div>;
+            })}<button className="secondary" type="button" onClick={() => addItem(selectedMeal)}>+ Add custom food</button><div className="field diet-day-note"><label>Coach note for this day</label><textarea rows={4} value={comment} onChange={(event) => setComment(event.target.value)} placeholder="Optional instructions for the player…" /></div></> : <p className="muted">Select a meal or snack to edit it.</p>}
           </aside>
         </div>}
 

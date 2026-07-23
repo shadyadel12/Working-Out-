@@ -1217,3 +1217,9 @@ button:has(.action-button-icon),
   .adaptive-nav-item.active,
   .library-nav-group > button.active { flex-direction: column-reverse; }
 }
+
+/* Food rows include the food, measurement type, amount, and remove action. */
+.diet-food-row { grid-template-columns: minmax(130px, 1fr) 100px 90px 44px; }
+@media (max-width: 700px) {
+  .diet-food-row { grid-template-columns: minmax(120px, 1fr) 90px 80px 44px; }
+}

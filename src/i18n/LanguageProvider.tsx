@@ -344,7 +344,7 @@ Object.assign(ar, {
   "Created On": "تاريخ الإنشاء", "Last updated": "آخر تحديث", "Difficulty": "الصعوبة",
   "Adherence": "الالتزام", "Age": "العمر", "Coach": "المدرب", "Player": "اللاعب",
   "Day": "اليوم", "Expiry": "انتهاء الصلاحية", "Features": "المميزات", "Food": "الطعام",
-  "Grams": "الجرامات", "Group": "المجموعة", "Key": "المفتاح", "Load": "الحمل",
+  "Grams": "الجرامات", "Measure": "طريقة القياس", "Group": "المجموعة", "Key": "المفتاح", "Load": "الحمل",
   "Meals": "الوجبات", "Number": "رقم", "Open": "فتح", "Prescription": "تفاصيل التمرين",
   "Quantity": "الكمية", "Question": "السؤال", "Ready when you are": "جاهز عندما تكون مستعدًا",
   "Sections": "الأقسام", "Section": "القسم", "Tasks": "المهام", "Forms & Questionnaires": "النماذج والاستبيانات",
