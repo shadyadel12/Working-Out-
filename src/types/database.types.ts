@@ -135,7 +135,7 @@ export type DietFoodItem = {
   quantityUnit?: string; // recipe units such as tbsp, cup, or item
 }
 
-export type DietRecipeSnapshot = { id:string; title:string; servings:number; instructions:string|null; ingredients:Array<{food:string;quantity:string;unit:string}> }
+export type DietRecipeSnapshot = { id:string; title:string; servings:number; instructions:string|null; videoUrl?:string|null; preparationSteps?:Array<{text:string;imageUrl:string}>; cookingSteps?:Array<{text:string;imageUrl:string}>; nutrition?:{calories:number|null;protein:number|null;carbs:number|null;fat:number|null}; dietaryLabels?:string[]; ingredients:Array<{food:string;quantity:string;unit:string}> }
 
 export type DietMeal = {
   type: 'meal' | 'snack';

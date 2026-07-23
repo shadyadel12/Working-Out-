@@ -9,6 +9,7 @@ import { saveDietLog } from '../../api/dietProgress';
 import type { DietDay } from '../../types/database.types';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
 import ActionButtonContent from '../../components/ActionButtonContent';
+import { getActiveMealPlanAssignment } from '../../api/nutritionLibrary';
 
 export default function PlayerDiet() {
   const { session, profile } = useAuth();
@@ -23,6 +24,7 @@ export default function PlayerDiet() {
     queryKey: ['active-player-link', playerId],
     queryFn: () => getActivePlayerLink(playerId),
   });
+  const { data: mealPlan } = useQuery({ queryKey: ['active-meal-plan', playerId], queryFn: () => getActiveMealPlanAssignment(playerId) });
 
   const weekInitialized = useRef(false);
   const automaticWeek = activeLink ? currentProgramWeek(activeLink.created_at) : week;
@@ -41,6 +43,7 @@ export default function PlayerDiet() {
 
   return (
     <div className="stack">
+      {mealPlan && <section className="player-meal-plan-banner">{mealPlan.coverUrl&&<img src={mealPlan.coverUrl} alt=""/>}<div><span className="overview-kicker">Assigned meal plan</span><h2>{mealPlan.title}</h2><p>{mealPlan.description||`Available in Week ${mealPlan.startWeek}${mealPlan.endWeek>mealPlan.startWeek?`–${mealPlan.endWeek}`:''}.`}</p></div></section>}
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1>Week {visibleWeek}: Diet plan for {profile?.name ?? 'you'}</h1>
         {weeks.length > 0 && (
@@ -98,7 +101,7 @@ export default function PlayerDiet() {
                     {(m.items ?? []).length > 0 ? (
                       (m.items ?? []).map((it, j) => <div key={j} className="player-meal-item"><span>{it.food}</span><span className="muted">{it.unit === 'quantity' ? (it.quantity ? `${it.quantity} ${it.quantityUnit ?? (Number(it.quantity) === 1 ? 'item' : 'items')}` : '') : (it.grams ? `${it.grams} g` : '')}</span></div>)
                     ) : <div style={{ whiteSpace: 'pre-wrap' }}>{m.content || <span className="muted">—</span>}</div>}
-                    {m.recipe&&<details className="player-recipe"><summary><span>View recipe</span>: {m.recipe.title}</summary><div><span className="muted">Makes {m.recipe.servings} serving{m.recipe.servings===1?'':'s'}</span><h4>Ingredients</h4><ul>{m.recipe.ingredients.map((ingredient,index)=><li key={`${ingredient.food}-${index}`}><span>{ingredient.food}</span><strong>{ingredient.quantity} {ingredient.unit}</strong></li>)}</ul><h4>How to make it</h4><p>{m.recipe.instructions||'No preparation instructions were added.'}</p></div></details>}
+                    {m.recipe&&<details className="player-recipe"><summary><span>View recipe</span>: {m.recipe.title}</summary><div><span className="muted">Makes {m.recipe.servings} serving{m.recipe.servings===1?'':'s'}</span>{m.recipe.dietaryLabels?.length?<div className="player-recipe-labels">{m.recipe.dietaryLabels.map(label=><span key={label}>{label}</span>)}</div>:null}<h4>Ingredients</h4><ul>{m.recipe.ingredients.map((ingredient,index)=><li key={`${ingredient.food}-${index}`}><span>{ingredient.food}</span><strong>{ingredient.quantity} {ingredient.unit}</strong></li>)}</ul>{m.recipe.nutrition&&<div className="player-recipe-nutrition"><span>Protein <b>{m.recipe.nutrition.protein??'—'}g</b></span><span>Carbs <b>{m.recipe.nutrition.carbs??'—'}g</b></span><span>Fat <b>{m.recipe.nutrition.fat??'—'}g</b></span><span>Calories <b>{m.recipe.nutrition.calories??'—'}</b></span></div>}{m.recipe.videoUrl&&<a href={m.recipe.videoUrl} target="_blank" rel="noreferrer">Watch cooking video ↗</a>}<h4>How to make it</h4>{[...(m.recipe.preparationSteps??[]),...(m.recipe.cookingSteps??[])].length?<ol className="player-recipe-steps">{[...(m.recipe.preparationSteps??[]),...(m.recipe.cookingSteps??[])].map((step,index)=><li key={index}><span>{index+1}</span><div><p>{step.text}</p>{step.imageUrl&&<img src={step.imageUrl} alt=""/>}</div></li>)}</ol>:<p>{m.recipe.instructions||'No preparation instructions were added.'}</p>}</div></details>}
                   </div>
                 </details>
               ))}
