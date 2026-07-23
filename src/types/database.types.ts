@@ -143,6 +143,7 @@ export type DietMeal = {
   content: string;        // legacy free text (kept for old rows)
   items?: DietFoodItem[]; // structured food items
   recipe?: DietRecipeSnapshot | null;
+  recipes?: DietRecipeSnapshot[]; // additive recipes; recipe remains for old saved days
 }
 
 export type CoachFood = {
