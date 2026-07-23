@@ -5,15 +5,13 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,
 const clean=(value:unknown)=>String(value??'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
 const normalized=(value:string)=>value.normalize('NFKC').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 async function hash(value:unknown){const bytes=new TextEncoder().encode(JSON.stringify(value));return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('')}
-async function secureEqual(left:string,right:string){if(!left||!right)return false;const[a,b]=await Promise.all([crypto.subtle.digest('SHA-256',new TextEncoder().encode(left)),crypto.subtle.digest('SHA-256',new TextEncoder().encode(right))]);const x=new Uint8Array(a),y=new Uint8Array(b);let difference=0;for(let index=0;index<x.length;index++)difference|=x[index]^y[index];return difference===0}
 async function fetchRetry(url:string,init:RequestInit,attempts=3){let last:unknown;for(let i=0;i<attempts;i++){try{const response=await fetch(url,init);if(response.ok)return response;if(response.status!==429&&response.status<500)throw new Error(`Provider returned ${response.status}`);last=new Error(`Provider returned ${response.status}`)}catch(error){last=error}if(i+1<attempts)await new Promise(resolve=>setTimeout(resolve,Math.min(4000,400*2**i)))}throw last}
 
 Deno.serve(async(request)=>{
  if(request.method!=='POST')return json({error:'Method not allowed'},405);
  const url=Deno.env.get('SUPABASE_URL'),serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
  const auth=request.headers.get('authorization')??'';if(!url||!serviceKey)return json({error:'Catalog import is not configured'},503);
- const token=auth.replace(/^Bearer\s+/i,'');const admin=createClient(url,serviceKey,{auth:{persistSession:false}});const bootstrap=await secureEqual(request.headers.get('x-catalog-bootstrap')??'',Deno.env.get('CATALOG_BOOTSTRAP_TOKEN')??'');let actorId:string;
- if(bootstrap){const{data:owner}=await admin.from('profiles').select('id').eq('role','admin').order('created_at').limit(1).single();if(!owner)return json({error:'Catalog owner is unavailable'},503);actorId=owner.id}else{const{data:{user}}=await admin.auth.getUser(token);if(!user||verifiedJwtAal(auth)!=='aal2')return json({error:'Administrator MFA is required'},403);const{data:profile}=await admin.from('profiles').select('role').eq('id',user.id).single();if(profile?.role!=='admin')return json({error:'Access denied'},403);actorId=user.id}
+ const token=auth.replace(/^Bearer\s+/i,'');const admin=createClient(url,serviceKey,{auth:{persistSession:false}});const{data:{user}}=await admin.auth.getUser(token);if(!user||verifiedJwtAal(auth)!=='aal2')return json({error:'Administrator MFA is required'},403);const{data:profile}=await admin.from('profiles').select('role').eq('id',user.id).single();if(profile?.role!=='admin')return json({error:'Access denied'},403);const actorId=user.id;
  const ownerId=actorId;
  let input:{provider?:string;query?:string;limit?:number};try{input=await request.json()}catch{return json({error:'Invalid JSON'},400)}
  const provider=input.provider,query=clean(input.query),limit=Math.max(1,Math.min(Number(input.limit)||20,50));if(!['wger','usda_fdc','open_food_facts'].includes(provider??''))return json({error:'Unsupported provider'},400);
