@@ -24,6 +24,8 @@ export interface CoachLibraryInput {
   subtype?: string;
   numberValue?: number;
   unit?: string;
+  availableFrom?: string;
+  availableUntil?: string;
 }
 
 type KindConfig = { table: string; title: string; summary?: string; subtype?: string; numberValue?: string; unit?: string; hasLifecycle: boolean };
@@ -69,6 +71,7 @@ export async function saveCoachLibraryItem(kind: LibraryKind, coachId: string, i
   if (config.hasLifecycle) { payload.lifecycle = input.lifecycle; payload.share_mode = input.shareMode; }
   if (kind === 'sections') payload.format = input.subtype || 'standard';
   if (kind === 'tasks') payload.task_type = input.subtype || 'general';
+  if (kind === 'forms') { payload.available_from = input.availableFrom || null; payload.available_until = input.availableUntil || null; }
   const query = id ? from(config.table).update(payload).eq('id', id) : from(config.table).insert(payload);
   const { data, error } = await query.select('id').single();
   if (error) throw error;
