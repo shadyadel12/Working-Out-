@@ -98,7 +98,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
 function iconFor(label: string): LucideIcon {
   const icons: Record<string, LucideIcon> = {
     Clients: UsersRound, Dashboard: LayoutDashboard, Exercises: Dumbbell, Workouts: ClipboardCheck,
-    Sections: FolderKanban, Programs: CalendarCheck2, Tasks: ListChecks, Forms: FileText,
+    Sections: FolderKanban, Programs: CalendarCheck2, Tasks: ListChecks, Forms: FileText, Foods: Apple,
     'Meal Plans': Salad, Recipes: Utensils, Ingredients: Apple, 'Recipe Books': BookOpen,
     'Metric Groups': BarChart3, 'Check-ups': CheckSquare, Messages: MessageCircle, Team: UsersRound,
     Subs: CreditCard, Settings, Support: LifeBuoy, Program: Dumbbell, Diet: Utensils,

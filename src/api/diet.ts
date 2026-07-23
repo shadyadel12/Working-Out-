@@ -37,6 +37,11 @@ export async function addCoachFood(coachId: string, name: string): Promise<Coach
   return data as CoachFood;
 }
 
+export async function removeCoachFood(id: string): Promise<void> {
+  const { error } = await supabase.from('coach_foods').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export async function listDietDays(playerId: string, week?: number): Promise<DietDay[]> {
   let query = (supabase
     .from('diet_days') as any)

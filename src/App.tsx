@@ -35,6 +35,7 @@ import CoachProgramLibrary from './routes/coach/ProgramLibrary';
 import SectionLibrary from './routes/coach/SectionLibrary';
 import TaskLibrary from './routes/coach/TaskLibrary';
 import FormLibrary from './routes/coach/FormLibrary';
+import FoodLibrary from './routes/coach/FoodLibrary';
 import MealPlanLibrary from './routes/coach/MealPlanLibrary';
 import RecipeLibrary from './routes/coach/RecipeLibrary';
 import IngredientLibrary from './routes/coach/IngredientLibrary';
@@ -64,6 +65,7 @@ const coachLinks = [
   { to: '/coach/program-library', label: 'Programs', group: 'library' as const },
   { to: '/coach/task-library', label: 'Tasks', group: 'library' as const },
   { to: '/coach/form-library', label: 'Forms', group: 'library' as const },
+  { to: '/coach/food-library', label: 'Foods', group: 'library' as const },
   { to: '/coach/meal-plan-library', label: 'Meal Plans', group: 'library' as const },
   { to: '/coach/recipe-library', label: 'Recipes', group: 'library' as const },
   { to: '/coach/ingredient-library', label: 'Ingredients', group: 'library' as const },
@@ -126,6 +128,7 @@ export default function App() {
             <Route path="program-library" element={<RequireCoachCapability capability="owner"><CoachProgramLibrary /></RequireCoachCapability>} />
             <Route path="task-library" element={<RequireCoachCapability capability="owner"><TaskLibrary /></RequireCoachCapability>} />
             <Route path="form-library" element={<RequireCoachCapability capability="owner"><FormLibrary /></RequireCoachCapability>} />
+            <Route path="food-library" element={<RequireCoachCapability capability="owner"><FoodLibrary /></RequireCoachCapability>} />
             <Route path="meal-plan-library" element={<RequireCoachCapability capability="owner"><MealPlanLibrary /></RequireCoachCapability>} />
             <Route path="recipe-library" element={<RequireCoachCapability capability="owner"><RecipeLibrary /></RequireCoachCapability>} />
             <Route path="ingredient-library" element={<RequireCoachCapability capability="owner"><IngredientLibrary /></RequireCoachCapability>} />
