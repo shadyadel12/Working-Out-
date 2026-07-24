@@ -4,6 +4,7 @@
 
 ### New Features
 
+- Players can now upload a private profile photo and use their avatar menu to open Assignments or Account & Privacy.
 - Added a complete Trainova Privacy Policy, Community Standards, public support details, and in-app account deletion on the website and mobile app.
 - Public creators now confirm a safe display name, content ownership, required attribution, and the Community Standards before publishing.
 - Coaches can block public creators, and chat participants can report messages or block new messages while existing coaching records remain available.

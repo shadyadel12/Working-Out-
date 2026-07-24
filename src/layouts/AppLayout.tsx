@@ -3,17 +3,19 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useUnreadCounts } from '../hooks/useUnreadCounts';
 import { useLanguage } from '../i18n/LanguageProvider';
+import PlayerProfileMenu from '../components/PlayerProfileMenu';
 import { Activity, Apple, BarChart3, Box, CalendarCheck2, CheckSquare, ChevronDown, ClipboardCheck, CreditCard, Dumbbell, FileText, FolderKanban, KeyRound, LayoutDashboard, LibraryBig, LifeBuoy, ListChecks, LogOut, Menu, MessageCircle, Moon, NotebookTabs, Salad, Settings, Sun, UserRound, UsersRound, Utensils, X, type LucideIcon } from 'lucide-react';
 
 type NavLink_ = { to: string; label: string; badgeKey?: 'chat' | 'support'; group?: 'library' };
 
 export default function AppLayout({ links }: { links: NavLink_[] }) {
-  const { profile, signOut, teamMembership } = useAuth();
+  const { profile, signOut, refreshProfile, teamMembership } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { chatCount, supportCount } = useUnreadCounts();
   const { theme, setTheme } = useLanguage();
   const isCoach = profile?.role === 'coach';
+  const isPlayer = profile?.role === 'player';
   const visibleLinks = !teamMembership ? links : links.filter((link) => {
     if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support' || link.label === 'How It Works' || link.label === 'Account & Privacy') return true;
     if (link.group === 'library') return false;
@@ -87,7 +89,12 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
       <header className="topbar">
         <div className="signed-in-heading"><strong>{isCoach ? 'Coach workspace' : 'TRAINOVA'}</strong>{!isCoach && menuButton}</div>
         {!isCoach && <div id="signed-in-navigation" className={`player-navigation mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>{navigation}</div>}
-        <div className="topbar-account"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}><LogOut size={17} /><span>Sign out</span></button></div>
+        <div className="topbar-account">
+          {isPlayer && profile
+            ? <PlayerProfileMenu profile={profile} onProfileChanged={refreshProfile} onSignOut={handleSignOut} />
+            : <><span className="muted topbar-user">{profile?.name ?? profile?.email}</span><button className="secondary" onClick={handleSignOut}><LogOut size={17} /><span>Sign out</span></button></>}
+          {!isCoach && themeToggle}
+        </div>
       </header>
       <main className="container"><Outlet /></main>
       <footer>© {new Date().getFullYear()} Trainova · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/community-standards">Community Standards</a> · <a href="/support">Support</a></footer>

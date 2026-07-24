@@ -29,6 +29,9 @@ requireText('supabase/migrations/0055_security_assessment_remediation.sql', "usi
 requireText('supabase/migrations/0055_security_assessment_remediation.sql', 'pg_advisory_xact_lock', 'quota registration must serialize per owner');
 requireText('supabase/migrations/0055_security_assessment_remediation.sql', 'set search_path = public, pg_temp', 'security-definer functions need a safe search path');
 requireText('supabase/migrations/0055_security_assessment_remediation.sql', 'revoke create on schema public', 'application roles must not create objects in public');
+requireText('supabase/migrations/0077_player_profile_photos.sql', "'profile-photos',\n  'profile-photos',\n  false", 'profile photos must use a private storage bucket');
+requireText('supabase/migrations/0077_player_profile_photos.sql', "(storage.foldername(name))[1] = (select auth.uid())::text", 'profile photo writes must stay inside the owner folder');
+requireText('supabase/migrations/0077_player_profile_photos.sql', 'public.team_can_view_player(link.coach_id, link.player_id)', 'profile photo reads must preserve assigned-team access');
 
 const vercel = JSON.parse(read('vercel.json'));
 const csp = vercel.headers.flatMap((entry) => entry.headers).find((header) => header.key === 'Content-Security-Policy')?.value ?? '';

@@ -25,6 +25,7 @@ export type Profile = {
   suspended_at: string | null;
   suspension_reason: string | null;
   deletion_requested_at: string | null;
+  avatar_path: string | null;
   created_at: string;
 }
 
@@ -230,6 +231,7 @@ export type Database = {
           public_display_name?: string | null; public_attribution?: string | null;
           community_standards_accepted_at?: string | null; community_standards_version?: number | null;
           suspended_at?: string | null; suspension_reason?: string | null; deletion_requested_at?: string | null;
+          avatar_path?: string | null;
           created_at?: string;
         };
         Update: {
@@ -240,6 +242,7 @@ export type Database = {
           public_display_name?: string | null; public_attribution?: string | null;
           community_standards_accepted_at?: string | null; community_standards_version?: number | null;
           suspended_at?: string | null; suspension_reason?: string | null; deletion_requested_at?: string | null;
+          avatar_path?: string | null;
           created_at?: string;
         };
         Relationships: [];

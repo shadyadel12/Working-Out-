@@ -35,6 +35,7 @@ interface AuthState {
   subscription: SubscriptionInfo | null; // players only
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
 }
 
@@ -120,6 +121,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTeamMembership(null);
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    if (!session?.user.id) return;
+    setProfile(await getMyProfile(session.user.id));
+  }, [session]);
+
   const refreshSubscription = useCallback(async () => {
     if (session?.user.id && profile?.role === 'player') {
       setSubscription(await getMySubscription(session.user.id));
@@ -153,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         subscription,
         loading,
         signOut,
+        refreshProfile,
         refreshSubscription,
       }}
     >

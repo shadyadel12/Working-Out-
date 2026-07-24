@@ -2128,6 +2128,7 @@ export type Database = {
           suspended_at: string | null
           suspension_reason: string | null
           deletion_requested_at: string | null
+          avatar_path: string | null
           role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
@@ -2142,6 +2143,7 @@ export type Database = {
           suspended_at?: string | null
           suspension_reason?: string | null
           deletion_requested_at?: string | null
+          avatar_path?: string | null
           role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
@@ -2156,6 +2158,7 @@ export type Database = {
           suspended_at?: string | null
           suspension_reason?: string | null
           deletion_requested_at?: string | null
+          avatar_path?: string | null
           role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
