@@ -340,6 +340,18 @@ const ar: Record<string, string> = {
 // Keep new product areas translatable without coupling every component to i18n.
 // Exact phrases are preferred so Arabic copy remains natural and contextual.
 Object.assign(ar, {
+  "Account & Privacy": "الحساب والخصوصية",
+  "Privacy Policy": "سياسة الخصوصية",
+  "Community Standards": "معايير المجتمع",
+  "Public Library Moderation": "إدارة المكتبة العامة",
+  "All Public Items": "كل العناصر العامة",
+  "Your Public Items": "عناصرك العامة",
+  "Your Private Items": "عناصرك الخاصة",
+  Drafts: "المسودات", Search: "بحث", "All sources": "كل المصادر",
+  "Newest first": "الأحدث أولاً", "Name A-Z": "الاسم من أ إلى ي",
+  Report: "إبلاغ", "Block creator": "حظر المنشئ", Severity: "الخطورة",
+  Reports: "البلاغات", Audit: "سجل الإجراءات", Restore: "استعادة", Hide: "إخفاء", Remove: "إزالة",
+  "Coaching Access": "صلاحية التدريب", "Coaching access key": "مفتاح صلاحية التدريب",
   "Actions": "الإجراءات", "Admin — Keys": "الإدارة — المفاتيح", "Analysis": "التحليل",
   "Archive": "أرشفة", "Archived": "مؤرشف", "Arrangement": "الترتيب", "Draft": "مسودة",
   "Published": "منشور", "Publish": "نشر", "Private": "خاص", "Created": "تاريخ الإنشاء",

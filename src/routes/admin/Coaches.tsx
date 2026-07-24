@@ -43,7 +43,7 @@ export default function AdminCoaches() {
       <CoachKeysSection />
 
       <div className="card stack">
-        <strong>Issue a player subscription key</strong>
+        <strong>Issue a player coaching access key</strong>
         <p className="muted" style={{ fontSize: '0.85rem', margin: 0 }}>
           Create a key for a coach, then give it to the player to sign up with.
         </p>

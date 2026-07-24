@@ -38,7 +38,7 @@ export default function PlayerSignup() {
       <form className="card stack" style={{ width: '100%', maxWidth: 400 }} onSubmit={handleSubmit}>
         <h2>Player sign up</h2>
         <p className="muted" style={{ marginTop: '-0.5rem', fontSize: '0.85rem' }}>
-          Enter the subscription key your coach gave you.
+          Enter the coaching access key your coach gave you.
         </p>
         <div className="field">
           <label htmlFor="player-signup-name">Name</label>

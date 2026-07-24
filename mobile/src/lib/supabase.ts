@@ -48,4 +48,14 @@ export const supabase = createClient(url, key, {
   },
 });
 
+/** Remove every locally persisted account/navigation value after account deletion. */
+export async function clearMobileLocalData() {
+  await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+  await AsyncStorage.clear();
+  if (Platform.OS !== 'web') {
+    const projectHost = new URL(url).hostname.split('.')[0];
+    await SecureStore.deleteItemAsync(`sb-${projectHost}-auth-token`).catch(() => undefined);
+  }
+}
+
 if (Platform.OS !== 'web') AppState.addEventListener('change', (state) => state === 'active' ? supabase.auth.startAutoRefresh() : supabase.auth.stopAutoRefresh());

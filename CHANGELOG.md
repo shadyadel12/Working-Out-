@@ -1,5 +1,26 @@
 # App Updates
 
+## July 24, 2026
+
+### New Features
+
+- Added a complete Trainova Privacy Policy, Community Standards, public support details, and in-app account deletion on the website and mobile app.
+- Public creators now confirm a safe display name, content ownership, required attribution, and the Community Standards before publishing.
+- Coaches can block public creators, and chat participants can report messages or block new messages while existing coaching records remain available.
+- Administrators can act directly on detailed safety reports, restore content, and suspend accounts when necessary.
+
+### Improvements
+
+- Coaching access wording is clearer and no longer looks like an App Store subscription.
+- Mobile branding, icon, splash screen, permission explanations, and privacy details are prepared for the Trainova store release.
+- Arabic labels were expanded for public libraries, reports, moderation, privacy, and coaching access.
+
+### Security
+
+- Public content is checked on the server and unsafe content is quarantined instead of being published.
+- Account deletion requires recent sign-in or administrator verification, removes the account, cleans private files, and keeps only limited anonymous safety records when required.
+- Public creator names no longer reveal email addresses, and blocked creators are hidden by database access rules.
+
 ## July 23, 2026
 
 ### New Features

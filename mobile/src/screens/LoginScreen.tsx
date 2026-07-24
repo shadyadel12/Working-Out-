@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabase";
 import { colors } from "../theme";
 import TermsScreen from "./legal/TermsScreen";
 import UpdatesScreen from "./legal/UpdatesScreen";
+import { CommunityStandardsScreen, PrivacyScreen, SupportScreen } from './LegalUpdatesScreen';
 import { localizeTree, tr, useLanguage } from "../i18n/MobileLanguage";
 
 export default function LoginScreen() {
@@ -25,7 +26,7 @@ export default function LoginScreen() {
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [publicPage, setPublicPage] = useState<"terms" | "updates" | null>(
+  const [publicPage, setPublicPage] = useState<"terms" | "privacy" | "standards" | "support" | "updates" | null>(
     null,
   );
   async function submit() {
@@ -96,6 +97,9 @@ export default function LoginScreen() {
     return <TermsScreen back={() => setPublicPage(null)} />;
   if (publicPage === "updates")
     return <UpdatesScreen back={() => setPublicPage(null)} />;
+  if (publicPage === "privacy") return <PrivacyScreen back={() => setPublicPage(null)} />;
+  if (publicPage === "standards") return <CommunityStandardsScreen back={() => setPublicPage(null)} />;
+  if (publicPage === "support") return <SupportScreen back={() => setPublicPage(null)} />;
   return (
     <SafeAreaView style={styles.page}>
       <View style={[styles.card, language === "ar" && styles.rtl]}>
@@ -161,7 +165,7 @@ export default function LoginScreen() {
                     ? team
                       ? "Team invitation key"
                       : "Coach invitation key"
-                    : "Subscription key"
+                    : "Coaching access key"
                 }
                 placeholderTextColor={colors.muted}
                 autoCapitalize="characters"
@@ -206,6 +210,9 @@ export default function LoginScreen() {
               <Pressable onPress={() => setPublicPage("terms")}>
                 <Text style={styles.link}>Terms of Use</Text>
               </Pressable>
+              <Pressable onPress={() => setPublicPage("privacy")}><Text style={styles.link}>Privacy Policy</Text></Pressable>
+              <Pressable onPress={() => setPublicPage("standards")}><Text style={styles.link}>Community Standards</Text></Pressable>
+              <Pressable onPress={() => setPublicPage("support")}><Text style={styles.link}>Support</Text></Pressable>
             </View>
           </>,
           language,

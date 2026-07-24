@@ -18,6 +18,13 @@ export type Profile = {
   role: UserRole;
   email: string;
   name: string | null;
+  public_display_name: string | null;
+  public_attribution: string | null;
+  community_standards_accepted_at: string | null;
+  community_standards_version: number | null;
+  suspended_at: string | null;
+  suspension_reason: string | null;
+  deletion_requested_at: string | null;
   created_at: string;
 }
 
@@ -220,6 +227,9 @@ export type Database = {
           role?: UserRole;
           email: string;
           name?: string | null;
+          public_display_name?: string | null; public_attribution?: string | null;
+          community_standards_accepted_at?: string | null; community_standards_version?: number | null;
+          suspended_at?: string | null; suspension_reason?: string | null; deletion_requested_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -227,6 +237,9 @@ export type Database = {
           role?: UserRole;
           email?: string;
           name?: string | null;
+          public_display_name?: string | null; public_attribution?: string | null;
+          community_standards_accepted_at?: string | null; community_standards_version?: number | null;
+          suspended_at?: string | null; suspension_reason?: string | null; deletion_requested_at?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -683,8 +696,14 @@ export type Database = {
         Returns: { daysCreated: number; mealsCreated: number; foodsCreated: number };
       };
       publish_catalog_item: { Args: { p_table: string; p_id: string; p_visibility: CatalogVisibility }; Returns: number };
+      publish_catalog_item_compliant: { Args: { p_table:string;p_id:string;p_visibility:CatalogVisibility;p_display_name?:string|null;p_public_attribution?:string|null;p_accept_standards?:boolean;p_ownership?:string|null;p_source_url?:string|null;p_source_license?:string|null;p_source_attribution?:string|null }; Returns:number };
       copy_public_catalog_item: { Args: { p_table: string; p_id: string }; Returns: string };
       report_catalog_item: { Args: { p_table: string; p_id: string; p_reason: string }; Returns: string };
+      report_catalog_item_compliant: { Args:{p_table:string;p_id:string;p_reason_code:string;p_details?:string|null};Returns:string };
+      report_ugc: { Args:{p_type:string;p_id:string;p_reason:string;p_details?:string|null};Returns:string };
+      block_user: { Args:{p_user:string;p_scope?:string;p_reason?:string|null};Returns:undefined };
+      moderate_user_account: { Args:{p_user:string;p_suspend:boolean;p_reason:string};Returns:undefined };
+      begin_account_deletion: { Args:{p_actor_hash:string};Returns:Array<{provider:string;object_key:string}> };
       moderate_catalog_item: { Args: { p_table: string; p_id: string; p_status: CatalogModerationStatus; p_reason: string }; Returns: undefined };
     };
     Enums: {

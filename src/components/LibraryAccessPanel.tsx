@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  blockPublicCreator,
   copyCatalogItem,
   itemsForTab,
   listPublicLibrary,
@@ -86,9 +87,10 @@ export default function LibraryAccessPanel({
   });
   const report = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      reportCatalogItem(kind, id, reason),
+      reportCatalogItem(kind, id, 'other', reason),
     onSuccess: () => window.alert(rtl ? "تم إرسال البلاغ." : "Report sent."),
   });
+  const block = useMutation({ mutationFn: blockPublicCreator, onSuccess: refresh });
   const all = query.data ?? [];
   const counts = {
     "all-public": itemsForTab(all, "all-public", coachId).length,
@@ -172,6 +174,7 @@ export default function LibraryAccessPanel({
                   {item.category && <>{item.category} · </>}
                   {t.creator}: {item.creatorName} · v{item.revision}
                 </small>
+                {item.creatorAttribution && item.creatorAttribution !== item.creatorName && <small>{item.creatorAttribution}</small>}
                 {item.sourceProvider && (
                   <small>
                     {t.source}: {item.sourceProvider}
@@ -241,6 +244,7 @@ export default function LibraryAccessPanel({
                     >
                       {t.report}
                     </button>
+                    <button className="secondary" disabled={block.isPending} onClick={() => window.confirm('Hide all public content from this creator?') && block.mutate(item.coachId)}>{rtl ? 'حظر المنشئ' : 'Block creator'}</button>
                   </>
                 )}
               </div>

@@ -12,6 +12,7 @@ import LoginScreen from "../screens/LoginScreen";
 import ProgramScreen from "../screens/player/ProgramScreen";
 import DietScreen from "../screens/player/DietScreen";
 import AccountScreen from "../screens/admin/AccountScreen";
+import AccountPrivacyScreen from '../screens/legal/AccountPrivacyScreen';
 import ChatScreen from "../screens/shared/ChatScreen";
 import { colors } from "../theme";
 import MfaScreen from "../screens/MfaScreen";
@@ -109,7 +110,10 @@ function PlayerTabs() {
     void check();
   }, [session]);
   if (active === null) return <MobileLoading variant="player" />;
-  if (!active) return <RenewSubscriptionScreen onRenewed={check} />;
+  if (!active) return <Tabs.Navigator screenOptions={adaptiveTabOptions}>
+    <Tabs.Screen name="Coaching access" options={{ tabBarIcon: tabIcon(KeyRound) }}>{() => <RenewSubscriptionScreen onRenewed={check} />}</Tabs.Screen>
+    <Tabs.Screen name="Account" component={AccountPrivacyScreen} options={{ tabBarIcon: tabIcon(UserRound) }} />
+  </Tabs.Navigator>;
   return (
     <Tabs.Navigator screenOptions={adaptiveTabOptions}>
       <Tabs.Screen
@@ -160,6 +164,7 @@ function PlayerTabs() {
           tabBarIcon: tabIcon(MessageCircle),
         }}
       />
+      <Tabs.Screen name="Account" component={AccountPrivacyScreen} options={{ tabBarLabel: tabLabel(tr('Account', language)), tabBarIcon: tabIcon(UserRound) }} />
     </Tabs.Navigator>
   );
 }

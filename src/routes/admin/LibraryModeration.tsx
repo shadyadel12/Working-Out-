@@ -5,6 +5,7 @@ import {
   listModerationItems,
   listModerationReports,
   moderateCatalogItem,
+  moderateUserAccount,
   type PublicLibraryKind,
 } from "../../api/publicLibrary";
 
@@ -52,6 +53,18 @@ export default function LibraryModeration() {
         : window.prompt("Reason for this moderation action?");
     if (reason) moderate.mutate({ id, status, reason });
   };
+  const tableKinds: Record<string, PublicLibraryKind> = { exercise_library:'exercises',workout_templates:'workouts',food_items:'ingredients',dishes:'recipes',menu_templates:'meal-plans' };
+  async function actOnReport(report: any, status: 'hidden'|'removed'|'visible') {
+    const reason = window.prompt('Moderation reason / escalation note:', report.details || report.reason_code || report.reason) || '';
+    if (!reason) return;
+    await moderateCatalogItem(tableKinds[report.entity_type], report.entity_id, status, reason);
+    await qc.invalidateQueries({ queryKey: ['catalog-reports'] });
+    await qc.invalidateQueries({ queryKey: ['moderation-items'] });
+  }
+  async function suspendOwner(report: any) {
+    const reason=window.prompt('Suspension reason and escalation note:'); if(!reason||!report.owner_id)return;
+    await moderateUserAccount(report.owner_id,true,reason); await qc.invalidateQueries({queryKey:['catalog-reports']});
+  }
   return (
     <div className="catalog-page">
       <header className="catalog-heading">
@@ -143,6 +156,7 @@ export default function LibraryModeration() {
                   <th>Item</th>
                   <th>Reason</th>
                   <th>Status</th>
+                  <th>Severity</th><th>Owner / preview</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,8 +165,11 @@ export default function LibraryModeration() {
                     <td>{new Date(x.created_at).toLocaleString()}</td>
                     <td>{x.entity_type}</td>
                     <td>{x.entity_id}</td>
-                    <td>{x.reason}</td>
+                    <td>{x.reason_code ?? x.reason}{x.details ? ` — ${x.details}` : ''}</td>
                     <td>{x.status}</td>
+                    <td>{x.severity ?? 'normal'}{x.acknowledged_at ? ' · acknowledged' : ''}</td>
+                    <td>{x.owner_preview ?? x.owner_id ?? 'Deleted user'}<small style={{display:'block'}}>{x.item_preview?.name ?? x.item_preview?.title ?? ''}</small></td>
+                    <td className="library-actions"><button className="secondary" onClick={()=>void actOnReport(x,'hidden')}>Hide</button><button className="danger" onClick={()=>void actOnReport(x,'removed')}>Remove</button><button onClick={()=>void actOnReport(x,'visible')}>Restore / dismiss</button><button className="danger" onClick={()=>void suspendOwner(x)}>Suspend user</button></td>
                   </tr>
                 ))}
               </tbody>

@@ -24,6 +24,8 @@ const config: Record<Kind, { table: string; title: string }> = {
   "meal-plans": { table: "menu_templates", title: "title" },
 };
 const ar = {
+  search: "بحث", sources: "كل المصادر", newest: "الأحدث أولاً", name: "الاسم من أ إلى ي", block: "حظر المنشئ",
+  publishConfirm: "تأكيد النشر العام", displayName: "اسم العرض العام (ليس بريداً إلكترونياً)", accept: "أوافق على معايير المجتمع وسلامة التدريب وحقوق الملكية وقواعد الإزالة.",
   title: "المكتبات العامة والخاصة",
   all: "كل العناصر العامة",
   minePublic: "عناصرك العامة",
@@ -37,6 +39,8 @@ const ar = {
   send: "إرسال البلاغ",
 };
 const en = {
+  search: "Search", sources: "All sources", newest: "Newest first", name: "Name A-Z", block: "BLOCK CREATOR",
+  publishConfirm: "Public publishing confirmation", displayName: "Public display name (not an email)", accept: "I accept the Community Standards, fitness safety, ownership and takedown rules.",
   title: "Private & Public Libraries",
   all: "All Public Items",
   minePublic: "Your Public Items",
@@ -53,6 +57,7 @@ export default function PublicLibrariesScreen() {
   const { session } = useAuth();
   const { language } = useLanguage();
   const t = language === "ar" ? ar : en;
+  const kindLabels: Record<Kind,string> = language === 'ar' ? { exercises:'التمارين',workouts:'الحصص التدريبية',ingredients:'المكونات',recipes:'الوصفات','meal-plans':'خطط الوجبات' } : { exercises:'Exercises',workouts:'Workouts',ingredients:'Ingredients',recipes:'Recipes','meal-plans':'Meal plans' };
   const coachId = session!.user.id;
   const [kind, setKind] = useState<Kind>("exercises");
   const [tab, setTab] = useState<Tab>("all-public");
@@ -62,6 +67,15 @@ export default function PublicLibrariesScreen() {
   const [sort, setSort] = useState<"newest" | "name">("newest");
   const [reportId, setReportId] = useState("");
   const [reason, setReason] = useState("");
+  const [reasonCode, setReasonCode] = useState('abuse');
+  const [publishId, setPublishId] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [publicAttribution, setPublicAttribution] = useState('');
+  const [ownership, setOwnership] = useState<'original'|'licensed'|'linked'>('original');
+  const [accepted, setAccepted] = useState(false);
+  const [sourceUrl, setSourceUrl] = useState('');
+  const [sourceLicense, setSourceLicense] = useState('');
+  const [sourceAttribution, setSourceAttribution] = useState('');
   async function load() {
     setRows(null);
     const { data, error } = await (
@@ -138,7 +152,7 @@ export default function PublicLibrariesScreen() {
             onPress={() => setKind(x)}
             style={[styles.chip, kind === x && styles.on]}
           >
-            <Text style={styles.chipText}>{x}</Text>
+            <Text style={styles.chipText}>{kindLabels[x]}</Text>
           </Pressable>
         ))}
       </View>
@@ -162,13 +176,13 @@ export default function PublicLibrariesScreen() {
           </Pressable>
         ))}
       </View>
-      <Input value={search} onChangeText={setSearch} placeholder="Search" />
+      <Input value={search} onChangeText={setSearch} placeholder={t.search} />
       <View style={[styles.wrap, language === "ar" && styles.rtl]}>
         <Pressable
           onPress={() => setSource("")}
           style={[styles.chip, !source && styles.on]}
         >
-          <Text style={styles.chipText}>All sources</Text>
+          <Text style={styles.chipText}>{t.sources}</Text>
         </Pressable>
         {[
           ...new Set(
@@ -190,7 +204,7 @@ export default function PublicLibrariesScreen() {
           style={styles.chip}
         >
           <Text style={styles.chipText}>
-            {sort === "newest" ? "Newest first" : "Name A-Z"}
+            {sort === "newest" ? t.newest : t.name}
           </Text>
         </Pressable>
       </View>
@@ -208,6 +222,7 @@ export default function PublicLibrariesScreen() {
               {item.creator_name || "Trainova coach"} · v{item.revision ?? 1}
               {item.source_provider ? ` · ${item.source_provider}` : ""}
             </Text>
+            {item.creator_attribution && item.creator_attribution !== item.creator_name ? <Text style={[textStyles.muted, language === 'ar' && styles.right]}>{item.creator_attribution}</Text> : null}
             {item.source_attribution ? (
               <Text
                 style={[textStyles.muted, language === "ar" && styles.right]}
@@ -220,23 +235,18 @@ export default function PublicLibrariesScreen() {
                 <Button
                   secondary
                   onPress={() =>
-                    rpc("publish_catalog_item", {
+                    rpc("publish_catalog_item_compliant", {
                       p_table: config[kind].table,
                       p_id: item.id,
                       p_visibility: "private",
+                      p_display_name: null,p_public_attribution:null,p_accept_standards:false,p_ownership:null,p_source_url:null,p_source_license:null,p_source_attribution:null,
                     })
                   }
                 >
                   {t.private}
                 </Button>
                 <Button
-                  onPress={() =>
-                    rpc("publish_catalog_item", {
-                      p_table: config[kind].table,
-                      p_id: item.id,
-                      p_visibility: "public",
-                    })
-                  }
+                  onPress={() => setPublishId(publishId === item.id ? '' : item.id)}
                 >
                   {t.public}
                 </Button>
@@ -256,10 +266,21 @@ export default function PublicLibrariesScreen() {
                 <Button secondary onPress={() => setReportId(item.id)}>
                   {t.report}
                 </Button>
+                <Button secondary onPress={() => Alert.alert(language==='ar'?'حظر المنشئ؟':'Block creator?', language==='ar'?'سيتم إخفاء محتواه العام عنك.':'Their public catalog content will be hidden for you.', [{text:language==='ar'?'إلغاء':'Cancel',style:'cancel'},{text:language==='ar'?'حظر':'Block',style:'destructive',onPress:()=>void rpc('block_user',{p_user:item.coach_id,p_scope:'catalog',p_reason:'Hidden from mobile public library'})}])}>{t.block}</Button>
               </>
             )}
+            {publishId === item.id ? <Card>
+              <Text style={textStyles.heading}>{t.publishConfirm}</Text>
+              <Input value={displayName} onChangeText={setDisplayName} placeholder={t.displayName} />
+              <Input value={publicAttribution} onChangeText={setPublicAttribution} placeholder={language==='ar'?'نسب المحتوى العام':'Public attribution / credit'} />
+              <View style={styles.wrap}>{(['original','licensed','linked'] as const).map(value => <Pressable key={value} onPress={()=>setOwnership(value)} style={[styles.chip,ownership===value&&styles.on]}><Text style={styles.chipText}>{value}</Text></Pressable>)}</View>
+              {ownership !== 'original' ? <><Input value={sourceUrl} onChangeText={setSourceUrl} placeholder="Source URL" /><Input value={sourceLicense} onChangeText={setSourceLicense} placeholder="License or permission" /><Input value={sourceAttribution} onChangeText={setSourceAttribution} placeholder="Public attribution" /></> : null}
+              <Pressable onPress={()=>setAccepted(value=>!value)}><Text style={textStyles.body}>{accepted?'☑':'☐'} {t.accept}</Text></Pressable>
+              <Button disabled={!displayName.trim()||!publicAttribution.trim()||!accepted||(ownership!=='original'&&(!sourceUrl.trim()||!sourceLicense.trim()||!sourceAttribution.trim()))} onPress={()=>void rpc('publish_catalog_item_compliant',{p_table:config[kind].table,p_id:item.id,p_visibility:'public',p_display_name:displayName.trim(),p_public_attribution:publicAttribution.trim(),p_accept_standards:true,p_ownership:ownership,p_source_url:sourceUrl||null,p_source_license:sourceLicense||null,p_source_attribution:sourceAttribution||null})}>CONFIRM PUBLICATION</Button>
+            </Card> : null}
             {reportId === item.id ? (
               <>
+                <View style={styles.wrap}>{['abuse','dangerous_content','sexual_content','violence','spam','malicious_link','copyright','privacy','duplicate','other'].map(value=><Pressable key={value} onPress={()=>setReasonCode(value)} style={[styles.chip,reasonCode===value&&styles.on]}><Text style={styles.chipText}>{value.replace('_',' ')}</Text></Pressable>)}</View>
                 <Input
                   value={reason}
                   onChangeText={setReason}
@@ -268,11 +289,11 @@ export default function PublicLibrariesScreen() {
                 />
                 <Button
                   onPress={() => {
-                    if (reason.trim().length < 3) return;
-                    void rpc("report_catalog_item", {
+                    void rpc("report_catalog_item_compliant", {
                       p_table: config[kind].table,
                       p_id: item.id,
-                      p_reason: reason.trim(),
+                      p_reason_code: reasonCode,
+                      p_details: reason.trim() || null,
                     });
                     setReason("");
                     setReportId("");

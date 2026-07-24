@@ -62,6 +62,11 @@ export default function AdminLibraryModerationScreen() {
     if (error) Alert.alert("Could not moderate", error.message);
     else void load();
   }
+  async function actOnReport(report: any, status: 'hidden'|'removed'|'visible') {
+    const { error }=await (supabase.rpc as any)('moderate_catalog_item',{p_table:report.entity_type,p_id:report.entity_id,p_status:status,p_reason:`${status} from report ${report.id}`});
+    if(error) Alert.alert('Could not moderate',error.message); else void load();
+  }
+  async function suspend(report:any){if(!report.owner_id)return;const{error}=await(supabase.rpc as any)('moderate_user_account',{p_user:report.owner_id,p_suspend:true,p_reason:`Repeat-offender review from report ${report.id}`});if(error)Alert.alert('Could not suspend',error.message);else void load();}
   return (
     <Screen
       title="Library Moderation"
@@ -125,10 +130,12 @@ export default function AdminLibraryModerationScreen() {
             .filter((x) => x.status === "open")
             .map((x) => (
               <Card key={x.id}>
-                <Text style={textStyles.body}>{x.reason}</Text>
+                <Text style={textStyles.heading}>{x.reason_code ?? x.reason} · {x.severity ?? 'normal'}</Text>
+                {x.details ? <Text style={textStyles.body}>{x.details}</Text> : null}
                 <Text style={textStyles.muted}>
                   {x.entity_type} · {x.entity_id}
                 </Text>
+                <Button secondary onPress={()=>actOnReport(x,'hidden')}>HIDE ITEM</Button><Button danger onPress={()=>actOnReport(x,'removed')}>REMOVE ITEM</Button><Button onPress={()=>actOnReport(x,'visible')}>RESTORE / DISMISS</Button><Button danger onPress={()=>suspend(x)}>SUSPEND USER</Button>
               </Card>
             ))}
         </>

@@ -9,6 +9,10 @@ import AppLayout from "./layouts/AppLayout";
 
 import Landing from "./routes/Landing";
 import Terms from "./routes/Terms";
+import Privacy from "./routes/Privacy";
+import CommunityStandards from "./routes/CommunityStandards";
+import SupportInfo from "./routes/SupportInfo";
+import AccountSettings from "./routes/AccountSettings";
 import Changelog from "./routes/Changelog";
 import CoachLogin from "./routes/auth/CoachLogin";
 import PlayerLogin from "./routes/auth/PlayerLogin";
@@ -105,6 +109,7 @@ const coachLinks = [
   { to: "/coach/settings", label: "Settings" },
   { to: "/coach/support", label: "Support", badgeKey: "support" as const },
   { to: "/coach/how-it-works", label: "How It Works" },
+  { to: "/coach/account", label: "Account & Privacy" },
 ];
 const playerLinks = [
   { to: "/player/program", label: "Program" },
@@ -115,6 +120,7 @@ const playerLinks = [
   { to: "/player/chat", label: "Chat", badgeKey: "chat" as const },
   { to: "/player/profile", label: "My Profile" },
   { to: "/player/how-it-works", label: "How It Works" },
+  { to: "/player/account", label: "Account & Privacy" },
 ];
 const adminLinks = [
   { to: "/admin/coaches", label: "Users & Keys" },
@@ -122,6 +128,7 @@ const adminLinks = [
   { to: "/admin/support", label: "Support", badgeKey: "support" as const },
   { to: "/admin/traffic", label: "Traffic" },
   { to: "/admin/how-it-works", label: "How It Works" },
+  { to: "/admin/account", label: "Account & Privacy" },
 ];
 
 export default function App() {
@@ -131,6 +138,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/support" element={<SupportInfo />} />
+          <Route path="/community-standards" element={<CommunityStandards />} />
           <Route path="/changelog" element={<Changelog />} />
           <Route path="/login/coach" element={<CoachLogin />} />
           <Route path="/login/player" element={<PlayerLogin />} />
@@ -322,6 +332,7 @@ export default function App() {
             <Route path="settings" element={<CoachSettings />} />
             <Route path="support" element={<CoachSupport />} />
             <Route path="how-it-works" element={<HowItWorks />} />
+            <Route path="account" element={<AccountSettings />} />
           </Route>
 
           {/* Player */}
@@ -404,6 +415,7 @@ export default function App() {
             />
             <Route path="blocked" element={<Blocked />} />
             <Route path="how-it-works" element={<HowItWorks />} />
+            <Route path="account" element={<AccountSettings />} />
           </Route>
 
           {/* Admin */}
@@ -423,6 +435,7 @@ export default function App() {
             <Route path="support" element={<AdminSupport />} />
             <Route path="traffic" element={<AdminTraffic />} />
             <Route path="how-it-works" element={<HowItWorks />} />
+            <Route path="account" element={<AccountSettings />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

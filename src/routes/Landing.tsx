@@ -155,7 +155,7 @@ export default function Landing() {
     </main>
     <footer className="pulse-footer">
 <span>TRAINOVA · Train · Grow · Achieve.</span>
-<span>© {new Date().getFullYear()} · <Link to="/terms">Terms</Link>
+<span>© {new Date().getFullYear()} · <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <Link to="/support">Support</Link>
 </span>
 </footer>
   </div>;

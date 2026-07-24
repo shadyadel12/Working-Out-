@@ -20,6 +20,7 @@ import { colors } from "../theme";
 import { validateMedia } from "../lib/mediaSecurity";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getPrivateFileUrl, isPrivateFileRef, uploadPrivateUri } from "../api/privateFiles";
+import AccountPrivacyScreen from './legal/AccountPrivacyScreen';
 
 export function ProgressScreen() {
   const { session, profile } = useAuth();
@@ -130,6 +131,7 @@ export function ChatScreen() {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [chatBlocked, setChatBlocked] = useState(false);
   const [threads, setThreads] = useState<any[]>([]);
   const [selected, setSelected] = useState<{
     coachId: string;
@@ -384,6 +386,14 @@ export function ChatScreen() {
     if (error) Alert.alert("Could not open", error.message);
     else await Linking.openURL(data.signedUrl);
   }
+  function messageSafety(message: any) {
+    if (message.sender_id === session!.user.id || !selected) return;
+    Alert.alert('Message safety', 'Report this message or block new messages from this user. Existing coaching records stay available.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Report abuse', onPress: async () => { const { error } = await (supabase.rpc as any)('report_ugc',{p_type:'chat_message',p_id:message.id,p_reason:'abuse',p_details:null}); Alert.alert(error ? 'Could not report' : 'Report received', error?.message ?? 'Thank you. Our safety team can review it.'); } },
+      { text: 'Block', style: 'destructive', onPress: async () => { const otherId=session!.user.id===selected.coachId?selected.playerId:selected.coachId; const { error }=await (supabase.rpc as any)('block_user',{p_user:otherId,p_scope:'chat',p_reason:'Blocked from mobile chat'}); if(error) Alert.alert('Could not block',error.message); else setChatBlocked(true); } },
+    ]);
+  }
   return (
     <Screen title="Chat">
       {!selected && profile?.role === "coach" ? (
@@ -407,7 +417,7 @@ export function ChatScreen() {
             messages.map((message) => (
               <Pressable
                 key={message.id}
-                disabled={!message.attachment_path}
+                onLongPress={() => messageSafety(message)}
                 onPress={() =>
                   message.attachment_path &&
                   openAttachment(message.attachment_path)
@@ -438,14 +448,16 @@ export function ChatScreen() {
             onChangeText={setBody}
             placeholder="Type a message"
             multiline
+            editable={!chatBlocked}
           />
-          <Button onPress={send} disabled={!body.trim() || uploading}>
+          {chatBlocked ? <Text style={textStyles.muted}>This chat is blocked. Existing records remain available.</Text> : null}
+          <Button onPress={send} disabled={chatBlocked || !body.trim() || uploading}>
             SEND
           </Button>
-          <Button secondary onPress={pickMedia} disabled={uploading}>
+          <Button secondary onPress={pickMedia} disabled={chatBlocked || uploading}>
             PHOTO / VIDEO (VIDEO MAX 500 MB)
           </Button>
-          <Button onPress={toggleRecord} disabled={uploading}>
+          <Button onPress={toggleRecord} disabled={chatBlocked || uploading}>
             {recording ? "STOP & SEND" : "RECORD VOICE"}
           </Button>
           {profile?.role === "coach" ? (
@@ -603,18 +615,7 @@ export function AdminScreen() {
   );
 }
 export function AccountScreen() {
-  const { profile, signOut } = useAuth();
-  return (
-    <Screen title="Account">
-      <Card>
-        <Text style={textStyles.heading}>
-          {profile?.name || profile?.email}
-        </Text>
-        <Text style={textStyles.muted}>{profile?.role}</Text>
-        <Button onPress={signOut}>SIGN OUT</Button>
-      </Card>
-    </Screen>
-  );
+  return <AccountPrivacyScreen />;
 }
 const styles = StyleSheet.create({
   stats: { flexDirection: "row", gap: 8 },

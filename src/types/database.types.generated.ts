@@ -1497,7 +1497,7 @@ export type Database = {
       library_audit_events: {
         Row: {
           action: string
-          actor_id: string
+          actor_id: string | null
           after_state: Json | null
           before_state: Json | null
           coach_id: string
@@ -1508,7 +1508,7 @@ export type Database = {
         }
         Insert: {
           action: string
-          actor_id: string
+          actor_id?: string | null
           after_state?: Json | null
           before_state?: Json | null
           coach_id: string
@@ -1519,7 +1519,7 @@ export type Database = {
         }
         Update: {
           action?: string
-          actor_id?: string
+          actor_id?: string | null
           after_state?: Json | null
           before_state?: Json | null
           coach_id?: string
@@ -2121,6 +2121,13 @@ export type Database = {
           email: string
           id: string
           name: string | null
+          public_display_name: string | null
+          public_attribution: string | null
+          community_standards_accepted_at: string | null
+          community_standards_version: number | null
+          suspended_at: string | null
+          suspension_reason: string | null
+          deletion_requested_at: string | null
           role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
@@ -2128,6 +2135,13 @@ export type Database = {
           email: string
           id: string
           name?: string | null
+          public_display_name?: string | null
+          public_attribution?: string | null
+          community_standards_accepted_at?: string | null
+          community_standards_version?: number | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
+          deletion_requested_at?: string | null
           role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
@@ -2135,6 +2149,13 @@ export type Database = {
           email?: string
           id?: string
           name?: string | null
+          public_display_name?: string | null
+          public_attribution?: string | null
+          community_standards_accepted_at?: string | null
+          community_standards_version?: number | null
+          suspended_at?: string | null
+          suspension_reason?: string | null
+          deletion_requested_at?: string | null
           role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
@@ -3286,6 +3307,14 @@ export type Database = {
       has_active_subscription: { Args: { p_player: string }; Returns: boolean }
       is_my_player: { Args: { p_player: string }; Returns: boolean }
       mark_player_video_viewed: { Args: { p_log_id: string }; Returns: string }
+      begin_account_deletion: { Args: { p_actor_hash: string }; Returns: { provider: string; object_key: string }[] }
+      block_user: { Args: { p_user: string; p_scope?: string; p_reason?: string | null }; Returns: undefined }
+      copy_public_catalog_item: { Args: { p_table: string; p_id: string }; Returns: string }
+      moderate_catalog_item: { Args: { p_table: string; p_id: string; p_status: Database["public"]["Enums"]["catalog_moderation_status"]; p_reason: string }; Returns: undefined }
+      moderate_user_account: { Args: { p_user: string; p_suspend: boolean; p_reason: string }; Returns: undefined }
+      publish_catalog_item_compliant: { Args: { p_table: string; p_id: string; p_visibility: Database["public"]["Enums"]["catalog_visibility"]; p_display_name?: string | null; p_public_attribution?: string | null; p_accept_standards?: boolean; p_ownership?: string | null; p_source_url?: string | null; p_source_license?: string | null; p_source_attribution?: string | null }; Returns: number }
+      report_catalog_item_compliant: { Args: { p_table: string; p_id: string; p_reason_code: string; p_details?: string | null }; Returns: string }
+      report_ugc: { Args: { p_type: string; p_id: string; p_reason: string; p_details?: string | null }; Returns: string }
       publish_library_item: {
         Args: { p_id: string; p_table: string }
         Returns: number
@@ -3399,6 +3428,10 @@ export type Database = {
     }
     Enums: {
       catalog_lifecycle: "draft" | "published" | "archived"
+      catalog_visibility: "private" | "public"
+      catalog_moderation_status: "visible" | "hidden" | "removed"
+      catalog_report_status: "open" | "reviewing" | "resolved" | "dismissed"
+      catalog_sync_status: "never" | "running" | "ok" | "failed" | "quarantined" | "disabled"
       catalog_share_mode: "private" | "workspace"
       day_type: "training" | "rest"
       delivery_status: "scheduled" | "active" | "complete" | "cancelled"

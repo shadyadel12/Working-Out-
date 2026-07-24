@@ -15,7 +15,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
   const { theme, setTheme } = useLanguage();
   const isCoach = profile?.role === 'coach';
   const visibleLinks = !teamMembership ? links : links.filter((link) => {
-    if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support' || link.label === 'How It Works') return true;
+    if (link.label === 'Dashboard' || link.label === 'Settings' || link.label === 'Support' || link.label === 'How It Works' || link.label === 'Account & Privacy') return true;
     if (link.group === 'library') return false;
     if (link.label === 'Messages') return teamMembership.role === 'chat' || teamMembership.role === 'head_coach';
     if (link.label === 'Check-ups') return teamMembership.role !== 'sales';
@@ -90,7 +90,7 @@ export default function AppLayout({ links }: { links: NavLink_[] }) {
         <div className="topbar-account"><span className="muted topbar-user">{profile?.name ?? profile?.email}</span>{!isCoach && themeToggle}<button className="secondary" onClick={handleSignOut}><LogOut size={17} /><span>Sign out</span></button></div>
       </header>
       <main className="container"><Outlet /></main>
-      <footer>© {new Date().getFullYear()} Trainova. All rights reserved. · <a href="/terms">Terms of Use</a></footer>
+      <footer>© {new Date().getFullYear()} Trainova · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/community-standards">Community Standards</a> · <a href="/support">Support</a></footer>
     </div>
   </div>;
 }
@@ -106,6 +106,7 @@ function iconFor(label: string): LucideIcon {
     'Users & Keys': KeyRound,
     Traffic: Activity,
     'How It Works': Box,
+    'Account & Privacy': UserRound,
   };
   return icons[label] ?? NotebookTabs;
 }

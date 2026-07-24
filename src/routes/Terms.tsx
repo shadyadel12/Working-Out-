@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { COMMUNITY_STANDARDS_URL, PRIVACY_URL, SUPPORT_EMAIL, SUPPORT_URL } from '../config/legal';
 
 export default function Terms() {
   const year = new Date().getFullYear();
@@ -33,15 +34,17 @@ export default function Terms() {
         <section>
           <h2>3. User Data</h2>
           <p>
-            All workout programs, logs, and personal data belong to the respective users.
-            We do not sell or share your data with third parties.
+            Users retain rights in their own content. Trainova does not sell personal data. We use
+            service providers such as Supabase, Cloudflare/R2, Vercel, Expo/EAS, and VirusTotal where
+            applicable to operate and secure the service. Their access is limited to processing for
+            those purposes. See the <a href={PRIVACY_URL}>Privacy Policy</a>.
           </p>
         </section>
 
         <section>
           <h2>4. Accounts &amp; Access</h2>
           <p>
-            Access to this platform requires a valid subscription key issued by an administrator.
+            Access to coaching requires a valid coaching access key issued by an administrator or coach.
             Sharing, transferring, or selling your account or key is strictly prohibited.
           </p>
         </section>
@@ -54,8 +57,10 @@ export default function Terms() {
           </p>
         </section>
 
+        <section><h2>6. Public content and conduct</h2><p>Public catalog publishers confirm that content is original, licensed, or lawfully linked and provide required attribution. Users must follow the <a href={COMMUNITY_STANDARDS_URL}>Community Standards</a>. Trainova may filter, quarantine, hide, remove, restore, or investigate content and accounts to protect users and rights holders.</p></section>
+
         <section>
-          <h2>6. Changes to These Terms</h2>
+          <h2>7. Changes to These Terms</h2>
           <p>
             We reserve the right to update these terms at any time. Continued use of the platform
             after changes constitutes acceptance of the updated terms.
@@ -63,9 +68,9 @@ export default function Terms() {
         </section>
 
         <section>
-          <h2>7. Contact</h2>
+          <h2>8. Contact</h2>
           <p>
-            For permissions or inquiries, contact us through your coach or platform administrator.
+            Support, privacy, and copyright/takedown inquiries: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Public support: <a href={SUPPORT_URL}>{SUPPORT_URL}</a>.
           </p>
         </section>
       </div>

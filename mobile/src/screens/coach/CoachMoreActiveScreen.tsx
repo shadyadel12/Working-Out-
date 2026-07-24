@@ -17,11 +17,12 @@ import CoachSupportScreen from "./CoachSupportScreen";
 import TermsScreen from "../legal/TermsScreen";
 import UpdatesScreen from "../legal/UpdatesScreen";
 import * as Clipboard from "expo-clipboard";
+import AccountPrivacyScreen from '../legal/AccountPrivacyScreen';
 
 type Page =
   "menu" | "subs" | "team" | "support" | "account" | "terms" | "updates";
 const pages: [Page, string, string][] = [
-  ["subs", "Subscriptions", "VIP, renewals and player keys"],
+  ["subs", "Coaching Access", "VIP, renewals and player access keys"],
   ["team", "Team", "Invite staff and manage roles"],
   ["support", "Admin Support", "Message the admin team"],
   ["updates", "Features & Updates", "See what the app can do"],
@@ -47,6 +48,7 @@ export default function CoachMoreActiveScreen() {
     );
   if (page === "terms") return <TermsScreen back={() => setPage("menu")} />;
   if (page === "updates") return <UpdatesScreen back={() => setPage("menu")} />;
+  if (page === "account") return <AccountPrivacyScreen />;
   return (
     <Screen
       title={
@@ -71,8 +73,6 @@ export default function CoachMoreActiveScreen() {
         <Subscriptions />
       ) : page === "team" ? (
         <CoachTeam />
-      ) : page === "account" ? (
-        <Account />
       ) : null}
     </Screen>
   );
@@ -263,18 +263,6 @@ function Subscriptions() {
         ))
       )}
     </>
-  );
-}
-function Account() {
-  const { profile, signOut } = useAuth();
-  return (
-    <Card>
-      <Text style={textStyles.heading}>{profile?.name || profile?.email}</Text>
-      <Text style={textStyles.muted}>{profile?.email}</Text>
-      <Button danger onPress={signOut}>
-        SIGN OUT
-      </Button>
-    </Card>
   );
 }
 const styles = StyleSheet.create({

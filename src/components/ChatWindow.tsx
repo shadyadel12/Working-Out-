@@ -12,6 +12,7 @@ import { useMarkReadOnMount } from '../hooks/useUnreadCounts';
 import LoadingSkeleton from './LoadingSkeleton';
 import ChatAttachment from './chat/ChatAttachment';
 import { Mic, Plus, Send, Smile, Square } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function ChatWindow({
   coachId,
@@ -28,6 +29,7 @@ export default function ChatWindow({
   const [recording, setRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -206,6 +208,10 @@ export default function ChatWindow({
                 <div style={{ fontSize: '0.68rem', opacity: 0.65, marginTop: '0.25rem', textAlign: 'right' }}>
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
+                {!mine && <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                  <button className="secondary" style={{ fontSize: '0.68rem', padding: '2px 6px' }} onClick={async () => { const reason = window.prompt('Reason: abuse, dangerous_content, sexual_content, violence, spam, malicious_link, copyright, privacy, or other', 'abuse')?.trim(); if (!reason || !['abuse','dangerous_content','sexual_content','violence','spam','malicious_link','copyright','privacy','other'].includes(reason)) return; const details = window.prompt('Optional details:', '') ?? ''; const { error } = await (supabase.rpc as any)('report_ugc',{p_type:'chat_message',p_id:msg.id,p_reason:reason,p_details:details||null}); alert(error ? error.message : 'Report received.'); }}>Report</button>
+                  <button className="secondary" style={{ fontSize: '0.68rem', padding: '2px 6px' }} onClick={async () => { if (!confirm('Block this user from sending new chat messages? Existing coaching records remain.')) return; const otherId=currentUserId===coachId?playerId:coachId; const { error }=await (supabase.rpc as any)('block_user',{p_user:otherId,p_scope:'chat',p_reason:'Blocked from chat'}); if(error) alert(error.message); else setBlocked(true); }}>Block</button>
+                </div>}
               </div>
             </div>
           );
@@ -214,6 +220,7 @@ export default function ChatWindow({
       </div>
 
       {/* Input */}
+      {blocked && <p className="muted">This chat is blocked. Existing records remain available.</p>}
       <div className="chat-composer-row">
         <button
           type="button"
@@ -221,7 +228,7 @@ export default function ChatWindow({
           title="Send a picture or video (videos up to 500 MB)"
           aria-label="Attach picture or video"
           onClick={() => fileRef.current?.click()}
-          disabled={uploading || send.isPending || recording}
+          disabled={blocked || uploading || send.isPending || recording}
         >
           {uploading ? <span aria-label="Uploading">…</span> : <Plus size={24} aria-hidden="true" />}
         </button>
@@ -245,7 +252,7 @@ export default function ChatWindow({
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message"
-          disabled={send.isPending || uploading || recording}
+          disabled={blocked || send.isPending || uploading || recording}
         />
         <button
           type="button"
@@ -253,7 +260,7 @@ export default function ChatWindow({
           title={recording ? 'Stop and send recording' : text.trim() ? 'Send message' : 'Record a voice message'}
           aria-label={recording ? 'Stop and send voice message' : text.trim() ? 'Send message' : 'Record voice message'}
           onClick={() => text.trim() ? send.mutate(text.trim()) : void toggleRecording()}
-          disabled={uploading || send.isPending}
+          disabled={blocked || uploading || send.isPending}
         >
           {recording ? <><Square size={17} aria-hidden="true" /><span className="sr-only">Stop {Math.floor(recordingSeconds / 60)}:{String(recordingSeconds % 60).padStart(2, '0')}</span></> : text.trim() ? <Send size={21} aria-hidden="true" /> : <Mic size={21} aria-hidden="true" />}
         </button>

@@ -258,6 +258,18 @@ const ar: Record<string, string> = {
   "7. Contact": "7. التواصل",
 };
 Object.assign(ar, {
+  "Account & Privacy": "الحساب والخصوصية",
+  "Privacy Policy": "سياسة الخصوصية",
+  "Community Standards": "معايير المجتمع",
+  "Private & public libraries": "المكتبات الخاصة والعامة",
+  "All Public Items": "كل العناصر العامة",
+  "Your Public Items": "عناصرك العامة",
+  "Your Private Items": "عناصرك الخاصة",
+  Drafts: "المسودات", Search: "بحث", "All sources": "كل المصادر",
+  "Newest first": "الأحدث أولاً", "Name A-Z": "الاسم من أ إلى ي",
+  Report: "إبلاغ", "Block creator": "حظر المنشئ", Reports: "البلاغات",
+  Audit: "سجل الإجراءات", Restore: "استعادة", Hide: "إخفاء", Remove: "إزالة",
+  "Coaching Access": "صلاحية التدريب", "Coaching access key": "مفتاح صلاحية التدريب",
   Action: "إجراء", tab: "علامة تبويب", "Client programming": "برمجة العميل", "Diet templates": "قوالب الأنظمة الغذائية",
   "15 DAYS": "15 يومًا", "15 days": "15 يومًا", "1 MONTH": "شهر واحد",
   "Player access was extended by 15 days.": "تم تمديد وصول اللاعب لمدة 15 يومًا.",
