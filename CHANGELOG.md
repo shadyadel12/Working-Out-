@@ -17,6 +17,7 @@
 
 - Public libraries now open on public items so imported exercises and ingredients are visible immediately.
 - Removed the temporary external exercise and food import connections while keeping existing library data available.
+- Removed the previously imported external food catalog from the public ingredient library.
 
 ## July 22, 2026
 
